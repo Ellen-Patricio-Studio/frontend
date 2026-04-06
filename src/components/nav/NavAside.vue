@@ -1,5 +1,6 @@
 <script setup>
-import Avatar from './Avatar.vue';
+import Avatar from '@/components/Avatar.vue';
+
 import NavLink from './NavLink.vue';
 import { Icon } from '@iconify/vue';
 import imgAvatar from '@/assets/images/logo.jpeg'

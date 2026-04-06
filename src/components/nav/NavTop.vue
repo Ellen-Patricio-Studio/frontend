@@ -1,5 +1,5 @@
 <script setup>
-import Avatar from './Avatar.vue';
+import Avatar from '@/components/Avatar.vue';
 import NavLink from './NavLink.vue';
 import { Icon } from '@iconify/vue';
 import imgAvatar from '@/assets/images/logo.jpeg'
@@ -22,7 +22,11 @@ import imgAvatar from '@/assets/images/logo.jpeg'
         height: 80px;
         color: var(--cinza-nav);
         padding: 0 24px;
-        box-shadow: 0px 0px 4px 0px rgba(0,0,0,0.12);
+        background-color: var(--cards);
+        box-shadow: var(--box-shadow-top);
+        position: fixed;
+        top: 0;
+
 
         .nav-icon{
             width: 24px;

@@ -3,7 +3,8 @@ defineProps({
     src: String,
     alt: String,
     name: String,
-    role: String
+    role: String,
+    hour: String
 })
 
     
@@ -11,10 +12,11 @@ defineProps({
 
 <template>
     <div class="avatar">
-        <img :src="src" :alt="alt">
+        <img :src="src" :alt="alt" class="avatar-img">
         <div class="role-area">
             <p class="name">{{name}}</p>
             <p class="role">{{role}}</p>
+            <p class="hour">{{hour}}</p>
         </div>
     </div>
 </template>
@@ -24,11 +26,7 @@ defineProps({
         @include flex(row, center, center);
         gap: 8px;
 
-        img{
-            width: 40px;
-            height: 40px;
-            border-radius: 999px;
-        }
+
     
         .role-area{
             @include flex(column, center, start);
@@ -41,7 +39,7 @@ defineProps({
                 font-weight: bold;
             }
 
-            .role{
+            .role, .hour{
                 font-size: 12px;
             }
             
