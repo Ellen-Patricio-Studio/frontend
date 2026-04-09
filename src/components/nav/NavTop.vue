@@ -26,7 +26,7 @@ import imgAvatar from '@/assets/images/logo.jpeg'
         box-shadow: var(--box-shadow-top);
         position: fixed;
         top: 0;
-
+        z-index: 10;
 
         .nav-icon{
             width: 24px;

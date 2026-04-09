@@ -1,0 +1,56 @@
+<script setup>
+import NextAppointments from '@/components/appointments/NextAppointments.vue';
+import BoxInfo from '@/components/BoxInfo.vue';
+import BoxGraph from '@/components/graph/BoxGraph.vue';
+import imgAvatar from '@/assets/images/logo.jpeg'
+import { useBreakpoints } from '@/composables/useBreakpoints';
+import RecentAppointmentsList from '@/components/appointments/RecentAppointmentsList.vue';
+import RecentsTransitionList from '@/components/finances/RecentsTransitionList.vue';
+const { width } = useBreakpoints()
+
+</script>
+
+<template>
+    <div class="finances-container-admin">
+        <div class="h1 h1-top">Finanças</div>
+        <div class="boxes">
+            <BoxInfo icon="boxicons:dollar" texto="Receitas" numero="R$1230,00" background-color="--verde-claro-box" icon-color="--verde-escuro-box"></BoxInfo>
+            <BoxInfo icon="mdi:dollar-off" texto="Despesas" numero="R$1230,00" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"></BoxInfo>
+            <BoxInfo icon="healthicons:low-income-level-outline" texto="Saldo" numero="R$1230,00" background-color="--roxo-claro-box" icon-color="--roxo-escuro-box"></BoxInfo>
+        </div>
+        <BoxGraph graph-type="line"></BoxGraph>
+        <ul class="box-lists box recent-transitions-list">
+            <div class="top">
+                <h2 class="h2">Transações recentes</h2>
+                <input type="text" class="input" placeholder="Buscar...">
+            </div>
+            <div class="titles">
+                <p>Descrição</p>
+                <p>Data</p>
+                <p>Categoria</p>
+                <p>Operação</p>
+                <p>Valor</p>
+                <p>Ação</p>
+            </div>
+            <RecentsTransitionList description="Kit maquiagem" data="08/04/2026" category="Suprimentos" operation="Saída" value="250"></RecentsTransitionList>
+            <RecentsTransitionList description="Kit maquiagem" data="08/04/2026" category="Suprimentos" operation="Saída" value="250"></RecentsTransitionList>
+            <RecentsTransitionList description="Kit maquiagem" data="08/04/2026" category="Suprimentos" operation="Saída" value="250"></RecentsTransitionList>
+            <RecentsTransitionList description="Kit maquiagem" data="08/04/2026" category="Suprimentos" operation="Saída" value="250"></RecentsTransitionList>
+        </ul>
+    </div>
+</template>
+
+<style lang="scss">
+    .finances-container-admin{
+        padding: 16px 24px;
+        @include flex(column, center, start);
+        gap: 32px;
+        margin: calc(80px + 16px) 0;
+        transition: 1s;
+
+        @media all and (min-width: 768px){
+            padding-left: calc(256px + 32px);
+            margin-bottom: 16px;
+        }
+    }
+</style>

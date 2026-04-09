@@ -30,32 +30,5 @@ defineProps({
 </template>
 
 <style lang="scss">
-    .recent-appointments{
-        .item{
-            width: 100%;
-            @include flex(row, space-between, center);
-            font-size: 12px;
-            flex: 1;
-            gap: 12px;
 
-            p, button{
-                flex: 1;
-                text-align: center;
-                background: none;
-                border: none;
-            }
-
-            .avatar-img{
-                width: 20px;
-                height: 20px;
-            }
-
-            .avatar-area{
-                @include flex(row, center, center);
-                gap: 8px;
-                flex: 1;
-                text-align: center;
-            }
-        }
-    }
 </style>

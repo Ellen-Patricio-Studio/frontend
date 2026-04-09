@@ -23,6 +23,7 @@ import NavLink from './NavLink.vue';
         position: fixed;
         bottom: 0;
         box-shadow: 0px -2px 4px 0px rgba(0,0,0,0.06);
+        z-index: 10;
 
         li{
             font-size: 10px;

@@ -57,3 +57,83 @@ body{
     height: 40px;
     border-radius: 999px;
 }
+
+.h1-top{
+    @media all and (min-width: 768px){
+        height: 80px;
+        background-color: var(--cards);
+        border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        border-left: 1px solid rgba(0, 0, 0, 0.06);
+        width: calc(100vw - 256px - 16px);
+        position: absolute;
+        left: 256px;
+        top: 0;
+        @include flex(row, start, center);
+        padding-left: 32px;
+    }
+}
+
+.input{
+    outline: none;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    width: 256px;
+    border-radius: 8px;
+    height: 36px;
+    padding-left: 8px;
+}
+
+.boxes{
+    width: 100%;
+    @include flex(row, space-between, center);
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.box-lists{
+    width: 100%;
+    @include flex(column, center, center);
+    padding-top: 24px;
+    gap: 32px;
+    color: var(--cinza-nav);
+
+    .top{
+        width: 100%;
+        @include flex(row, space-between, center);
+    }
+    
+    .titles{
+        width: 100%;
+        @include flex(row, start, center);
+        text-transform: uppercase;
+        font-size: 12px;
+        p{
+            flex: 1;
+            text-align: center;
+            font-weight: 700;
+        }
+    }
+
+    .item{
+        width: 100%;
+        @include flex(row, space-between, center);
+        font-size: 12px;
+        flex: 1;
+        gap: 12px;
+        p, button{
+            flex: 1;
+            text-align: center;
+            background: none;
+            border: none;
+        }
+        .avatar-img{
+            width: 20px;
+            height: 20px;
+        }
+        .avatar-area{
+            @include flex(row, center, center);
+            gap: 8px;
+            flex: 1;
+            text-align: center;
+        }
+        }
+}

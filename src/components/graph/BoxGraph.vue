@@ -1,21 +1,24 @@
 <script setup>
 import BoxInfo from '@/components/BoxInfo.vue';
 import BarGraph from './BarGraph.vue';
-
+defineProps({
+    graphType: String
+})
 
 </script>
 
 <template>
     <div class="box-graph box">
         <div class="top">
-            <h2 class="h2">Total de agendamentos</h2>
+            <h2 class="h2" v-if="graphType === 'bar'">Total de agendamentos</h2>
+            <h2 class="h2" v-else="graphType">Receitas x Despesas</h2>
             <select id="options" class="button-select">
                 <option value="Semanal">Semanal</option>
                 <option value="Mensal">Mensal</option>
                 <option value="Anual">Anual</option>
             </select>
         </div>
-        <BarGraph></BarGraph>
+        <BarGraph :graphType="graphType"></BarGraph>
     </div>
 </template>
 

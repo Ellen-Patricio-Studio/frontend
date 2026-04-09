@@ -39,7 +39,7 @@ import imgAvatar from '@/assets/images/logo.jpeg'
         position: fixed;
         top: 0;
         box-shadow: 2px 0px 4px 0px rgba(0,0,0,0.06);
-
+        z-index: 10;
         
         .topo{
             @include flex(column, space-between, start);

@@ -6,6 +6,7 @@
 import BoxInfo from './components/BoxInfo.vue';
 import DashboardAdmin from './views/DashboardAdmin.vue';
 import Appointments from './views/Appointments.vue';
+import FinancesAdmin from './views/FinancesAdmin.vue';
   const { width } = useBreakpoints()
 
 </script>
@@ -15,7 +16,8 @@ import Appointments from './views/Appointments.vue';
   <NavAside v-if="width >= 768"></NavAside>
   <NavTop v-if="width < 768"></NavTop>
   <!-- <DashboardAdmin></DashboardAdmin> -->
-   <Appointments></Appointments>
+   <!-- <Appointments></Appointments> -->
+   <FinancesAdmin></FinancesAdmin>
 </template>
 
 <style lang="scss">
