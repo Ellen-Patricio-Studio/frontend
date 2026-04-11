@@ -137,3 +137,13 @@ body{
         }
         }
 }
+
+.employee-list-item{
+    width: 100%;
+    @include flex(row, space-between, center);
+
+    .right{
+        @include flex(column, center, end);
+        gap: 8px;
+    }
+}

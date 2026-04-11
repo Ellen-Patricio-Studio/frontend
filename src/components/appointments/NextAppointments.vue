@@ -21,7 +21,7 @@ defineProps({
 </template>
 
 <style lang="scss">
-    .appointments-list{
+    .appointments-list, .calendario-list{
         .item{
             width: 100%;
             @include flex(row, space-between, start);
