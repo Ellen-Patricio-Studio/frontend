@@ -52,6 +52,12 @@ body{
     cursor: pointer;
 }
 
+.button-voltar{
+    background-image: none;
+    background-color: var(--cinza-claro);
+    color: var(--cinza-nav);
+}
+
 .avatar-img{
     width: 40px;
     height: 40px;
@@ -145,5 +151,100 @@ body{
     .right{
         @include flex(column, center, end);
         gap: 8px;
+    }
+}
+
+.confirmation{
+    @include flex(column, start, start);
+    width: 100%;
+    gap: 16px;
+    margin-top: 16px;
+
+    .right{
+        @include flex(column, center, center);
+        width: 100%;
+        gap: 24px;
+    }
+
+    @media all and (min-width: 768px){
+        height: 80px;
+        background-color: var(--cards);
+        box-shadow: var(--box-shadow-bottom);
+        border-left: 1px solid rgba(0, 0, 0, 0.06);
+        width: calc(100vw - 256px - 16px) !important;
+        position: fixed;
+        left: 256px;
+        bottom: 0;
+    
+        flex-direction: row;
+        align-items: center;
+        justify-content: end;
+        padding-right: 24px;
+        @include flex(row, space-between, center);
+        padding-left: 40px;
+
+        .right{
+            @include flex(row, start, start);
+            gap: 16px;
+            width: initial;
+
+            .button-rosa{
+                width: 150px;
+                height: 40px;
+            }
+        }
+        
+    }
+}
+
+.new-appointment-list{
+    width: 100%;
+    @include flex(column, center, start);
+    gap: 16px;
+
+    h2{
+        flex: 1 1 100%
+    }
+
+    @media all and (min-width: 768px){
+        flex-wrap: wrap;
+        flex-direction: row;
+        justify-content: start;
+        align-items: stretch;   
+    }
+}
+
+.new-appointment-list-item{
+    width: 100%;
+    color: var(--cinza-nav);
+    box-shadow: var(--box-shadow-item);
+    border-radius: 12px;
+    padding: 18px 12px;
+    cursor: pointer;
+
+    .left{
+        @include flex(column, start, start);
+        gap: 8px;
+    }
+
+    &.checked{
+        border: 2px solid var(--rosa-nav);
+        box-shadow: none;
+    }
+
+    .service-check{
+        appearance: none;
+        -webkit-appearance: none;
+        width: 16px;
+        height: 16px;
+        border-radius: 999px;
+        background-color: transparent;
+        box-shadow: var(--box-shadow-checkbox);
+
+        &:checked{
+            background-color: var(--cards);
+            border: 5px solid var(--rosa-nav);
+            box-shadow: none;
+        }
     }
 }

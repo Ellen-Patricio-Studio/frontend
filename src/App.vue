@@ -9,6 +9,8 @@ import Appointments from './views/Appointments.vue';
 import FinancesAdmin from './views/FinancesAdmin.vue';
 import TeamsAdmin from './views/TeamsAdmin.vue';
 import Profile from './views/Profile.vue';
+import NewAppointment from './views/newAppointments/NewAppointment.vue';
+import ProfessionalSelection from './views/newAppointments/ProfessionalSelection.vue';
   const { width } = useBreakpoints()
 
 </script>
@@ -21,7 +23,9 @@ import Profile from './views/Profile.vue';
   <!-- <Appointments></Appointments> -->
   <!-- <FinancesAdmin></FinancesAdmin> -->
   <!-- <TeamsAdmin></TeamsAdmin>   -->
-  <Profile></Profile>
+  <!-- <Profile></Profile> -->
+  <!-- <NewAppointment></NewAppointment> -->
+  <!-- <ProfessionalSelection></ProfessionalSelection> -->
 </template>
 
 <style lang="scss">

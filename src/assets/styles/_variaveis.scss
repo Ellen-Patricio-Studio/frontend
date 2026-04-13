@@ -2,6 +2,9 @@
     --border-radius: 12px;
     --box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.06);
     --box-shadow-top: 0px 0px 4px 0px rgba(0,0,0,0.12);
+    --box-shadow-bottom: 0px -2px 4px 0px rgba(0,0,0,0.06);
+    --box-shadow-item: 0px 0px 2px 0px rgba(0,0,0,0.30);
+    --box-shadow-checkbox: 0px 0px 2px 0px rgba(0,0,0,1);
 
     --fundo: #F9FAFB;
     --cards: #fff;
@@ -26,6 +29,8 @@
 
     --rosa: #C4297C;
     --roxo: #9C1AFA;
+
+    --cinza-claro: #E5E7EB;
 
     @media all and (min-width: 768px){
         --font-size-h1: 24px;

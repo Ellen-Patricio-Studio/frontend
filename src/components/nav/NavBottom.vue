@@ -22,7 +22,7 @@ import NavLink from './NavLink.vue';
         background-color: var(--cards);
         position: fixed;
         bottom: 0;
-        box-shadow: 0px -2px 4px 0px rgba(0,0,0,0.06);
+        box-shadow: var(--box-shadow-bottom);
         z-index: 10;
 
         li{
