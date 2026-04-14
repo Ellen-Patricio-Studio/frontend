@@ -11,6 +11,8 @@ import TeamsAdmin from './views/TeamsAdmin.vue';
 import Profile from './views/Profile.vue';
 import NewAppointment from './views/newAppointments/NewAppointment.vue';
 import ProfessionalSelection from './views/newAppointments/ProfessionalSelection.vue';
+import DateSelection from './views/newAppointments/DateSelection.vue';
+import Confirmation from './views/newAppointments/Confirmation.vue';
   const { width } = useBreakpoints()
 
 </script>
@@ -26,6 +28,8 @@ import ProfessionalSelection from './views/newAppointments/ProfessionalSelection
   <!-- <Profile></Profile> -->
   <!-- <NewAppointment></NewAppointment> -->
   <!-- <ProfessionalSelection></ProfessionalSelection> -->
+  <!-- <DateSelection></DateSelection> -->
+  <Confirmation></Confirmation>  
 </template>
 
 <style lang="scss">
