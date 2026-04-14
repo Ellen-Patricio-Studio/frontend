@@ -13,14 +13,16 @@ import NewAppointment from './views/newAppointments/NewAppointment.vue';
 import ProfessionalSelection from './views/newAppointments/ProfessionalSelection.vue';
 import DateSelection from './views/newAppointments/DateSelection.vue';
 import Confirmation from './views/newAppointments/Confirmation.vue';
+import Login from './views/Login.vue';
   const { width } = useBreakpoints()
 
 </script>
 
 <template>
-  <NavBottom v-if="width < 768"></NavBottom>
-  <NavAside v-if="width >= 768"></NavAside>
-  <NavTop v-if="width < 768"></NavTop>
+  <Login></Login>
+  <!-- <NavBottom v-if="width < 768"></NavBottom> -->
+  <!-- <NavAside v-if="width >= 768"></NavAside> -->
+  <!-- <NavTop v-if="width < 768"></NavTop> -->
   <!-- <DashboardAdmin></DashboardAdmin> -->
   <!-- <Appointments></Appointments> -->
   <!-- <FinancesAdmin></FinancesAdmin> -->
@@ -29,7 +31,7 @@ import Confirmation from './views/newAppointments/Confirmation.vue';
   <!-- <NewAppointment></NewAppointment> -->
   <!-- <ProfessionalSelection></ProfessionalSelection> -->
   <!-- <DateSelection></DateSelection> -->
-  <Confirmation></Confirmation>  
+  <!-- <Confirmation></Confirmation>   -->
 </template>
 
 <style lang="scss">
