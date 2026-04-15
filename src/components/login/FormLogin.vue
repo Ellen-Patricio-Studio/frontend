@@ -1,10 +1,13 @@
 <script setup>
 import imgAvatar from '@/assets/images/logo.jpeg'
+import { useRedirect } from '@/composables/useRedirect';
+
+const { handleSubmit } = useRedirect()
 
 </script>
 
 <template>
-    <form action="">
+    <form action="" @submit.prevent="handleSubmit('dashboard')">
         <div class="wrapper-input">
             <label for="">Email</label>
             <input type="email" name="" id="" placeholder="Email@dominio.com">
@@ -17,7 +20,7 @@ import imgAvatar from '@/assets/images/logo.jpeg'
             <input type="checkbox" name="" id="">
             <label for="">Lembrar-me</label>
         </div>
-        <input type="submit" class="button-rosa" value="Entrar"/>
+        <input type="submit" class="button-rosa" value="Entrar" />
     </form>
 </template>
 

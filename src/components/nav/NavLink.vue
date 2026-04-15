@@ -3,16 +3,17 @@ import { Icon } from '@iconify/vue';
 defineProps({
     icon: String,
     texto: String,
-    active: Boolean
+    active: Boolean,
+    redirect: String
 })
     
 </script>
 
 <template>
-    <li class="nav-link" :class="{'is-active': active}">
+    <RouterLink :to="{name: redirect}" class="nav-link" :class="{'is-active': active}">
         <Icon :icon="icon" class="nav-icon" />
         <p>{{texto}}</p>
-    </li>
+    </RouterLink>
 </template>
 
 <style lang="scss">

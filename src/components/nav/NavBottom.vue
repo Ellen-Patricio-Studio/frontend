@@ -6,11 +6,11 @@ import NavLink from './NavLink.vue';
 
 <template>
     <ul id="nav">
-        <NavLink icon="material-symbols:dashboard-rounded" texto="Dashboard"></NavLink>
-        <NavLink icon="solar:calendar-bold" texto="Agendamentos"></NavLink>
-        <NavLink icon="boxicons:dollar" texto="Financeiro"></NavLink>
-        <NavLink icon="fa7-solid:gears" texto="Serviços"></NavLink>
-        <NavLink icon="fluent:people-team-24-filled" texto="Equipe"></NavLink>
+        <NavLink icon="material-symbols:dashboard-rounded" texto="Dashboard" redirect="dashboard"></NavLink>
+        <NavLink icon="solar:calendar-bold" texto="Agendamentos" redirect="agendamentos"></NavLink>
+        <NavLink icon="boxicons:dollar" texto="Financeiro" redirect="financas"></NavLink>
+        <NavLink icon="fa7-solid:gears" texto="Serviços" redirect="login"></NavLink>
+        <NavLink icon="fluent:people-team-24-filled" texto="Equipe" redirect="equipe"></NavLink>
     </ul>
 </template>
 

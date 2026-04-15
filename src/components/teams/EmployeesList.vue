@@ -17,7 +17,7 @@ defineProps({
         <Avatar :src="src" :alt="alt" :name="name" :role="role"></Avatar>
         <div class="right">
             <Icon icon="qlementine-icons:menu-dots-16"/>
-            <button class="button-select">Perfil</button>
+            <RouterLink :to="{name: 'equipe/julia.campos'}" class="button-select">Perfil</RouterLink>
         </div>
     </li>
 </template>

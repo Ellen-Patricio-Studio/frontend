@@ -44,7 +44,7 @@ const { width } = useBreakpoints()
                     <p class="total-services">Total : R$120,00</p>
                 </div>
                 <div class="right">
-                    <button class="button-rosa">Prosseguir</button>
+                    <RouterLink :to="{name: 'selecionar-profissional'}" class="button-rosa">Prosseguir</RouterLink>
                 </div>
             </div>
         </div>

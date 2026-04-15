@@ -21,7 +21,7 @@ const { width } = useBreakpoints()
         <ul class="appointments-list box">
            <div class="top">
                <h2 class="h2">Próximos agendamentos</h2>
-               <a href="#">Ver todos</a>
+               <RouterLink :to="{name: 'agendamentos'}" href="#">Ver todos</RouterLink>
            </div>
            <NextAppointments :src="imgAvatar" alt="Foto de perfil" name="Ellen patricio" role="Hidratação" hour="17:30 - 18:30" status="Pendente"></NextAppointments>
            <NextAppointments :src="imgAvatar" alt="Foto de perfil" name="Ellen patricio" role="Hidratação" hour="17:30 - 18:30" status="Pendente"></NextAppointments>
@@ -57,7 +57,7 @@ const { width } = useBreakpoints()
             ></RecentAppointmentsList>
 
         </ul>
-        <button class="button-rosa btn-dash">+ Novo agendamento</button>
+        <RouterLink :to="{name: 'novo-agendamento'}" class="button-rosa btn-dash">+ Novo agendamento</RouterLink>
     </div>
 </template>
 

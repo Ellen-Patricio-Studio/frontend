@@ -16,13 +16,15 @@ import NextAppointments from '@/components/appointments/NextAppointments.vue';
                 <p>></p>
                 <p>Ellen patricio</p>
             </div>
-            <Icon icon="icon-park-outline:return"/>
+            <RouterLink :to="{name: 'equipe'}">
+                <Icon icon="icon-park-outline:return"/>
+            </RouterLink>
         </div>
         <ShowProfile :src="imgAvatar" name="Ellen Patricio" role="Estilista" ></ShowProfile>
         <div class="box box-calendario">
             <div class="top">
                 <h2 class="h2">Agenda</h2>
-                <a href="">Ver calendário</a>
+                <RouterLink :to="{name: 'agendamentos'}" href="">Ver calendário</RouterLink>
             </div>
             <CarouselDays></CarouselDays>
             <ul class="calendario-list">

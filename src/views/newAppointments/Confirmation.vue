@@ -51,8 +51,8 @@ import imgAvatar from '@/assets/images/logo.jpeg'
                     <p>Total pago<span class="total">R$380,00</span></p>
                 </div>
                 <div class="buttons">
-                    <button class="button-rosa button-voltar">Cancelar reserva</button>
-                    <button class="button-rosa">Ir para o dashboard</button>
+                    <RouterLink class="button-rosa button-voltar">Cancelar reserva</RouterLink>
+                    <RouterLink :to="{name: 'dashboard'}" class="button-rosa">Ir para o dashboard</RouterLink>
                 </div>
             </div>   
             <div class="notice">

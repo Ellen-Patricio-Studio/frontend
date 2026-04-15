@@ -66,8 +66,8 @@ const attributes = ref([
                     <p class="total">R$380,00</p>
                 </div>
                 <div class="right">
-                    <button class="button-rosa button-voltar">Voltar</button>
-                    <button class="button-rosa">Agendar</button>
+                    <RouterLink :to="{name: 'selecionar-profissional'}" class="button-rosa button-voltar">Voltar</RouterLink>
+                    <RouterLink :to="{name: 'resumo'}" class="button-rosa">Agendar</RouterLink>
                 </div>
             </div>
         </div>

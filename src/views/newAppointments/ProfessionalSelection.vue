@@ -30,8 +30,8 @@ import imgAvatar from '@/assets/images/logo.jpeg';
                     <Avatar :src="imgAvatar" name="Qualquer profissional / Sem preferência"></Avatar>
                 </div>
                 <div class="right">
-                    <button class="button-rosa button-voltar">Voltar</button>
-                    <button class="button-rosa">Prosseguir</button>
+                    <RouterLink :to="{name: 'novo-agendamento'}" class="button-rosa button-voltar">Voltar</RouterLink>
+                    <RouterLink :to="{name: 'selecionar-data'}" class="button-rosa">Prosseguir</RouterLink>
                 </div>
             </div>
         </div>

@@ -11,21 +11,23 @@ import imgAvatar from '@/assets/images/logo.jpeg'
 <template>
     <div id="nav-aside">
         <div class="topo">
-            <div class="logo-area">
+            <RouterLink :to="{name: 'dashboard'}" class="logo-area">
                 <img src="@/assets/images/logo.jpeg" alt="">
                 <span>Ellen Patricio Studio</span>
-            </div>
+            </RouterLink>
             <ul>
-                <NavLink icon="material-symbols:dashboard-rounded" texto="Dashboard" active="true"></NavLink>
-                <NavLink icon="solar:calendar-bold" texto="Agendamentos"></NavLink>
-                <NavLink icon="boxicons:dollar" texto="Financeiro"></NavLink>
-                <NavLink icon="fa7-solid:gears" texto="Serviços"></NavLink>
-                <NavLink icon="fluent:people-team-24-filled" texto="Equipe"></NavLink>
+                <NavLink icon="material-symbols:dashboard-rounded" texto="Dashboard" active="true" redirect="dashboard"></NavLink>
+                <NavLink icon="solar:calendar-bold" texto="Agendamentos" redirect="agendamentos"></NavLink>
+                <NavLink icon="boxicons:dollar" texto="Financeiro" redirect="financas"></NavLink>
+                <NavLink icon="fa7-solid:gears" texto="Serviços" redirect="login"></NavLink> <!-- alterar -->
+                <NavLink icon="fluent:people-team-24-filled" texto="Equipe" redirect="equipe"></NavLink>
             </ul>
         </div>
         <div class="bottom">
             <Avatar :src="imgAvatar" alt="Foto de perfil do usuário" name="Ellen Patricio" role="Admin"></Avatar>
-            <Icon icon="famicons:log-out" class="nav-icon" />
+            <RouterLink :to="{name: 'login'}">
+                <Icon icon="famicons:log-out" class="nav-icon" />
+            </RouterLink>
         </div>
     </div>
 </template>
@@ -71,7 +73,7 @@ import imgAvatar from '@/assets/images/logo.jpeg'
                 width: 100%;
                 gap: 8px;
                 
-                li{
+                a{
                     @include flex(row, start, center);
                     width: 100%;
                     height: 50px;
@@ -84,8 +86,7 @@ import imgAvatar from '@/assets/images/logo.jpeg'
                     }
 
                     &:active{
-                        background-color: red !important;
-                        columns: yellow;
+                      
                     }
                 }
             }

@@ -2,6 +2,13 @@
 import imgAvatar from '@/assets/images/logo.jpeg'
 import FormCadastro from '@/components/login/FormCadastro.vue';
 import FormLogin from '@/components/login/FormLogin.vue';
+import { ref } from 'vue'
+
+const formularioAtivo = ref('login')
+
+function mudarForm(formName){
+    formularioAtivo.value = formName
+}
 
 </script>
 
@@ -13,11 +20,11 @@ import FormLogin from '@/components/login/FormLogin.vue';
                 <h1 class="h1">Ellen Patricio Studio</h1>
             </div>
             <div class="buttons">
-                <button class="button-select active">Login</button>
-                <button class="button-select">Criar conta</button>
+                <button @click.prevent="mudarForm('login')" class="button-select"    :class="{'active': formularioAtivo === 'login'}" >Login</button>
+                <button @click.prevent="mudarForm('cadastro')" class="button-select" :class="{'active': formularioAtivo === 'cadastro'}" >Criar conta</button>
             </div>
-            <FormLogin></FormLogin>
-            <!-- <FormCadastro></FormCadastro> -->
+            <FormLogin v-if="formularioAtivo === 'login'"></FormLogin>
+            <FormCadastro v-else-if="formularioAtivo === 'cadastro'"></FormCadastro>
         </div>
     </div>
 
