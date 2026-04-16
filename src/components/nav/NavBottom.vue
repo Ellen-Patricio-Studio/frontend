@@ -25,7 +25,7 @@ import NavLink from './NavLink.vue';
         box-shadow: var(--box-shadow-bottom);
         z-index: 10;
 
-        li{
+        a{
             font-size: 10px;
         }
     }

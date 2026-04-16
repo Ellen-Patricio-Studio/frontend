@@ -4,12 +4,23 @@ import Avatar from '@/components/Avatar.vue';
 import NavLink from './NavLink.vue';
 import { Icon } from '@iconify/vue';
 import imgAvatar from '@/assets/images/logo.jpeg'
+import { useMenuStore } from '@/stores/useMenuStore';
+import { useBreakpoints } from '@/composables/useBreakpoints';
+import { watch } from 'vue';
 
-    
+const menuStore = useMenuStore()
+const { width } = useBreakpoints()    
+
+watch(width, (newWidth) => {
+    if(newWidth < 768){
+        menuStore.closeMenu()
+    }
+})
+
 </script>
 
 <template>
-    <div id="nav-aside">
+    <div id="nav-aside" v-if="width >= 768 || menuStore.isMenuOpen === true">
         <div class="topo">
             <RouterLink :to="{name: 'dashboard'}" class="logo-area">
                 <img src="@/assets/images/logo.jpeg" alt="">

@@ -3,15 +3,15 @@ import Avatar from '@/components/Avatar.vue';
 import NavLink from './NavLink.vue';
 import { Icon } from '@iconify/vue';
 import imgAvatar from '@/assets/images/logo.jpeg'
-
-
+import { useMenuStore } from '@/stores/useMenuStore';
+const menuStore = useMenuStore()
     
 </script>
 
 <template>
     <div class="nav-top">
         <Avatar :src="imgAvatar" alt="Foto de perfil" name="" role=""></Avatar>
-        <Icon icon="mingcute:menu-fill" class="nav-icon" />
+        <Icon icon="mingcute:menu-fill" class="nav-icon" @click="menuStore.toggleMenu()"/>
     </div>
 </template>
 
@@ -31,6 +31,7 @@ import imgAvatar from '@/assets/images/logo.jpeg'
         .nav-icon{
             width: 24px;
             height: 24px;
+            cursor: pointer;
         }
      
     }

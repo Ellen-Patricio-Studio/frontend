@@ -6,14 +6,16 @@ defineProps({
     active: Boolean,
     redirect: String
 })
-    
+import { useRedirect } from '@/composables/useRedirect';
+const redirectComposable = useRedirect()
+
 </script>
 
 <template>
-    <RouterLink :to="{name: redirect}" class="nav-link" :class="{'is-active': active}">
+    <a @click.prevent="redirectComposable.handleSubmit(redirect)" class="nav-link" :class="{'is-active': active}">
         <Icon :icon="icon" class="nav-icon" />
         <p>{{texto}}</p>
-    </RouterLink>
+    </a>
 </template>
 
 <style lang="scss">
@@ -24,6 +26,7 @@ defineProps({
         background-color: var(--cards);
         gap: 8px;
         color: var(--cinza-nav);
+        cursor: pointer;
 
         .nav-icon{
             width: 16px;
