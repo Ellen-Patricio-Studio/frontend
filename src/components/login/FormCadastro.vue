@@ -9,6 +9,14 @@ const { handleSubmit } = useRedirect()
 <template>
     <form action="" @submit.prevent="handleSubmit('login')">
         <div class="wrapper-input">
+            <label for="">Nome completo</label>
+            <input type="text" name="" id="" placeholder="Email@dominio.com">
+        </div>
+        <div class="wrapper-input">
+            <label for="">Telefone</label>
+            <input type="number" name="" id="" placeholder="Email@dominio.com">
+        </div>
+        <div class="wrapper-input">
             <label for="">Email</label>
             <input type="email" name="" id="" placeholder="Email@dominio.com">
         </div>
@@ -23,6 +31,8 @@ const { handleSubmit } = useRedirect()
         <input type="submit" class="button-rosa" value="Criar"/>
     </form>
 </template>
+
+
 
 <style lang="scss">
     .container-login{
@@ -63,3 +73,6 @@ const { handleSubmit } = useRedirect()
         }
     }
 </style>
+
+
+

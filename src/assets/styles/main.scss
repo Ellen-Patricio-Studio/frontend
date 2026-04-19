@@ -274,3 +274,106 @@ body{
         }
     }
 }
+
+.box-modal{
+    position: fixed;
+    z-index: 12;
+    inset: 0;
+    margin: auto;
+    height: max-content;
+    width: 90%;
+    @include flex(column, center, start);
+    gap: 24px;
+    color: var(--cinza-nav);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
+                0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
+
+    .top{
+        width: 100%;
+        @include flex(row, space-between, center);
+
+        .title{
+            font-weight: bold;
+        }
+
+        .icon{
+            cursor: pointer;
+            color: var(--rosa);
+        }
+    }
+
+    hr{
+        width: 100%;
+        border: 1px solid rgba(128, 128, 128, 0.301);
+    }
+
+    .button-rosa:last-child{
+        background-image: none;
+        background-color: var(--rosa);
+    }
+
+    .form{
+        width: 100%;
+        @include flex (column, center, center);
+        gap: 32px;
+
+        .two-wrappers{
+            width: 100%;
+            @include flex(row, space-between, center);
+            gap: 16px;
+        }
+
+        .service-wrapper{
+            @include flex(row, space-between, center);
+            width: 100%;
+            margin-bottom: 8px;
+
+            .icon{
+                color: #3696e4;
+                cursor: pointer;
+            }
+        }
+
+        .wrapper-input{
+            @include flex (column, center, start);
+            width: 100%;
+            gap: 8px;
+
+            .input{
+                width: 100%;
+            }
+
+            textarea{
+                height: 100px;
+            }
+
+            img{
+                width: 100px;
+                height: 100px;
+                border-radius: 999px;
+                align-self: center;
+            }
+
+            .buttons{
+                @include flex(row, space-between, center);
+                gap: 16px;
+
+                .button-remove{
+                    color: var(--rosa);
+                    border-color: var(--rosa);
+                }
+            }
+        }
+
+        .wrapper-check{
+            flex-direction: row;
+            justify-content: start;
+            align-items: center;
+        }
+        
+    }
+
+    @media all and (min-width: 768px){
+        width: 600px;
+    }
+}

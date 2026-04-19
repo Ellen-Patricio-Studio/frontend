@@ -30,8 +30,9 @@ watch(width, (newWidth) => {
                 <NavLink icon="material-symbols:dashboard-rounded" texto="Dashboard" active="true" redirect="dashboard"></NavLink>
                 <NavLink icon="solar:calendar-bold" texto="Agendamentos" redirect="agendamentos"></NavLink>
                 <NavLink icon="boxicons:dollar" texto="Financeiro" redirect="financas"></NavLink>
-                <NavLink icon="fa7-solid:gears" texto="Serviços" redirect="login"></NavLink> <!-- alterar -->
+                <NavLink icon="fa7-solid:gears" texto="Serviços" redirect="servicos"></NavLink>
                 <NavLink icon="fluent:people-team-24-filled" texto="Equipe" redirect="equipe"></NavLink>
+                <NavLink icon="mdi:account" texto="Conta" redirect="conta"></NavLink>
             </ul>
         </div>
         <div class="bottom">

@@ -35,7 +35,8 @@ function mudarForm(formName){
     .wrapper-login{
         @include flex(row, center,center);
         width: 100%;
-        height: 100vh;
+        min-height: 100vh;
+        padding: 32px 0;
     }
 
     .container-login{
