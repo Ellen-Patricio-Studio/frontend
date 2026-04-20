@@ -1,9 +1,13 @@
 <script setup>
 
+defineProps({
+    toggleModal: Function
+})
+
 </script>
 
 <template>
-    <div class="fundo-menu"></div>
+    <div class="fundo-menu" @click="toggleModal"></div>
 </template>
 
 <style lang="scss">

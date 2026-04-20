@@ -283,11 +283,15 @@ body{
 .box-modal{
     position: fixed;
     z-index: 12;
-    inset: 0;
-    margin: auto;
-    height: max-content;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    
+    max-height: 90vh;
+
     width: 90%;
-    @include flex(column, center, start);
+    @include flex(column, flex-start, start);
     gap: 24px;
     color: var(--cinza-nav);
     box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 
@@ -319,8 +323,10 @@ body{
 
     .form{
         width: 100%;
-        @include flex (column, center, center);
+        @include flex (column, flex-start, center);
         gap: 32px;
+        padding-right: 16px;
+        overflow-y: auto;
 
         .two-wrappers{
             width: 100%;
@@ -361,7 +367,8 @@ body{
 
             .buttons{
                 @include flex(row, space-between, center);
-                gap: 16px;
+                gap: 16px; 
+
 
                 .button-remove{
                     color: var(--rosa);
@@ -375,7 +382,10 @@ body{
             justify-content: start;
             align-items: center;
         }
-        
+
+        .button-rosa{
+            min-height: 45px;
+        }
     }
 
     @media all and (min-width: 768px){

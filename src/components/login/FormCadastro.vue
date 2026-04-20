@@ -1,6 +1,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import api from '@/services/api'
+import { usePhoneMask } from '@/composables/usePhoneMask';
 
 const {mudarForm} = defineProps({
     mudarForm: Function
@@ -15,25 +16,14 @@ const modeloReq = ref({
     confirmar_senha: '',
 })
 
+const { formatPhone } = usePhoneMask()
+watch(() => modeloReq.value.telefone, (val) => {
+  modeloReq.value.telefone = formatPhone(val)
+})
+
 const loading = ref(false) // true quando estiver fazendo a requisição
 const errorMsg = ref('')
 const errorMsg2 = ref('')
-
-watch(() => modeloReq.value.telefone, (val) => {
-  let inputValue = val.replace(/\D/g, '') // Remove tudo que não é dígito
-  if (inputValue.length > 11) inputValue = inputValue.slice(0, 11) // Limita a 11 números
-  
-  if (inputValue.length > 10) {
-    inputValue = inputValue.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3')
-  } else if (inputValue.length > 6) {
-    inputValue = inputValue.replace(/^(\d{2})(\d{4})(\d{0,4}).*/, '($1) $2-$3')
-  } else if (inputValue.length > 2) {
-    inputValue = inputValue.replace(/^(\d{2})(\d{0,5})/, '($1) $2')
-  } else if (inputValue.length > 0) {
-    inputValue = inputValue.replace(/^(\d*)/, '($1')
-  }
-  modeloReq.value.telefone = inputValue
-})
 
 const cadastrar = async () => {
     loading.value = true;
