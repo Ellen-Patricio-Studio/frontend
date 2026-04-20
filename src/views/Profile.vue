@@ -5,22 +5,44 @@ import imgAvatar from '@/assets/images/logo.jpeg'
 import CarouselDays from '@/components/appointments/CarouselDays.vue';
 import RecentAppointmentsList from '@/components/appointments/RecentAppointmentsList.vue';
 import NextAppointments from '@/components/appointments/NextAppointments.vue';
+import { onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { useEquipeStore } from '@/stores/useEquipeStore';
+
+const route = useRoute()
+const equipeStore = useEquipeStore()
+
+onMounted(() => {
+    const id = route.params.id
+    equipeStore.buscarPorId(id)
+})
+
 
 </script>
 
 <template>
-    <div class="container-profile">
+    <p v-if="equipeStore.loading">Carregando perfil...</p>
+    <div v-elif="equipeStore.funcionarioSelecionado" class="container-profile">
         <div class="wrapper-name h1-top">
             <div class="names">
                 <p>Equipe</p>
                 <p>></p>
-                <p>Ellen patricio</p>
+                <p>{{equipeStore.funcionarioSelecionado?.nome_completo}}</p>
             </div>
             <RouterLink :to="{name: 'equipe'}">
                 <Icon icon="icon-park-outline:return"/>
             </RouterLink>
         </div>
-        <ShowProfile :src="imgAvatar" name="Ellen Patricio" role="Estilista" ></ShowProfile>
+        <ShowProfile 
+            :key="equipeStore.funcionarioSelecionado?.id"
+            :id="equipeStore.funcionarioSelecionado?.id"
+            :src="imgAvatar" 
+            :name="equipeStore.funcionarioSelecionado?.nome_completo" 
+            role="Estilista" 
+            :tel="equipeStore.funcionarioSelecionado?.telefone" 
+            :email="equipeStore.funcionarioSelecionado?.email" 
+            :active="equipeStore.funcionarioSelecionado?.ativo">
+        </ShowProfile>
         <div class="box box-calendario">
             <div class="top">
                 <h2 class="h2">Agenda</h2>

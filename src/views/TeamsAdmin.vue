@@ -31,7 +31,7 @@ onMounted(() => {
     <div class="container-teams">
         <h1 class="h1 h1-top">Equipe <button class="button-select" @click="toggleModal">Novo funcionário</button></h1>
         <input type="text" class="input" placeholder="Buscar...">
-        <EmployeesList v-for="funcionario in equipeStore.funcionarios" :key="funcionario.id" :src="AvatarImg" alt="Foto de perfil" :name="funcionario.nome_completo" :role="funcionario.cargo"></EmployeesList>          
+        <EmployeesList v-for="funcionario in equipeStore.funcionarios" :key="funcionario.id" :src="AvatarImg" alt="Foto de perfil" :name="funcionario.nome_completo" :role="funcionario.cargo" :id="funcionario.id"></EmployeesList>          
     </div>
 </template>
 

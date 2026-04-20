@@ -40,9 +40,10 @@ const routes = [
     component: TeamsAdmin
   },
   {
-    path: '/equipe/julia.campos',
-    name: 'equipe/julia.campos',
-    component: Profile
+    path: '/equipe/:id',
+    name: 'equipe/funcionario',
+    component: () => import('@/views/Profile.vue'),
+    props: true
   },
   {
     path: '/novo-agendamento',

@@ -2,33 +2,50 @@
 import { Icon } from '@iconify/vue';
 import { useBreakpoints } from '@/composables/useBreakpoints';
 const { width } = useBreakpoints()
- 
+import FundoModais from '../FundoModais.vue';
+import EmployeeEdit from '../modals/EmployeeEdit.vue'; 
+import { ref } from 'vue';
+
+const isModalOpen = ref(false);
+
+const toggleModal = () => {
+    isModalOpen.value = !isModalOpen.value;
+}
+
 defineProps({
+    id: Number,
     src: String,
     name: String,
-    role: String
+    role: String,
+    tel: String,
+    email: String,
+    active: Boolean
 })
 </script>
 
 <template>
+    <teleport to="body" v-if="isModalOpen">
+        <FundoModais :toggle-modal="toggleModal"></FundoModais>
+        <EmployeeEdit :toggle-modal="toggleModal" :id="id" :name="name" :tel="tel" :email="email" :active="active"></EmployeeEdit>
+    </teleport>
     <div class="box container-show-profile">
         <img :src="src" />
         <div class="texts">
             <h1 class="h1">{{ name }}</h1>
             <p>{{ role }}</p>
-            <p v-if="width>=768" class="active">Ativo</p>
+            <p v-if="width>=768" class="active">{{active ? 'Ativo' : 'Desativado'}}</p>
             <div v-if="width>=768" class="contacts">
                 <div class="contact">
                     <Icon class="icon" icon="mynaui:telephone-solid"/>
-                    <p>(11) 12345-6789</p>
+                    <p>{{tel}}</p>
                 </div>
                 <div class="contact">
                     <Icon class="icon" icon="mage:email-fill"/>
-                    <p>ellenpatricio@ellenpatricio.com</p>
+                    <p>{{email}}</p>
                 </div>
             </div>
         </div>
-        <button class="button-select">Editar</button>
+        <button class="button-select" @click="toggleModal()">Editar</button>
     </div>
 </template>
 

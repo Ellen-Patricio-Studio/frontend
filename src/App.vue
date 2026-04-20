@@ -40,7 +40,7 @@ const route = useRoute()
     <!-- <NewAppointmentModal></NewAppointmentModal> -->
     <!-- <PasswordEdit></PasswordEdit> -->
     <!-- <ProfileEdit></ProfileEdit> -->
-    <!-- <EmployeeEdit></EmployeeEdit> -->
+    
   </template>
 </template>
 

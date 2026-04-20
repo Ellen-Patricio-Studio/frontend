@@ -2,13 +2,16 @@
 import Avatar from '../Avatar.vue';
 import { Icon } from '@iconify/vue';
 
-defineProps({
+const props = defineProps({
     src: String,
     alt: String,
     name: String,
     role: String,
     hour: String,
+    id: Number
 })
+
+const linkRedirect = `equipe/${props.id}`
 
 </script>
 
@@ -17,7 +20,7 @@ defineProps({
         <Avatar :src="src" :alt="alt" :name="name" :role="role"></Avatar>
         <div class="right">
             <Icon icon="qlementine-icons:menu-dots-16"/>
-            <RouterLink :to="{name: 'equipe/julia.campos'}" class="button-select">Perfil</RouterLink>
+            <RouterLink :to="linkRedirect" class="button-select">Perfil</RouterLink>
         </div>
     </li>
 </template>

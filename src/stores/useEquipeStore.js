@@ -52,7 +52,7 @@ export const useEquipeStore = defineStore('equipe', {
             this.loading = true
 
             try{
-                const response = await api.put(`/admin/funcionarios/${id}`, dados)
+                const response = await api.put(`/admin/funcionarios/${id}`, data)
 
                 const index = this.funcionarios.findIndex(funcionario => funcionario.id === id)
                 if(index !== -1){
@@ -73,13 +73,27 @@ export const useEquipeStore = defineStore('equipe', {
             this.loading = true
 
             try{
-                await api.delete(`admin/funcionarios/${id}`)
+                await api.delete(`/admin/funcionarios/${id}`)
 
                 this.funcionarios = this.funcionarios.filter(funcionario => funcionario.id !== id)
                 return { success: true }
             } catch (error) {
                 console.error("Erro ao remover funcionário: ", error)
                 return { success: false }
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async buscarPorId(id) {
+            this.loading = true
+
+            try{
+                const response = await api.get(`/admin/funcionarios/${id}`)
+                this.funcionarioSelecionado = response.data
+            } catch (error ) {
+                console.error ("Erro ao buscar perfil: ", error)
+                this.funcionarioSelecionado = null
             } finally {
                 this.loading = false
             }
