@@ -7,9 +7,19 @@ import imgAvatar from '@/assets/images/logo.jpeg'
 import { useMenuStore } from '@/stores/useMenuStore';
 import { useBreakpoints } from '@/composables/useBreakpoints';
 import { watch } from 'vue';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { onMounted } from 'vue';
 
 const menuStore = useMenuStore()
 const { width } = useBreakpoints()    
+
+const auth = useAuthStore()
+
+onMounted(async () => {
+    if(auth.token && !auth.user){
+        await auth.carregarPerfil()
+    }
+})
 
 watch(width, (newWidth) => {
     if(newWidth < 768){
@@ -27,16 +37,16 @@ watch(width, (newWidth) => {
                 <span>Ellen Patricio Studio</span>
             </RouterLink>
             <ul>
-                <NavLink icon="material-symbols:dashboard-rounded" texto="Dashboard" active="true" redirect="dashboard"></NavLink>
-                <NavLink icon="solar:calendar-bold" texto="Agendamentos" redirect="agendamentos"></NavLink>
-                <NavLink icon="boxicons:dollar" texto="Financeiro" redirect="financas"></NavLink>
-                <NavLink icon="fa7-solid:gears" texto="Serviços" redirect="servicos"></NavLink>
-                <NavLink icon="fluent:people-team-24-filled" texto="Equipe" redirect="equipe"></NavLink>
-                <NavLink icon="mdi:account" texto="Conta" redirect="conta"></NavLink>
+                <NavLink  icon="material-symbols:dashboard-rounded" texto="Dashboard" active="true" redirect="dashboard"></NavLink>
+                <NavLink  icon="solar:calendar-bold" texto="Agendamentos" redirect="agendamentos"></NavLink>
+                <NavLink v-if="auth.isAdmin" icon="boxicons:dollar" texto="Financeiro" redirect="financas"></NavLink>
+                <NavLink v-if="auth.isAdmin" icon="fa7-solid:gears" texto="Serviços" redirect="servicos"></NavLink>
+                <NavLink v-if="auth.isPeloMenosFuncionario" icon="fluent:people-team-24-filled" texto="Equipe" redirect="equipe"></NavLink>
+                <NavLink  icon="mdi:account" texto="Conta" redirect="conta"></NavLink>
             </ul>
         </div>
         <div class="bottom">
-            <Avatar :src="imgAvatar" alt="Foto de perfil do usuário" name="Ellen Patricio" role="Admin"></Avatar>
+            <Avatar :src="imgAvatar" alt="Foto de perfil do usuário" :name="auth.user?.nome_completo || 'Carregando...'" :role="auth.roles[0] || 'Carregando...'"></Avatar>
             <RouterLink :to="{name: 'login'}">
                 <Icon icon="famicons:log-out" class="nav-icon" />
             </RouterLink>

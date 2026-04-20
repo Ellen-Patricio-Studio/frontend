@@ -39,6 +39,14 @@ defineProps({
                 font-weight: bold;
             }
 
+            .role{
+                text-transform: lowercase;
+            }
+
+            .role::first-letter{
+                text-transform: capitalize;
+            }
+
             .role, .hour{
                 font-size: 12px;
             }

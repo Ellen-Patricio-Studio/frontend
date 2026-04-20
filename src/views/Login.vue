@@ -24,7 +24,7 @@ function mudarForm(formName){
                 <button @click.prevent="mudarForm('cadastro')" class="button-select" :class="{'active': formularioAtivo === 'cadastro'}" >Criar conta</button>
             </div>
             <FormLogin v-if="formularioAtivo === 'login'"></FormLogin>
-            <FormCadastro v-else-if="formularioAtivo === 'cadastro'"></FormCadastro>
+            <FormCadastro v-else-if="formularioAtivo === 'cadastro'" :mudar-form="mudarForm"></FormCadastro>
         </div>
     </div>
 

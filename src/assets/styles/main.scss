@@ -53,6 +53,11 @@ body{
     cursor: pointer;
     @include flex(row, center,center);
     font-size: 14px;
+
+    &.disabled{
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
 }
 
 .button-voltar{
@@ -376,4 +381,9 @@ body{
     @media all and (min-width: 768px){
         width: 600px;
     }
+}
+
+.alert{
+    align-self: start;
+    color: var(--vermelho);
 }

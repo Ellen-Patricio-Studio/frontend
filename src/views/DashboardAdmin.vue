@@ -5,7 +5,21 @@ import BoxGraph from '@/components/graph/BoxGraph.vue';
 import imgAvatar from '@/assets/images/logo.jpeg'
 import { useBreakpoints } from '@/composables/useBreakpoints';
 import RecentAppointmentsList from '@/components/appointments/RecentAppointmentsList.vue';
-const { width } = useBreakpoints()
+const { width } = useBreakpoints();
+import { onMounted } from 'vue';
+import { useAgendaStore } from '@/stores/useAgendaStore';
+import { useAuthStore } from '@/stores/useAuthStore';
+
+const agendamentos = useAgendaStore()
+const auth = useAuthStore()
+
+onMounted(() => {
+    agendamentos.carregarAgendamentos();
+})
+
+// const filtrarPage = () => {
+//     agendamentos.carregarAgendamentos(1)
+// }
 
 </script>
 
@@ -13,9 +27,9 @@ const { width } = useBreakpoints()
     <div class="dash-container">
         <div class="h1 h1-top">Overview</div>
         <div class="boxes">
-            <BoxInfo icon="solar:calendar-bold" texto="Agendamentos hoje" numero="123" background-color="--azul-claro-box" icon-color="--azul-escuro-box"></BoxInfo>
-            <BoxInfo icon="boxicons:dollar" texto="Receita de hoje" numero="123" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"></BoxInfo>
-            <BoxInfo icon="fluent:people-team-24-filled" texto="Novos clientes" numero="123" background-color="--roxo-claro-box" icon-color="--roxo-escuro-box"></BoxInfo>
+            <BoxInfo v-if="isPeloMenosFuncionario" icon="solar:calendar-bold" texto="Agendamentos hoje" numero="123" background-color="--azul-claro-box" icon-color="--azul-escuro-box"      ></BoxInfo>
+            <BoxInfo v-if="isPeloMenosFuncionario" icon="boxicons:dollar" texto="Receita de hoje" numero="123" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"    ></BoxInfo>
+            <BoxInfo v-if="isPeloMenosFuncionario" icon="fluent:people-team-24-filled" texto="Novos clientes" numero="123" background-color="--roxo-claro-box" icon-color="--roxo-escuro-box"></BoxInfo>
         </div>
         <BoxGraph graph-type="bar"></BoxGraph>
         <ul class="appointments-list box">
@@ -23,9 +37,8 @@ const { width } = useBreakpoints()
                <h2 class="h2">Próximos agendamentos</h2>
                <RouterLink :to="{name: 'agendamentos'}" href="#">Ver todos</RouterLink>
            </div>
-           <NextAppointments :src="imgAvatar" alt="Foto de perfil" name="Ellen patricio" role="Hidratação" hour="17:30 - 18:30" status="Pendente"></NextAppointments>
-           <NextAppointments :src="imgAvatar" alt="Foto de perfil" name="Ellen patricio" role="Hidratação" hour="17:30 - 18:30" status="Pendente"></NextAppointments>
-           <NextAppointments :src="imgAvatar" alt="Foto de perfil" name="Ellen patricio" role="Hidratação" hour="17:30 - 18:30" status="Pendente"></NextAppointments>
+           <NextAppointments v-for="item in agendamentos.agendamentos" :key="item.id" :src="imgAvatar" alt="Foto de perfil" :name="item.funcionario" role="Hidratação" hour="17:30 - 18:30" status="Pendente"></NextAppointments>
+           
         </ul>
         <ul class="box-lists box recent-appointments" v-if="width >= 768">
             <div class="top">
