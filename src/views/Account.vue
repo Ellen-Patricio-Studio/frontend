@@ -6,16 +6,50 @@ import imgAvatar from '@/assets/images/logo.jpeg'
 import { useBreakpoints } from '@/composables/useBreakpoints';
 import RecentAppointmentsList from '@/components/appointments/RecentAppointmentsList.vue';
 import Avatar from '@/components/Avatar.vue';
+import { onMounted, computed } from 'vue'
+import { useAuthStore } from '@/stores/useAuthStore';
+import PasswordEdit from '@/components/modals/PasswordEdit.vue';
+import FundoModais from '@/components/FundoModais.vue';
+import { ref } from 'vue';
+import ProfileEdit from '@/components/modals/ProfileEdit.vue';
+
+
 const { width } = useBreakpoints()
+const authStore = useAuthStore()
+
+onMounted(async () => {
+    if(!authStore.user){
+        await authStore.carregarPerfil()    
+    }
+})
+
+const user = computed(() => authStore.user)
+
+const isModalOpen = ref({
+    passwordEdit: false,
+    profileEdit: false,
+});
+
+const toggleModal = (modal) => {
+    isModalOpen.value[modal] = !isModalOpen.value[modal];
+}
 
 </script>
 
 <template>
+    <Teleport to="body" v-if="isModalOpen.passwordEdit">
+        <FundoModais  :toggle-modal="() => toggleModal('passwordEdit')" ></FundoModais>
+        <PasswordEdit :toggle-modal="() => toggleModal('passwordEdit')" :data="authStore.user"  ></PasswordEdit>
+    </Teleport>
+    <Teleport to="body" v-if="isModalOpen.profileEdit">
+        <FundoModais  :toggle-modal="() => toggleModal('profileEdit')" ></FundoModais>
+        <ProfileEdit  :toggle-modal="() => toggleModal('profileEdit')" :data="authStore.user"  ></ProfileEdit>
+    </Teleport>
     <div class="account-container">
         <div class="h1 h1-top">Minha conta</div>
         <div class="box profile-info">
-            <Avatar :src="imgAvatar" alt="Foto de perfil" name="Ellen Patricio" role="Admin - Proprietária"></Avatar>
-            <button class="button-select">Editar</button>
+            <Avatar :src="imgAvatar" alt="Foto de perfil" :name="user.nome_completo || 'Carregando...'" :role="user.roles[0] || 'Carregando...'"></Avatar>
+            <button class="button-select" @click.prevent="toggleModal('profileEdit')">Editar</button>
         </div>
         <ul class="box-lists box">
             <div class="top">
@@ -23,35 +57,31 @@ const { width } = useBreakpoints()
             </div>
             <div class="data-item">
                 <p class="subtitle">Nome completo</p>
-                <p class="data">Hellen Patricio</p>
+                <p class="data">{{user.nome_completo || '---'}}</p>
             </div>
             <div class="data-item">
                 <p class="subtitle">Email</p>
-                <p class="data">hellen.patricio@eps.com.br</p>
+                <p class="data">{{user.email || '---'}}</p>
             </div>
             <div class="data-item">
                 <p class="subtitle">Telefone</p>
-                <p class="data">(11) 12345-6789</p>
+                <p class="data">{{user.telefone || '---'}}</p>
             </div>
-            <div class="data-item">
+            <!-- <div class="data-item">
                 <p class="subtitle">Serviços</p>
                 <p class="data">Corte de cabelo</p>
                 <p class="data">Manicure</p>
                 <p class="data">Pedicure</p>
-            </div>
+            </div> -->
             <div class="data-item">
                 <p class="subtitle">Função</p>
-                <p class="data">Administradora - Proprietária</p>
+                <p class="data">{{user.roles[0]}}</p>
             </div>
         </ul>
         <ul class="box-lists box">
             <div class="top">
                 <h2 class="h2">Senha</h2>
-                <button class="button-select">Editar</button>
-            </div>
-            <div class="data-item">
-                <p class="subtitle">Status</p>
-                <p class="data">Atualizada há dois meses</p>
+                <button class="button-select" @click.prevent="toggleModal('passwordEdit')">Editar</button>
             </div>
         </ul>
     </div>

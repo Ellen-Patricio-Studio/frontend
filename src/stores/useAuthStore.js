@@ -35,6 +35,19 @@ export const useAuthStore = defineStore('auth', {
             }
         },
 
+        async atualizarPerfil(data) {
+            try {
+                const response = await api.put('/auth/perfil', data);               
+                this.user = { ...this.user, ...data };
+                return { success: true };
+            } catch (error) {
+                return { 
+                    success: false, 
+                    message: error.response?.data?.message || "Erro ao atualizar" 
+                };
+            }
+        },
+
         setAuth(token, role){
             this.token = token
             this.roleString = role

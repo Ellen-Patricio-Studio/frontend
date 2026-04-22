@@ -8,6 +8,7 @@ import { usePhoneMask } from '@/composables/usePhoneMask';
 
 
 const equipeStore = useEquipeStore()
+const alert = ref('')
 
 defineProps({
     toggleModal: Function
