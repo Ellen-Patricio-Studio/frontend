@@ -397,3 +397,30 @@ body{
     align-self: start;
     color: var(--vermelho);
 }
+
+.categories-wrapper{
+    width: 100%;
+    @include flex(column, center, start);
+    gap: 16px;
+
+    .categories{
+        width: 100%;
+        @include flex(row, start, start);
+        gap: 16px;
+
+        .categories-li{
+            @include flex(row, space-between, center);
+            gap: 16px;
+
+            .icon{
+                cursor: pointer;
+                color: var(--vermelho);
+            }
+            
+            &.active{
+                background-color: var(--rosa-nav);
+                color: var(--cards);
+            }
+        }
+    }
+}

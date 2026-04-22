@@ -9,31 +9,29 @@ const { categorias, isLoading } = useCategorias()
 const serviceStore = useServiceStore()
 const alert = ref('')
 
+const dataForm = ref({
+    id_categoria: 1,
+    nome_servico: '',
+    duracao_minutos: 0,
+    valor: 0
+})
+
 const props = defineProps({
-    id: Number,
-    id_categoria: Number,
-    name: String,
-    time: String,
-    value: String,
-    active: Boolean,
     toggleModal: Function
 })
 
-const dataForm = ref({
-    id_categoria: props.id_categoria || '',
-    nome_servico: props.name,
-    duracao_minutos: props.time,
-    valor: props.value,
-    // ativo: props.active
-})
 
-const atualizarServico = async () => {
-    console.log(dataForm.value)
-    const response = await serviceStore.editarServico(props.id, dataForm.value);
 
+const cadastrarServico = async () => {
+    // Validação básica
+    if (!dataForm.value.id_categoria || !dataForm.value.nome_servico) {
+        alert("Preencha todos os campos obrigatórios.");
+        return;
+    }
+
+    const response = await serviceStore.cadastrarServico(dataForm.value);
     
     if (response.success) {
-
         window.location.reload();
     } else {
         alert.value = response.message;
@@ -45,22 +43,22 @@ const atualizarServico = async () => {
 <template>
     <div class="box box-modal">
         <div class="top">
-            <p class="title">Editar serviço</p>
-            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal()"/>
+            <p class="title">Novo serviço</p>
+            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal('newService')"/>
         </div>
         <hr>
-        <form class="form" @submit.prevent="atualizarServico">
+        <form class="form" @submit.prevent="cadastrarServico">
             <div class="wrapper-input">
                 <label>Nome</label>
                 <input v-model="dataForm.nome_servico" type="text" name="" id="" class="input">
             </div>
             <div class="wrapper-input">
                 <label>Duração</label>
-                <input v-model.number="dataForm.duracao_minutos" type="number" name="" id="" class="input">
+                <input v-model="dataForm.duracao_minutos" type="number" name="" id="" class="input">
             </div>
             <div class="wrapper-input">
                 <label>Valor</label>
-                <input v-model.number="dataForm.valor" type="number" name="" id="" class="input">
+                <input v-model="dataForm.valor" type="number" name="" id="" class="input">
             </div>
             <div class="wrapper-input">
                 <label>Categoria</label>
@@ -75,12 +73,8 @@ const atualizarServico = async () => {
                     </option>
                 </select>
             </div>
-            <!-- <div class="wrapper-input wrapper-check">
-                <input v-model="dataForm.ativo" type="checkbox" name="" id="">
-                <label>Ativo?</label>
-            </div> -->
             <p v-if="alert !== ''" class="alert">{{ alert }}</p>
-            <button class="button-rosa button-voltar" @click.prevent="toggleModal()">Cancelar</button>
+            <button class="button-rosa button-voltar" @click.prevent="toggleModal('newService')">Cancelar</button>
             <input type="submit" value="Confirmar" class="button-rosa">
         </form>
     </div>

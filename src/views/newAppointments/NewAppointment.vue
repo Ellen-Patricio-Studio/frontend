@@ -65,26 +65,6 @@ const { width } = useBreakpoints()
             padding-top: 32px;
             padding-bottom: 32px;
 
-            .categories-wrapper{
-                width: 100%;
-                @include flex(column, center, start);
-                gap: 16px;
-
-                .categories{
-                    width: 100%;
-                    @include flex(row, start, start);
-                    gap: 16px;
-
-                    .categories-li{
-
-                        &.active{
-                            background-color: var(--rosa-nav);
-                            color: var(--cards);
-                        }
-                    }
-                }
-            }
-
             .confirmation{
                 .resume{
                     width: 100%;
