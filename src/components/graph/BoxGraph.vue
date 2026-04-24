@@ -2,7 +2,8 @@
 import BoxInfo from '@/components/BoxInfo.vue';
 import BarGraph from './BarGraph.vue';
 defineProps({
-    graphType: String
+    graphType: String,
+    agendamentos: Array
 })
 
 </script>

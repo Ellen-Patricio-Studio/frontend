@@ -34,13 +34,9 @@ const route = useRoute()
     <NavTop v-if="width < 768"></NavTop>
     <FundoMenu v-if="menuStore.isMenuOpen && width < 768"></FundoMenu>
     <!-- <FundoModais></FundoModais> -->
-    <!-- <DeleteService></DeleteService> -->
 
     <!-- <EditAppointment></EditAppointment> -->
     <!-- <NewAppointmentModal></NewAppointmentModal> -->
-    <!-- <PasswordEdit></PasswordEdit> -->
-    <!-- <ProfileEdit></ProfileEdit> -->
-    
   </template>
 </template>
 

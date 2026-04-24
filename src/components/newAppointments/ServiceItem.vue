@@ -1,26 +1,38 @@
 <script setup>
-
 defineProps({
     service: String,
     description: String,
     time: String,
     checkStatus: Boolean,
-    price: String,
-    id: 1 //temporário
+    price: [String, Number], // Aceita string ou número do banco
+    id: [String, Number]
 })
 
+// Define o evento para o pai capturar
+const emit = defineEmits(['click'])
 </script>
 
 <template>
-    <label class="new-appointment-list-item" :class="{'checked': checkStatus}" :for="'check'+id">
+    <label 
+        class="new-appointment-list-item" 
+        :class="{'checked': checkStatus}" 
+        :for="'check'+id"
+        @click.prevent="$emit('click')" 
+    >
         <div class="left">
             <p class="service-title">{{ service }}</p>
             <p class="service-description">{{ description }}</p>
             <p class="service-time">{{ time }}</p>
         </div>  
         <div class="right">
-            <input class="service-check" type="checkbox"  :name="'check'+id" :id="'check'+id" :checked="checkStatus">
-            <p class="service-price">R${{ price }},00</p>
+            <input 
+                class="service-check" 
+                type="checkbox"  
+                :name="'check'+id" 
+                :id="'check'+id" 
+                :checked="checkStatus"
+            >
+            <p class="service-price">R${{ price }}</p>
         </div>
     </label>
 </template>
@@ -29,6 +41,11 @@ defineProps({
     .container-newAppointment{
         .new-appointment-list-item{
             @include flex(row, space-between, stretch);
+            
+            &.checked {
+                border: 2px solid var(--rosa-nav);
+                background-color: rgba(var(--rosa-rgb), 0.05);
+            }
 
             .service-title{
                 font-size: 16px;

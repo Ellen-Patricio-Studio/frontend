@@ -1,4 +1,6 @@
 <script setup>
+import { useAuthStore } from '@/stores/useAuthStore';
+const authStore = useAuthStore()
 
 defineProps({
     src: String,
@@ -11,12 +13,13 @@ defineProps({
     status: String,
 })
 
+
     
 </script>
 
 <template>
     <li class="item">
-        <p class="avatar-area">
+        <p class="avatar-area" v-if="!authStore.isCliente">
             <img v-if="src!==undefined" :src="src" :alt="alt" class="avatar-img">
             <span class="name">{{ name }}</span>
         </p>

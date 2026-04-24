@@ -1,14 +1,22 @@
 <script setup>
 import ButtonTime from '@/components/buttons/ButtonTime.vue';
 import ActiveArea from '@/components/newAppointments/ActiveArea.vue';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
 import { Icon } from '@iconify/vue';
 import Information from '@/components/newAppointments/Information.vue';
 import Avatar from '@/components/Avatar.vue';
 import imgAvatar from '@/assets/images/logo.jpeg'
+import { useFormatter } from '@/composables/useFormatter';
+import { useBooking } from '@/composables/useBooking';
+import { useAgendamentosStore } from '@/stores/useAgendamentosStore';
 
+// const agendamentosStore = useAgendamentosStore()
+const useFormatterComposable = useFormatter()
+const { bookingData, totalPreco } = useBooking();
 
-
+const imprimir = () => {
+    window.print();
+};
 
 
 </script>
@@ -25,33 +33,33 @@ import imgAvatar from '@/assets/images/logo.jpeg'
                     <h1>Reserva confirmada!</h1>
                     <p>Uma cópia deste comprovante foi enviada ao seu endereço de email.</p>
                     <div class="buttons">
-                        <button class="button-select"><Icon icon="solar:calendar-broken" />Ver calendário</button>
-                        <button class="button-select"><Icon icon="solar:calendar-broken" />Imprimir</button>
+                        <button class="button-select" @click="$router.push({name: 'agendamentos'})"><Icon icon="solar:calendar-broken" />Ver calendário</button>
+                        <button class="button-select" @click="imprimir"><Icon icon="solar:calendar-broken" />Imprimir</button>
                     </div>
                 </div>
                 <div class="informations">
                     <div class="top">
                         <h2 class="h2">Detalhes <span>Confirmado</span></h2>
-                        <p>Código de referência</p>
+                        <!-- <p>Código de referência</p> -->
                         <hr>
                     </div>
-                    <Information title="Serviço" description="Corte de cabelo + Cílios" subdescription="Duração: 90 minutos"></Information>
-                    <Information title="Data" description="Segunda. 16 de março de 2026" subdescription="10:30"></Information>
+                    <Information title="Serviço" :description="bookingData._temp.nome_servico" :subdescription="bookingData._temp.nome_categoria"></Information>
+                    <Information title="Data" :description="bookingData.data_atendimento" :subdescription="bookingData.hora_inicio"></Information>
                     <div class="information">
                         <p class="title">Profissional</p>
-                        <Avatar :src="imgAvatar" alt="Foto de perfil" name="Ellen Patricio" role="Estilista"></Avatar>
+                        <Avatar :src="imgAvatar" alt="Foto de perfil" :name="bookingData._temp.nome_funcionario" role="Estilista"></Avatar>
                     </div>
                     <Information title="Local" description="Rua do salão" subdescription="123"></Information>
                 </div>
                 <hr>
                 <div class="resume">
                     <h2 class="h2">Resumo financeiro</h2>
-                    <p>Subtotal<span>R$350,00</span></p>
-                    <p>Taxas e tarifas<span>R$30,00</span></p>
-                    <p>Total pago<span class="total">R$380,00</span></p>
+                    <!-- <p>Subtotal<span>R$350,00</span></p>
+                    <p>Taxas e tarifas<span>R$30,00</span></p> -->
+                    <p>Total pago<span class="total">{{useFormatterComposable.formatarMoeda(totalPreco)}}</span></p>
                 </div>
                 <div class="buttons">
-                    <RouterLink class="button-rosa button-voltar">Cancelar reserva</RouterLink>
+                    <!-- <RouterLink class="button-rosa button-voltar">Cancelar reserva</RouterLink> -->
                     <RouterLink :to="{name: 'dashboard'}" class="button-rosa">Ir para o dashboard</RouterLink>
                 </div>
             </div>   

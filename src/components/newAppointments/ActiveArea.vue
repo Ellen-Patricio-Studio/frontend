@@ -16,13 +16,13 @@
                 </div>
                 <hr>
                 <div class="area">
-                    <Icon icon="stash:circle-dot-duotone"  class="icon" :class="{'active': activeProfessional}"/>
-                    <p :class="{'active': activeProfessional}">Profissional</p>
+                    <Icon icon="stash:circle-dot-duotone"  class="icon" :class="{'active': activeData}"/>
+                    <p :class="{'active': activeData}">Data</p>
                 </div>
                 <hr>
                 <div class="area">
-                    <Icon icon="stash:circle-dot-duotone"  class="icon" :class="{'active': activeData}"/>
-                    <p :class="{'active': activeData}">Data</p>
+                    <Icon icon="stash:circle-dot-duotone"  class="icon" :class="{'active': activeProfessional}"/>
+                    <p :class="{'active': activeProfessional}">Profissional</p>
                 </div>
             </div>
 </template>

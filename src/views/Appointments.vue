@@ -1,9 +1,41 @@
 <script setup>
+import { onMounted, ref, computed } from 'vue';
+import { useAgendamentosStore } from '@/stores/useAgendamentosStore';
+import { useAuthStore } from '@/stores/useAuthStore';
 import AppointmentsList from '@/components/appointments/AppointmentsList.vue';
 import CarouselDays from '@/components/appointments/CarouselDays.vue';
 import MobileCalendar from '@/components/appointments/MobileCalendar.vue';
 import imgAvatar from '@/assets/images/logo.jpeg'
 
+const agendamentosStore = useAgendamentosStore();
+const auth = useAuthStore();
+
+const busca = ref('');
+const filtroStatus = ref('');
+
+const agendamentoSelecionado = ref(null);
+
+const selecionarAgendamento = (agendamento) => {
+    agendamentoSelecionado.value = agendamento;
+};
+
+onMounted(() => {
+    if (auth.isAdmin) {
+        agendamentosStore.fetchTodosAgendamentos();
+    } else {
+        agendamentosStore.fetchMeusAgendamentos();
+    }
+});
+
+// Lógica de filtragem para a lista
+const agendamentosFiltrados = computed(() => {
+    return agendamentosStore.agendamentos.filter(a => {
+        const matchesBusca = a.cliente.toLowerCase().includes(busca.value.toLowerCase()) || 
+                             a.servico.toLowerCase().includes(busca.value.toLowerCase());
+        const matchesStatus = filtroStatus.value ? a.status === filtroStatus.value : true;
+        return matchesBusca && matchesStatus;
+    });
+});
 </script>
 
 <template>
@@ -13,24 +45,40 @@ import imgAvatar from '@/assets/images/logo.jpeg'
             <div class="appointment-calendar box">
                 <CarouselDays></CarouselDays>
                 <MobileCalendar></MobileCalendar>
-    
             </div>
+            
             <ul class="appointments-box box">
                 <div class="top">
                     <h2 class="h2">Lista de agendamentos</h2>
-                    <input type="text" placeholder="Buscar..." class="input">
+                    <input v-model="busca" type="text" placeholder="Buscar por cliente ou serviço..." class="input">
                     <div class="selects">
-                        <select name="" id="" class="button-select">
-                            <option value="funcionario">Funcionário</option>
-                        </select>
-                        <select name="" id="" class="button-select">
-                            <option value="status">Status</option>
+                        <select v-model="filtroStatus" class="button-select">
+                            <option value="">Todos os Status</option>
+                            <option value="AGENDADO">Agendado</option>
+                            <option value="CONFIRMADO">Confirmado</option>
+                            <option value="REALIZADO">Realizado</option>
+                            <option value="CANCELADO">Cancelado</option>
+                            <option value="AUSENTE">Ausente</option>
                         </select>
                     </div>
                 </div>
-                <AppointmentsList :src="imgAvatar" alt="Foto de perfil" name="Ellen Patricio" professional="Arlindo Guimarães" status="Pendente" role="Corte de unha"></AppointmentsList>
-                <AppointmentsList :src="imgAvatar" alt="Foto de perfil" name="Ellen Patricio" professional="Arlindo Guimarães" status="Pendente" role="Corte de unha"></AppointmentsList>
-                <AppointmentsList :src="imgAvatar" alt="Foto de perfil" name="Ellen Patricio" professional="Arlindo Guimarães" status="Pendente" role="Corte de unha"></AppointmentsList>
+
+                <AppointmentsList 
+                    v-for="item in agendamentosFiltrados" 
+                    :key="item.id"
+                    :id="item.id"
+                    :src="imgAvatar" 
+                    :name="item.cliente" 
+                    :professional="item.funcionario" 
+                    :status="item.status" 
+                    :role="item.servico"
+                    :hour="item.horario"
+                />
+
+                <div v-if="agendamentosStore.loading">Carregando...</div>
+                <div v-if="agendamentosFiltrados.length === 0 && !agendamentosStore.loading">
+                    Nenhum agendamento encontrado.
+                </div>
             </ul>
         </div>
     </div>
