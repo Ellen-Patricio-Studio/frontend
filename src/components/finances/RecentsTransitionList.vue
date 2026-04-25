@@ -1,21 +1,22 @@
 <script setup>
 defineProps({
-    description: String,
-    data: String,
-    category: String,
-    operation: String,
-    value: String,
+    transacao: Object,
+    categorias: Array,
 })
     
 </script>
 
 <template>
     <li class="item">
-        <p>{{ description }}</p>
-        <p>{{ data }}</p>
-        <p>{{ category }}</p>
-        <p>{{ operation }}</p>
-        <p>R${{ value }},00</p>
+        <p>{{ transacao.id }}</p>
+        <p>{{ transacao.data_criacao }}</p>
+        <p>{{ transacao.nome_lancamento }}</p>
+        <p>{{ transacao.id_agendamento }}</p>
+        <!-- <p>{{ categorias[transacao.id_categoria_financeira] }}</p> -->
+        <p>{{ transacao.valor }}</p>
+        <p>{{ transacao.forma_pagamento }}</p>
+        <p>{{ transacao.status_pagamento }}</p>
+        <p>{{ transacao.data_pagamento }}</p>
         <button>...</button>
     </li>
 </template>

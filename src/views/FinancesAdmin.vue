@@ -6,7 +6,20 @@ import imgAvatar from '@/assets/images/logo.jpeg'
 import { useBreakpoints } from '@/composables/useBreakpoints';
 import RecentAppointmentsList from '@/components/appointments/RecentAppointmentsList.vue';
 import RecentsTransitionList from '@/components/finances/RecentsTransitionList.vue';
+import { useFinanceiroStore } from '@/stores/useFinanceiroStore';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { onMounted } from 'vue';
+
+const auth = useAuthStore()
+const financeiroStore = useFinanceiroStore()
 const { width } = useBreakpoints()
+
+onMounted(() => {
+    if (auth.isAdmin) {
+        financeiroStore.fetchLancamentos({page: 1});
+        financeiroStore.fetchDashboardFinanceiro();
+    }
+});
 
 </script>
 
@@ -14,9 +27,9 @@ const { width } = useBreakpoints()
     <div class="finances-container-admin">
         <div class="h1 h1-top">Finanças</div>
         <div class="boxes">
-            <BoxInfo icon="boxicons:dollar" texto="Receitas" numero="R$1230,00" background-color="--verde-claro-box" icon-color="--verde-escuro-box"></BoxInfo>
-            <BoxInfo icon="mdi:dollar-off" texto="Despesas" numero="R$1230,00" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"></BoxInfo>
-            <BoxInfo icon="healthicons:low-income-level-outline" texto="Saldo" numero="R$1230,00" background-color="--roxo-claro-box" icon-color="--roxo-escuro-box"></BoxInfo>
+            <BoxInfo icon="boxicons:dollar" texto="Receitas" :numero="financeiroStore.receita_total || 'R$ 0,00'" background-color="--verde-claro-box" icon-color="--verde-escuro-box"></BoxInfo>
+            <BoxInfo icon="mdi:dollar-off" texto="Despesas" :numero="financeiroStore.dashboardFinanceiro?.despesas_total || 'R$ 0,00'" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"></BoxInfo>
+            <BoxInfo icon="healthicons:low-income-level-outline" texto="Saldo" :numero="financeiroStore.dashboardFinanceiro?.saldo_total || 'R$ 0,00'" background-color="--roxo-claro-box" icon-color="--roxo-escuro-box"></BoxInfo>
         </div>
         <BoxGraph graph-type="line"></BoxGraph>
         <ul class="box-lists box recent-transitions-list">
@@ -25,17 +38,17 @@ const { width } = useBreakpoints()
                 <input type="text" class="input" placeholder="Buscar...">
             </div>
             <div class="titles">
+                <p>Nº</p>
+                <p>Data criação</p>
                 <p>Descrição</p>
-                <p>Data</p>
-                <p>Categoria</p>
-                <p>Operação</p>
+                <p>Nº agendamento</p>
                 <p>Valor</p>
-                <p>Ação</p>
+                <p>Operação</p>
+                <p>Status</p>
+                <p>Data pagamento</p>
+                <p>Opções</p>
             </div>
-            <RecentsTransitionList description="Kit maquiagem" data="08/04/2026" category="Suprimentos" operation="Saída" value="250"></RecentsTransitionList>
-            <RecentsTransitionList description="Kit maquiagem" data="08/04/2026" category="Suprimentos" operation="Saída" value="250"></RecentsTransitionList>
-            <RecentsTransitionList description="Kit maquiagem" data="08/04/2026" category="Suprimentos" operation="Saída" value="250"></RecentsTransitionList>
-            <RecentsTransitionList description="Kit maquiagem" data="08/04/2026" category="Suprimentos" operation="Saída" value="250"></RecentsTransitionList>
+            <RecentsTransitionList v-for="transacao in financeiroStore.lancamentos" :transacao="transacao"></RecentsTransitionList>
         </ul>
     </div>
 </template>

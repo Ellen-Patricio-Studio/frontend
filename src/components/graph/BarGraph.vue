@@ -5,7 +5,9 @@ import {
   Chart as ChartJS, Title, Tooltip, Legend, BarElement, PointElement,
   LineElement, CategoryScale, LinearScale, Filler
 } from 'chart.js'
+import { useFinanceiroStore } from '@/stores/useFinanceiroStore'
 
+const financeiroStore = useFinanceiroStore()
 const props = defineProps({
   // 'bar' para barras (Agendamentos) ou 'line' para linhas (Financeiro)
   graphType: {
