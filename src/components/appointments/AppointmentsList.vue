@@ -3,24 +3,87 @@ import Avatar from '../Avatar.vue';
 import imgAvatar from '@/assets/images/logo.jpeg'
 import { Icon } from '@iconify/vue';
 import { useAuthStore } from '@/stores/useAuthStore';
+import ConfirmModal from '../modals/ConfirmModal.vue';
+import { ref } from 'vue';
+import FundoModais from '../FundoModais.vue';
+
 const auth = useAuthStore();
 
-defineProps({
+const props = defineProps({
+    id: Number,
     src: String,
     alt: String,
     name: String,
     role: String,
     hour: String,
     status: String,
-    professional: String
+    professional: String,
+    date: String,
 })
+
+const isModalOpen = ref({
+    confirmar: false,
+    cancelar: false,
+    realizar: false,
+    ausentar: false
+});
+
+const toggleModal = (modal) => {
+    isModalOpen.value[modal] = !isModalOpen.value[modal];
+}
+
+
 </script>
 
 <template>
+    <Teleport to="body" v-if="isModalOpen.confirmar">
+        <FundoModais :toggle-modal="() => toggleModal('confirmar')"></FundoModais>
+        <ConfirmModal  
+            :id="id"
+            :toggle-modal="toggleModal"
+            :allert="allert"
+            :title="'Confirmar agendamento'"
+            :acao="'confirmar'"
+        ></ConfirmModal>
+    </Teleport>
+    
+    <Teleport to="body" v-if="isModalOpen.cancelar">
+        <FundoModais :toggle-modal="() => toggleModal('cancelar')"></FundoModais>
+        <ConfirmModal  
+            :id="id"
+            :toggle-modal="toggleModal"
+            :allert="allert"
+            :title="'Cancelar agendamento'"
+            :acao="'cancelar'"
+        ></ConfirmModal>
+    </Teleport>
+
+    <Teleport to="body" v-if="isModalOpen.realizar">
+        <FundoModais :toggle-modal="() => toggleModal('realizar')"></FundoModais>
+        <ConfirmModal  
+            :id="id"
+            :toggle-modal="toggleModal"
+            :allert="allert"
+            :title="'Finalizar agendamento'"
+            :acao="'realizar'"
+        ></ConfirmModal>
+    </Teleport>
+
+    <Teleport to="body" v-if="isModalOpen.ausentar">
+        <FundoModais :toggle-modal="() => toggleModal('ausentar')"></FundoModais>
+        <ConfirmModal  
+            :id="id"
+            :toggle-modal="toggleModal"
+            :allert="allert"
+            :title="'Ausentar agendamento'"
+            :acao="'ausentar'"
+        ></ConfirmModal>
+    </Teleport>
+
     <li class="appointments-list-item">
         <div class="left">
             <p class="service-name">{{ role }}</p>
-            <Avatar :src="imgAvatar" :alt="alt" :name="name" :hour="hour"></Avatar>
+            <Avatar :src="imgAvatar" :alt="alt" :name="name" :role="date" :hour="hour"></Avatar>
             <p class="professional">
                 <Icon icon="healthicons:city-worker" class="icon"/>
                 <span>{{ professional }}</span>
@@ -28,13 +91,13 @@ defineProps({
             
             <div class="actions">
                 <template v-if="auth.isCliente && (status === 'AGENDADO' || status === 'CONFIRMADO')">
-                    <button v-if="status === 'AGENDADO'" class="btn-action confirm">Confirmar</button>
-                    <button class="btn-action cancel">Cancelar</button>
+                    <button v-if="status === 'AGENDADO'" class="button-select confirm" @click.prevent="toggleModal('confirmar')">Confirmar</button>
+                    <button class="button-select cancel" @click.prevent="toggleModal('cancelar')">Cancelar</button>
                 </template>
 
                 <template v-if="auth.isPeloMenosFuncionario && (status === 'CONFIRMADO' || status === 'AGENDADO')">
-                    <button class="btn-action done">Realizado</button>
-                    <button class="btn-action absent">Ausente</button>
+                    <button class="button-select done" @click.prevent="toggleModal('realizar')">Realizado</button>
+                    <button class="button-select absent" @click.prevent="toggleModal('ausentar')">Ausente</button>
                 </template>
             </div>
         </div>
@@ -81,16 +144,13 @@ defineProps({
             gap: 8px;
             margin-top: 8px;
 
-            .btn-action {
-                padding: 4px 8px;
-                border-radius: 4px;
-                font-size: 11px;
-                cursor: pointer;
-                border: 1px solid #ccc;
-                background: #fff;
+            .button-select{
+                padding: 6px;
+                font-size: 12px;
+
                 
                 &.confirm { color: green; border-color: green; }
-                &.cancel { color: red; border-color: red; }
+                &.cancel { color: rgb(141, 38, 38); border-color: rgb(136, 39, 39); }
                 &.done { background: var(--azul-claro-box); color: var(--azul-escuro-box); }
                 &.absent { background: #eee; color: #666; }
             }

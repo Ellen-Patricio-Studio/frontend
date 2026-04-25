@@ -67,27 +67,76 @@ export const useAgendamentosStore = defineStore('agendamentos', {
           this.agendamentos[index].status = 'CANCELADO';
         }
 
-        return response.data;
+        return { success: true }
       } catch (err) {
-        const msg = err.response?.data?.message || 'Erro ao cancelar.';
-        this.error = msg;
-        throw msg;
+        console.error(err);
+        return { success: false, error: err.response?.data?.message }
       } finally {
-        this.loading = false;
+          this.loading = false;
       }
     },
 
     async confirmarAgendamento(id) {
+      this.loading = true;
       try {
-        await api.patch(`/agendamentos/${id}/status`, { status: 'CONFIRMADO' });
+        const response = await api.patch(`/agendamentos/${id}/status`, { 
+          status: 'CONFIRMADO' 
+        });
+
         const index = this.agendamentos.findIndex(a => a.id === id);
         if (index !== -1) {
           this.agendamentos[index].status = 'CONFIRMADO';
         }
+
+        return { success: true }
       } catch (err) {
         console.error(err);
-        throw err;
+        return { success: false, error: err.response?.data?.message }
+      } finally {
+          this.loading = false;
       }
-    }
-  }
+    },
+
+    async realizarAgendamento(id) {
+      this.loading = true;
+      try {
+        const response = await api.patch(`/agendamentos/${id}/status`, { 
+          status: 'REALIZADO' 
+        });
+
+        const index = this.agendamentos.findIndex(a => a.id === id);
+        if (index !== -1) {
+          this.agendamentos[index].status = 'REALIZADO';
+        }
+
+        return { success: true }
+      } catch (err) {
+        console.error(err);
+        return { success: false, error: err.response?.data?.message }
+      } finally {
+          this.loading = false;
+      }
+    },
+
+    async ausentarAgendamento(id) {
+      this.loading = true;
+      try {
+        const response = await api.patch(`/agendamentos/${id}/status`, { 
+          status: 'AUSENTE' 
+        });
+
+        const index = this.agendamentos.findIndex(a => a.id === id);
+        if (index !== -1) {
+          this.agendamentos[index].status = 'AUSENTE';
+        }
+
+        return { success: true }
+      } catch (err) {
+        console.error(err);
+        return { success: false, error: err.response?.data?.message }
+      } finally {
+          this.loading = false;
+      }
+    },
+  },
 });

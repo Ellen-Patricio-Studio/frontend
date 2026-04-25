@@ -2,7 +2,6 @@
 import { Icon } from '@iconify/vue';
 import ShowProfile from '@/components/profiles/ShowProfile.vue';
 import imgAvatar from '@/assets/images/logo.jpeg'
-import CarouselDays from '@/components/appointments/CarouselDays.vue';
 import RecentAppointmentsList from '@/components/appointments/RecentAppointmentsList.vue';
 import NextAppointments from '@/components/appointments/NextAppointments.vue';
 import { onMounted } from 'vue';
@@ -48,7 +47,7 @@ onMounted(() => {
                 <h2 class="h2">Agenda</h2>
                 <RouterLink :to="{name: 'agendamentos'}" href="">Ver calendário</RouterLink>
             </div>
-            <CarouselDays></CarouselDays>
+            <!-- <CarouselDays></CarouselDays> -->
             <ul class="calendario-list">
                 <NextAppointments :src="imgAvatar" name="Julia campos" role="Pintura" date="1" hour="16:00 - 17:00" status="Confirmado"></NextAppointments>
                 <NextAppointments :src="imgAvatar" name="Julia campos" role="Pintura" date="1" hour="16:00 - 17:00" status="Confirmado"></NextAppointments>

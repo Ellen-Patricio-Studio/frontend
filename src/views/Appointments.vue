@@ -3,7 +3,6 @@ import { onMounted, ref, computed } from 'vue';
 import { useAgendamentosStore } from '@/stores/useAgendamentosStore';
 import { useAuthStore } from '@/stores/useAuthStore';
 import AppointmentsList from '@/components/appointments/AppointmentsList.vue';
-import CarouselDays from '@/components/appointments/CarouselDays.vue';
 import MobileCalendar from '@/components/appointments/MobileCalendar.vue';
 import imgAvatar from '@/assets/images/logo.jpeg'
 
@@ -43,8 +42,7 @@ const agendamentosFiltrados = computed(() => {
         <h1 class="h1 h1-top">Agendamentos</h1>
         <div class="appointment-content">
             <div class="appointment-calendar box">
-                <CarouselDays></CarouselDays>
-                <MobileCalendar></MobileCalendar>
+                <MobileCalendar :appointments-data="agendamentosFiltrados"></MobileCalendar>
             </div>
             
             <ul class="appointments-box box">
@@ -73,6 +71,7 @@ const agendamentosFiltrados = computed(() => {
                     :status="item.status" 
                     :role="item.servico"
                     :hour="item.horario"
+                    :date="item.data"
                 />
 
                 <div v-if="agendamentosStore.loading">Carregando...</div>
