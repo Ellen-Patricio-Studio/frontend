@@ -2,7 +2,9 @@
 import NavLink from './NavLink.vue';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { onMounted } from 'vue';    
+import { useRoute } from 'vue-router';
 
+const route = useRoute()
 const auth = useAuthStore()
 
 onMounted(async () => {
@@ -15,12 +17,12 @@ onMounted(async () => {
 
 <template>
     <ul id="nav">
-        <NavLink  icon="material-symbols:dashboard-rounded" texto="Dashboard" active="true" redirect="dashboard"></NavLink>
-        <NavLink  icon="solar:calendar-bold" texto="Agendamentos" redirect="agendamentos"></NavLink>
-        <NavLink v-if="auth.isAdmin" icon="boxicons:dollar" texto="Financeiro" redirect="financas"></NavLink>
-        <NavLink v-if="auth.isAdmin" icon="fa7-solid:gears" texto="Serviços" redirect="servicos"></NavLink>
-        <NavLink v-if="auth.isPeloMenosFuncionario" icon="fluent:people-team-24-filled" texto="Equipe" redirect="equipe"></NavLink>
-        <NavLink  icon="mdi:account" texto="Conta" redirect="conta"></NavLink>
+        <NavLink  icon="material-symbols:dashboard-rounded" texto="Dashboard" :active="route.name === 'dashboard'" redirect="dashboard"></NavLink>
+        <NavLink  icon="solar:calendar-bold" texto="Agendamentos" :active="route.name === 'agendamentos'" redirect="agendamentos"></NavLink>
+        <NavLink v-if="auth.isAdmin" icon="boxicons:dollar" texto="Financeiro" :active="route.name === 'financas'" redirect="financas"></NavLink>
+        <NavLink v-if="auth.isAdmin" icon="fa7-solid:gears" texto="Serviços" :active="route.name === 'servicos'" redirect="servicos"></NavLink>
+        <NavLink v-if="auth.isAdmin" icon="fluent:people-team-24-filled" texto="Equipe" :active="route.name === 'equipe'" redirect="equipe"></NavLink>
+        <NavLink  icon="mdi:account" texto="Conta" :active="route.name === 'conta'" redirect="conta"></NavLink>
     </ul>
 </template>
 
@@ -37,6 +39,13 @@ onMounted(async () => {
 
         a{
             font-size: 10px;
+        }
+
+        .nav-link{
+            &.is-active{
+                border-radius: 0;
+                outline: none;
+            }
         }
     }
 </style>

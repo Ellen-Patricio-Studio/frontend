@@ -4,16 +4,31 @@ import ShowProfile from '@/components/profiles/ShowProfile.vue';
 import imgAvatar from '@/assets/images/logo.jpeg'
 import RecentAppointmentsList from '@/components/appointments/RecentAppointmentsList.vue';
 import NextAppointments from '@/components/appointments/NextAppointments.vue';
-import { onMounted } from 'vue';
+import { onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useEquipeStore } from '@/stores/useEquipeStore';
+import { useAgendamentosStore } from '@/stores/useAgendamentosStore';
+import { useAuthStore } from '@/stores/useAuthStore';
 
+const auth = useAuthStore()
+const agendamentosStore = useAgendamentosStore()
 const route = useRoute()
 const equipeStore = useEquipeStore()
 
-onMounted(() => {
-    const id = route.params.id
-    equipeStore.buscarPorId(id)
+const id = route.params.id
+
+onMounted(async () => {
+    await equipeStore.buscarPorId(id)
+    await agendamentosStore.fetchTodosAgendamentos()
+})
+
+const agendamentosFiltrados = computed(() => {
+    const agendamentos = agendamentosStore.agendamentos || []
+    
+    return agendamentos.filter(agendamento => {
+        console.log(agendamento)
+        return agendamento.funcionario == equipeStore.funcionarioSelecionado.nome_completo
+    })
 })
 
 
@@ -49,11 +64,19 @@ onMounted(() => {
                 <RouterLink :to="{name: 'agendamentos'}" href="">Ver calendário</RouterLink>
             </div>
             <!-- <CarouselDays></CarouselDays> -->
-            <ul class="calendario-list">
-                <NextAppointments :src="imgAvatar" name="Julia campos" role="Pintura" date="1" hour="16:00 - 17:00" status="Confirmado"></NextAppointments>
-                <NextAppointments :src="imgAvatar" name="Julia campos" role="Pintura" date="1" hour="16:00 - 17:00" status="Confirmado"></NextAppointments>
-                <NextAppointments :src="imgAvatar" name="Julia campos" role="Pintura" date="1" hour="16:00 - 17:00" status="Confirmado"></NextAppointments>
-                <NextAppointments :src="imgAvatar" name="Julia campos" role="Pintura" date="1" hour="16:00 - 17:00" status="Confirmado"></NextAppointments>
+            <ul class="calendario-list scroll">
+                <NextAppointments v-for="agendamento in agendamentosFiltrados"
+                    :id="id"
+                    :key="agendamento.id"
+                    :src="imgAvatar" 
+                    :name="auth.isPeloMenosFuncionario ? agendamento.cliente : agendamento.funcionario" 
+                    :role="agendamento.servico" 
+                    :hour="` ${agendamento.data} | ${agendamento.horario}`" 
+                    :status="agendamento.status">
+                </NextAppointments>
+                <p v-if="agendamentosFiltrados.length === 0 && !agendamentosStore.loading" class="alert">
+                    Nenhum agendamento futuro para este funcionário.
+                </p>
             </ul>
         </div>
     </div>
@@ -92,6 +115,9 @@ onMounted(() => {
                 @include flex(column, start, start);
                 gap: 32px;
                 width: 100%;
+                max-height: 512px;
+                overflow-y: auto;
+                padding-right: 16px;
             }
         }
     

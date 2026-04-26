@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
+import { useAuthStore } from '@/stores/useAuthStore';
 
 import Login from '@/views/Login.vue';
 import DashboardAdmin from '@/views/DashboardAdmin.vue';
@@ -32,18 +33,21 @@ const routes = [
   {
     path: '/financas',
     name: 'financas',
-    component: FinancesAdmin
+    component: FinancesAdmin,
+    meta: { requiresAuth: true, role: ['ADMIN']}
   },
   {
     path: '/equipe',
     name: 'equipe',
-    component: TeamsAdmin
+    component: TeamsAdmin,
+    meta: { requiresAuth: true, role: ['ADMIN']}
   },
   {
     path: '/equipe/:id',
     name: 'equipe/funcionario',
     component: () => import('@/views/Profile.vue'),
-    props: true
+    props: true,
+    meta: { requiresAuth: true, role: ['ADMIN']}
   },
   {
     path: '/novo-agendamento',
@@ -68,7 +72,8 @@ const routes = [
   {
     path: '/servicos',
     name: 'servicos',
-    component: ServicesAdmin
+    component: ServicesAdmin,
+    meta: { requiresAuth: true, role: ['ADMIN']}
   },
   {
     path: '/conta',

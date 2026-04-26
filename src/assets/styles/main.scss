@@ -67,6 +67,19 @@ body{
     color: var(--cinza-nav);
 }
 
+.btn-dash{
+    font-weight: normal;
+
+    @media all and (min-width: 768px){
+        background-color: yellow;
+        width: 224px;
+        height: 38px;
+        position: absolute;
+        top: 16px;
+        right: 28px;
+    }
+}
+
 .avatar-img{
     width: 40px;
     height: 40px;
@@ -436,4 +449,19 @@ body{
     top: 42px;
     right: 16px;
     background-color: var(--cards);
+}
+
+.box::-webkit-scrollbar, .scroll::-webkit-scrollbar {
+    width: 8px; /* Largura da barra */
+}
+
+.box::-webkit-scrollbar-track, .scroll::-webkit-scrollbar {
+    background: transparent; /* Fundo da trilha transparente */
+    margin: 8px 0; /* Adiciona um espaço no topo e base para não bater na curva */
+}
+
+.box::-webkit-scrollbar-thumb, .scroll::-webkit-scrollbar {
+    background-color: #888; /* Cor da barrinha */
+    border-radius: 20px;    /* Arredonda a própria barrinha */
+    border: 2px solid var(--cor-de-fundo); /* Cria um espaçamento visual */
 }

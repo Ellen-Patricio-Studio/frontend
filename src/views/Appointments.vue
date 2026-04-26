@@ -39,7 +39,7 @@ const agendamentosFiltrados = computed(() => {
 
 <template>
     <div class="appointment-container">
-        <h1 class="h1 h1-top">Agendamentos</h1>
+        <h1 class="h1 h1-top">Agendamentos <RouterLink v-if="auth.isCliente" :to="{name: 'novo-agendamento'}" class="button-rosa btn-dash">+ Novo agendamento</RouterLink></h1>
         <div class="appointment-content">
             <div class="appointment-calendar box">
                 <MobileCalendar :appointments-data="agendamentosFiltrados"></MobileCalendar>
@@ -80,6 +80,7 @@ const agendamentosFiltrados = computed(() => {
                 </div>
             </ul>
         </div>
+
     </div>
 </template>
 
@@ -92,6 +93,21 @@ const agendamentosFiltrados = computed(() => {
         width: 100%;
         overflow: hidden;
         margin: calc(80px + 16px) 0;
+
+        .h1-top{
+            @media all and (max-width: 768px){
+                @include flex(row, space-between, end);
+                width: 100%;
+                
+                .btn-dash{
+                    font-size: 11px;
+                    height: 32px;
+                    width: 140px;
+            
+                }
+            }
+
+        }
 
 
         .appointment-content{

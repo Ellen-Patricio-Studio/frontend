@@ -62,6 +62,13 @@ const historicoAgendamentos = computed(() => {
     );
 });
 
+const historicoAgendamentosProximos = computed(() => {
+    return agendamentosStore.agendamentos.filter(a => 
+        a.status === 'AGENDADO' || 
+        a.status === 'CONFIRMADO'
+    );
+})
+
 </script>
 
 <template>
@@ -86,12 +93,12 @@ const historicoAgendamentos = computed(() => {
                <RouterLink :to="{name: 'agendamentos'}" href="#">Ver todos</RouterLink>
            </div>
            <NextAppointments 
-                v-for="item in agendamentosStore.agendamentos" 
+                v-for="item in historicoAgendamentosProximos" 
                 :key="item.id" 
                 :src="imgAvatar" 
                 :name="auth.isPeloMenosFuncionario ? item.cliente : item.funcionario" 
                 :role="item.servico" 
-                :hour="item.horario" 
+                :hour="` ${item.data} | ${item.horario}`" 
                 :status="item.status"
                 @cancelar="handleCancelar(item.id)" 
             /> 
@@ -126,7 +133,7 @@ const historicoAgendamentos = computed(() => {
                 :status="item.status"
             ></RecentAppointmentsList>
         </ul>
-        <RouterLink :to="{name: 'novo-agendamento'}" class="button-rosa btn-dash">+ Novo agendamento</RouterLink>
+        <RouterLink v-if="auth.isCliente" :to="{name: 'novo-agendamento'}" class="button-rosa btn-dash">+ Novo agendamento</RouterLink>
     </div>
 </template>
 
@@ -138,6 +145,25 @@ const historicoAgendamentos = computed(() => {
         margin: calc(80px + 16px) 0;
         transition: 1s;
         
+        .recent-appointments{
+            max-height: 512px;
+            overflow-y: auto;
+            padding-top: 24px;
+
+            .top, .titles{
+                @include flex(row, space-between, center);
+                width: 100%;
+                padding: 16px 0;
+                position: sticky;
+                top: -24px;
+                background-color: var(--cards);
+            }
+
+            .titles{
+                top: 52px;
+            }
+        }
+
         .appointments-list{
             width: 100%;
             @include flex(column, center, center);
@@ -160,21 +186,6 @@ const historicoAgendamentos = computed(() => {
                     font-size: 14px;
                 }
             }
-
-            &::-webkit-scrollbar {
-                width: 8px; /* Largura da barra */
-            }
-            
-            &::-webkit-scrollbar-track {
-                background: transparent; /* Fundo da trilha transparente */
-                margin: 8px 0; /* Adiciona um espaço no topo e base para não bater na curva */
-            }
-            
-            &::-webkit-scrollbar-thumb {
-                background-color: #888; /* Cor da barrinha */
-                border-radius: 20px;    /* Arredonda a própria barrinha */
-                border: 2px solid var(--cor-de-fundo); /* Cria um espaçamento visual */
-            }
         }
     }
 
@@ -195,14 +206,7 @@ const historicoAgendamentos = computed(() => {
 
             
 
-            .btn-dash{
-                background-color: yellow;
-                width: 224px;
-                height: 38px;
-                position: absolute;
-                top: 16px;
-                right: 28px;
-            }
+
         }
     }
 </style>
