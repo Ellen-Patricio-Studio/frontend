@@ -1,19 +1,28 @@
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { Icon } from '@iconify/vue';
 import { format, addDays, startOfToday, eachDayOfInterval, parseISO, isValid } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 
 const props = defineProps({
-    selectedDate: String,      // Data vinda do pai (opcional, se quiser sincronizar)
-    appointmentsData: Array,   // Agendamentos vindos do banco/store
+    selectedDate: String,      // Data controlada pela store (yyyy-MM-dd)
+    appointmentsData: Array,   // Agendamentos já normalizados vindos da store
     professionalsData: Array   // Lista de profissionais para legenda e cores
 })
+
+const emit = defineEmits(['update:selectedDate']);
 
 const dias = ref([]);
 const hoje = startOfToday();
 const diasParaExibir = 30; 
-const diaSelecionado = ref(format(hoje, 'yyyy-MM-dd'));
+const diaSelecionado = ref(props.selectedDate || format(hoje, 'yyyy-MM-dd'));
+
+// Sincroniza diaSelecionado quando a prop selectedDate muda externamente
+watch(() => props.selectedDate, (novaData) => {
+    if (novaData && novaData !== diaSelecionado.value) {
+        diaSelecionado.value = novaData;
+    }
+});
 
 onMounted(() => {
   const intervalo = eachDayOfInterval({
@@ -45,6 +54,7 @@ const headerDate = computed(() => {
 
 const selecionarDia = (id) => {
   diaSelecionado.value = id;
+  emit('update:selectedDate', id);
 };
 
 const scrollContainer = ref(null);
@@ -65,8 +75,22 @@ const END_HOUR    = 20
 const SLOT_MIN    = 60
 const PX_PER_MIN  = 1.5
 const CARD_PAD    = 6
+const MIN_CARD_W  = 180
 const START_MIN   = START_HOUR * 60
 const totalHeight = computed(() => (END_HOUR - START_HOUR + 1) * SLOT_MIN * PX_PER_MIN)
+
+// Largura total necessária para o slot com mais colunas simultâneas
+const slotsAreaMinWidth = computed(() => {
+  if (!appointments.value.length) return 0
+  const maxCols = Math.max(...appointments.value.map(a => {
+    const sA = timeToMinutes(a.startTime), eA = sA + a.durationMin
+    return appointments.value.filter(b => {
+      const sB = timeToMinutes(b.startTime), eB = sB + b.durationMin
+      return sB < eA && eB > sA
+    }).length
+  }))
+  return maxCols > 1 ? maxCols * MIN_CARD_W + (maxCols + 1) * CARD_PAD : 0
+})
 
 function minutesToPx(min) { return min * PX_PER_MIN }
 function timeToMinutes(t) {
@@ -75,24 +99,23 @@ function timeToMinutes(t) {
   return h * 60 + m
 }
 
-// ─── Dados das Props (Substituição dos Estáticos) ──────────────────────────
+// ─── Dados das Props ──────────────────────────────────────────────────────
 const professionals = computed(() => props.professionalsData || [])
 
+// ID do único card aberto — null = nenhum expandido
+const expandedId = ref(null)
+
+function toggleExpand(appt) {
+  expandedId.value = expandedId.value === appt.id ? null : appt.id
+}
+
+// Filtra apenas agendamentos do dia selecionado (dados já normalizados pela store)
 const appointments = computed(() => {
   if (!props.appointmentsData) return []
-  
-  // Mapeia os dados das props para o formato que o layout espera
-  return props.appointmentsData.map(appt => ({
-    ...appt,
-    client: appt.cliente || appt.client,
-    service: appt.servico || appt.service,
-    startTime: appt.horario || appt.startTime,
-    durationMin: appt.durationMin || 60,
-    duration: appt.duracao || appt.duration || '1h',
-    professionalId: appt.funcionario_id || appt.professionalId,
-    price: appt.preco || appt.price || 0,
-    expanded: !!appt.expanded
-  }))
+
+  return props.appointmentsData
+    .filter(appt => appt.date === diaSelecionado.value)
+    .map(appt => ({ ...appt, expanded: expandedId.value === appt.id }))
 })
 
 // ─── Lógica de colunas ────────────────────────────────────────────────────────
@@ -115,19 +138,29 @@ function getColumnInfo(appt) {
   }
 }
 
+const MAX_CARD_H = SLOT_MIN * PX_PER_MIN - 8  // altura máxima = 1 slot menos padding
+
 function getCardStyle(appt) {
-  const top        = minutesToPx(timeToMinutes(appt.startTime) - START_MIN)
-  const naturalH   = minutesToPx(appt.durationMin)
-  const height     = (appt.expanded ? Math.max(naturalH, 180) : naturalH) - 8
+  const top      = minutesToPx(timeToMinutes(appt.startTime) - START_MIN)
+  const naturalH = minutesToPx(appt.durationMin)
+  // Colapso: nunca estoura o slot de 1h. Expandido: cresce até 180px mínimo
+  const height   = appt.expanded ? Math.max(naturalH, 180) - 8 : Math.min(naturalH, MAX_CARD_H)
   const { colIndex, totalCols } = getColumnInfo(appt)
-  const pct        = 100 / totalCols
-  const gapPerCol  = (CARD_PAD * (totalCols + 1)) / totalCols
+
+  // Se o slot precisa de scroll, usa largura fixa em px; senão divide % normalmente
+  const useFixedWidth = slotsAreaMinWidth.value > 0
+  const left   = useFixedWidth
+    ? CARD_PAD + colIndex * (MIN_CARD_W + CARD_PAD) + 'px'
+    : `calc(${100 / totalCols * colIndex}% + ${CARD_PAD + (colIndex > 0 ? CARD_PAD * colIndex / totalCols : 0)}px)`
+  const width  = useFixedWidth
+    ? MIN_CARD_W + 'px'
+    : `calc(${100 / totalCols}% - ${(CARD_PAD * (totalCols + 1)) / totalCols}px)`
 
   return {
     top: top + 4 + 'px',
     height: height + 'px',
-    left: `calc(${pct * colIndex}% + ${CARD_PAD + (colIndex > 0 ? CARD_PAD * colIndex / totalCols : 0)}px)`,
-    width: `calc(${pct}% - ${gapPerCol}px)`,
+    left,
+    width,
     zIndex: appt.expanded ? 20 : colIndex + 1,
     transition: 'height 0.3s ease',
   }
@@ -145,6 +178,7 @@ function isSlotFree(slot) {
   const slotStart = timeToMinutes(slot)
   const slotEnd   = slotStart + SLOT_MIN
   return !appointments.value.some(a => {
+    if (!a.startTime) return false
     const s = timeToMinutes(a.startTime)
     const e = s + a.durationMin
     return s < slotEnd && e > slotStart
@@ -164,9 +198,7 @@ function statusLabel(s) {
   return { confirmado: 'Confirmado', aguardando: 'Aguardando', cancelado: 'Cancelado' }[s] ?? s
 }
 
-function toggleExpand(appt) {
-  appt.expanded = !appt.expanded
-}
+
 </script>
 
 <template>
@@ -181,12 +213,11 @@ function toggleExpand(appt) {
       </div>
       <Icon icon="mingcute:right-fill" class="icon" @click="moverScroll('proximo')"/>
     </div>
-
     <div class="agenda-header">
       <div class="agenda-date">
-        <span class="day-name" style="text-transform: capitalize;">{{ headerDate.name }}</span>
+        <span class="day-name">{{ headerDate.name }}</span>
         <span class="day-number">{{ headerDate.day }}</span>
-        <span class="month" style="text-transform: capitalize;">{{ headerDate.monthYear }}</span>
+        <span class="month">{{ headerDate.monthYear }}</span>
       </div>
       <div class="agenda-legend">
         <span v-for="prof in professionals" :key="prof.id" class="legend-item">
@@ -197,34 +228,69 @@ function toggleExpand(appt) {
     </div>
 
     <div class="agenda-body">
+      <!-- Trilha de horários -->
       <div class="time-rail" :style="{ height: totalHeight + 'px' }">
-        <div v-for="slot in timeSlots" :key="slot" class="time-label" :style="{ top: minutesToPx(timeToMinutes(slot) - START_MIN) + 'px' }">
+        <div
+          v-for="slot in timeSlots"
+          :key="slot"
+          class="time-label"
+          :style="{ top: minutesToPx(timeToMinutes(slot) - START_MIN) + 'px' }"
+        >
           {{ slot }}
         </div>
       </div>
 
-      <div class="slots-area" :style="{ height: totalHeight + 'px' }">
-        <div v-for="slot in timeSlots" :key="'line-' + slot" class="slot-line" :style="{ top: minutesToPx(timeToMinutes(slot) - START_MIN) + 'px' }"></div>
+      <!-- Área de agendamentos -->
+      <div class="slots-area" :style="{ height: totalHeight + 'px', minWidth: slotsAreaMinWidth > 0 ? slotsAreaMinWidth + 'px' : undefined }">
 
+        <!-- Linhas separadoras por hora -->
+        <div
+          v-for="slot in timeSlots"
+          :key="'line-' + slot"
+          class="slot-line"
+          :style="{ top: minutesToPx(timeToMinutes(slot) - START_MIN) + 'px' }"
+        ></div>
+
+        <!-- Faixas "horário disponível" — apenas onde não há NENHUM card ativo -->
         <template v-for="slot in timeSlots" :key="'avail-' + slot">
-          <div v-if="isSlotFree(slot)" class="slot-available" :style="{ top: minutesToPx(timeToMinutes(slot) - START_MIN) + 4 + 'px', height: minutesToPx(SLOT_MIN) - 8 + 'px' }">
+          <div
+            v-if="isSlotFree(slot)"
+            class="slot-available"
+            :style="{
+              top:    minutesToPx(timeToMinutes(slot) - START_MIN) + 4 + 'px',
+              height: minutesToPx(SLOT_MIN) - 8 + 'px',
+            }"
+          >
             <span>Horário disponível</span>
           </div>
         </template>
 
-        <div v-for="appt in appointments" :key="appt.id" class="appointment-card" :class="{ 'is-expanded': appt.expanded }" :style="getCardStyle(appt)" @click="toggleExpand(appt)">
-          <div class="card-accent" :style="{ background: getProfessionalColor(appt.professionalId) }"></div>
+        <!-- Cards de agendamento -->
+        <div
+          v-for="appt in appointments"
+          :key="appt.id"
+          class="appointment-card"
+          :class="{ 'is-expanded': appt.expanded }"
+          :style="getCardStyle(appt)"
+          @click="toggleExpand(appt)"
+        >
+          <div
+            class="card-accent"
+            :style="{ background: getProfessionalColor(appt.professionalId) }"
+          ></div>
           <div class="card-content">
             <div class="card-header-row">
-              <strong class="client-name">{{ appt.client }}</strong>
-              <span class="status-pill" :class="appt.status">{{ statusLabel(appt.status) }}</span>
+              <strong class="client-name">{{ appt.cliente }}</strong>
+              <span class="status-pill" :class="appt.status.toLowerCase()">
+                {{ statusLabel(appt.status) }}
+              </span>
             </div>
-            <span class="service-name">{{ appt.service }}</span>
+            <span class="service-name">{{ appt.servico }}</span>
             <span class="duration">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
               </svg>
-              {{ appt.duration }}
+              {{ appt.durationMin >= 60 ? Math.floor(appt.durationMin/60) + 'h' + (appt.durationMin%60 ? appt.durationMin%60+'min' : '') : appt.durationMin + 'min' }}
             </span>
 
             <transition name="expand">
@@ -233,13 +299,18 @@ function toggleExpand(appt) {
                   <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
                   </svg>
-                  <span>{{ getProfessionalName(appt.professionalId) }}</span>
+                  <span>{{ appt.funcionario }}</span>
                 </div>
-                <div class="detail-price">R$ {{ appt.price.toFixed(2).replace('.', ',') }}</div>
+                <div class="detail-price">{{ appt.valor }}</div>
+                <div class="card-actions">
+                  <button class="btn-reschedule" @click.stop="reschedule(appt)">Reagendar</button>
+                  <button class="btn-cancel" @click.stop="cancel(appt)">Cancelar</button>
+                </div>
               </div>
             </transition>
           </div>
         </div>
+
       </div>
     </div>
   </div>
@@ -316,7 +387,14 @@ function toggleExpand(appt) {
 }
 
 /* ── Body ── */
-.agenda-body { display: flex; }
+.agenda-body {
+  display: flex;
+  overflow-x: auto;
+  overflow-y: visible;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+}
 
 /* ── Time rail ── */
 .time-rail {
@@ -328,7 +406,6 @@ function toggleExpand(appt) {
 .time-label {
   position: absolute;
   right: 10px;
-  /* alinha o texto com a linha separadora */
   transform: translateY(-50%);
   font-size: 12px;
   font-weight: 500;
@@ -340,8 +417,9 @@ function toggleExpand(appt) {
 /* ── Slots area ── */
 .slots-area {
   flex: 1;
+  flex-shrink: 0;
   position: relative;
-  /* height é definida via :style binding para ficar em sincronia com time-rail */
+  overflow: visible;
 }
 
 /* Linha separadora de hora */
@@ -380,9 +458,12 @@ function toggleExpand(appt) {
   background: var(--surface);
   box-shadow: var(--shadow);
   display: flex;
-  cursor: pointer;
-  transition: box-shadow .2s ease, transform .15s ease;
-  /* overflow é controlado via :style para o estado expandido */
+  cursor: grab;
+  min-width: 120px;
+  min-height: 36px;
+  overflow: hidden;
+  transition: box-shadow .2s ease, transform .15s ease, height .3s ease;
+  &:active { cursor: grabbing; }
 }
 
 .appointment-card:hover {
@@ -391,7 +472,9 @@ function toggleExpand(appt) {
 }
 
 .appointment-card.is-expanded {
+  overflow: visible;
   box-shadow: 0 8px 32px rgba(80,60,140,.18);
+  z-index: 20;
 }
 
 .card-accent {
@@ -407,7 +490,7 @@ function toggleExpand(appt) {
   display: flex;
   flex-direction: column;
   gap: 3px;
-  min-width: 0; /* permite text-overflow funcionar */
+  min-width: 0;
 }
 
 .card-header-row {
@@ -437,9 +520,12 @@ function toggleExpand(appt) {
   line-height: 1.6;
 }
 
-.status-pill.confirmado { background: #e6faf3; color: #10b981; }
-.status-pill.aguardando { background: #fff8e6; color: #f59e0b; }
-.status-pill.cancelado  { background: #fee2e2; color: #ef4444; }
+.status-pill.confirmado,
+.status-pill.agendado    { background: #e6faf3; color: #10b981; }
+.status-pill.aguardando  { background: #fff8e6; color: #f59e0b; }
+.status-pill.cancelado,
+.status-pill.ausente     { background: #fee2e2; color: #ef4444; }
+.status-pill.realizado   { background: #ede9fe; color: #7c6af7; }
 
 .service-name {
   font-size: 12px;
@@ -520,9 +606,6 @@ function toggleExpand(appt) {
 }
 
 
-
-
-
 .carousel{
         width: 100%;
         @include flex(row, space-between, center);
@@ -573,7 +656,4 @@ function toggleExpand(appt) {
             cursor: pointer;
         }
     }
-
-
-
 </style>
