@@ -3,6 +3,9 @@ import { ref, computed, onMounted, watch } from 'vue'
 import { Icon } from '@iconify/vue';
 import { format, addDays, startOfToday, eachDayOfInterval, parseISO, isValid } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
+import { useAuthStore } from '@/stores/useAuthStore';
+import FundoModais from '../FundoModais.vue';
+import ConfirmModal from '../modals/ConfirmModal.vue';
 
 const props = defineProps({
     selectedDate: String,      // Data controlada pela store (yyyy-MM-dd)
@@ -198,10 +201,71 @@ function statusLabel(s) {
   return { confirmado: 'Confirmado', aguardando: 'Aguardando', cancelado: 'Cancelado' }[s] ?? s
 }
 
+// Modais 
+
+const auth = useAuthStore();
+const agendamentoSelecionado = ref({})
+
+const isModalOpen = ref({
+    confirmar: false,
+    cancelar: false,
+    realizar: false,
+    ausentar: false
+});
+
+const toggleModal = (modal, agendamento) => {
+  agendamentoSelecionado.value = agendamento
+  isModalOpen.value[modal] = !isModalOpen.value[modal];
+}
+
 
 </script>
 
 <template>
+  <Teleport to="body" v-if="isModalOpen.confirmar">
+      <FundoModais :toggle-modal="() => toggleModal('confirmar')"></FundoModais>
+      <ConfirmModal  
+          :id="agendamentoSelecionado.id"
+          :toggle-modal="toggleModal"
+          :allert="allert"
+          :title="'Confirmar agendamento'"
+          :acao="'confirmar'"
+      ></ConfirmModal>
+  </Teleport>
+  
+  <Teleport to="body" v-if="isModalOpen.cancelar">
+      <FundoModais :toggle-modal="() => toggleModal('cancelar')"></FundoModais>
+      <ConfirmModal  
+          :id="agendamentoSelecionado.id"
+          :toggle-modal="toggleModal"
+          :allert="allert"
+          :title="'Cancelar agendamento'"
+          :acao="'cancelar'"
+      ></ConfirmModal>
+  </Teleport>
+
+  <Teleport to="body" v-if="isModalOpen.realizar">
+      <FundoModais :toggle-modal="() => toggleModal('realizar')"></FundoModais>
+      <ConfirmModal  
+          :id="agendamentoSelecionado.id"
+          :toggle-modal="toggleModal"
+          :allert="allert"
+          :title="'Finalizar agendamento'"
+          :acao="'realizar'"
+      ></ConfirmModal>
+  </Teleport>
+
+  <Teleport to="body" v-if="isModalOpen.ausentar">
+      <FundoModais :toggle-modal="() => toggleModal('ausentar')"></FundoModais>
+      <ConfirmModal  
+          :id="agendamentoSelecionado.id"
+          :toggle-modal="toggleModal"
+          :allert="allert"
+          :title="'Ausentar agendamento'"
+          :acao="'ausentar'"
+      ></ConfirmModal>
+  </Teleport>
+
   <div class="agenda-wrapper">
     <div class="carousel">
       <Icon icon="mingcute:left-fill" class="icon" @click="moverScroll('anterior')"/>
@@ -303,8 +367,18 @@ function statusLabel(s) {
                 </div>
                 <div class="detail-price">{{ appt.valor }}</div>
                 <div class="card-actions">
-                  <button class="btn-reschedule" @click.stop="reschedule(appt)">Reagendar</button>
-                  <button class="btn-cancel" @click.stop="cancel(appt)">Cancelar</button>
+                  <!-- <button class="btn-reschedule" @click.stop="reschedule(appt)">Reagendar</button>
+                  <button class="btn-cancel" @click.stop="cancel(appt)">Cancelar</button> -->
+                  
+                  <template v-if="auth.isCliente && (appt.status === 'AGENDADO' || appt.status === 'CONFIRMADO')">
+                    <button v-if="appt.status === 'AGENDADO'" class="btn-reschedule" @click.prevent="toggleModal('confirmar', appt)">Confirmar</button>
+                    <button class="btn-cancel" @click.prevent="toggleModal('cancelar', appt)">Cancelar</button>
+                  </template>
+
+                  <template v-if="auth.isPeloMenosFuncionario && (appt.status === 'CONFIRMADO' || appt.status === 'AGENDADO')">
+                      <button class="btn-reschedule" @click.prevent="toggleModal('realizar', appt)">Realizado</button>
+                      <button class="btn-cancel" @click.prevent="toggleModal('ausentar', appt)">Ausente</button>
+                  </template>
                 </div>
               </div>
             </transition>
@@ -394,6 +468,10 @@ function statusLabel(s) {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
+  
+  // user-select: none;
+  // -webkit-user-drag: none;
+
 }
 
 /* ── Time rail ── */

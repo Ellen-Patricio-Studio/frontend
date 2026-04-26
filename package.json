@@ -9,6 +9,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@amaoaaaaa/vue-drag-scroll": "^0.1.0",
     "@popperjs/core": "^2.11.8",
     "axios": "^1.15.1",
     "border": "^0.0.13",
@@ -18,6 +19,7 @@
     "v-calendar": "^3.1.2",
     "vue": "^3.5.31",
     "vue-chartjs": "^5.3.3",
+    "vue-dragscroll": "^4.0.6",
     "vue-router": "^4.6.4"
   },
   "devDependencies": {
