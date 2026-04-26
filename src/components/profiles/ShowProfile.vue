@@ -5,31 +5,53 @@ const { width } = useBreakpoints()
 import FundoModais from '../FundoModais.vue';
 import EmployeeEdit from '../modals/EmployeeEdit.vue'; 
 import { ref } from 'vue';
+import TimeEdit from '../modals/TimeEdit.vue';
+import DayOffEdit from '../modals/DayOffEdit.vue';
 
-const isModalOpen = ref(false);
+const isModalOpen = ref({
+    employeeEdit: false,
+    timeEdit: false,
+    dayOffEdit: false
+});
 
-const toggleModal = () => {
-    isModalOpen.value = !isModalOpen.value;
+const toggleModal = (modal) => {
+    isModalOpen.value[modal] = !isModalOpen.value[modal];
 }
 
-defineProps({
+const isOptionShow = ref(false)
+
+const toggleOptions = () => {
+    isOptionShow.value = !isOptionShow.value;
+}
+
+const props = defineProps({
     id: Number,
     src: String,
     name: String,
     role: String,
     tel: String,
     email: String,
-    active: Boolean
+    active: Boolean,
+    categorias: Array
 })
+
 </script>
 
 <template>
-    <teleport to="body" v-if="isModalOpen">
-        <FundoModais :toggle-modal="toggleModal"></FundoModais>
-        <EmployeeEdit :toggle-modal="toggleModal" :id="id" :name="name" :tel="tel" :email="email" :active="active"></EmployeeEdit>
+    <teleport to="body" v-if="isModalOpen.employeeEdit">
+        <FundoModais :toggle-modal=" () => toggleModal('employeeEdit')"></FundoModais>
+        <EmployeeEdit :toggle-modal="() => toggleModal('employeeEdit')" :id="id" :name="name" :tel="tel" :email="email" :active="active" :categorias="categorias"></EmployeeEdit>
+    </teleport>
+    <teleport to="body" v-if="isModalOpen.timeEdit">
+        <FundoModais :toggle-modal=" () => toggleModal('timeEdit')"></FundoModais>
+        <TimeEdit :toggle-modal="() => toggleModal('timeEdit')" :id="id"></TimeEdit>
+    </teleport>
+    <teleport to="body" v-if="isModalOpen.dayOffEdit">
+        <FundoModais :toggle-modal=" () => toggleModal('dayOffEdit')"></FundoModais>
+        <DayOffEdit :toggle-modal="() => toggleModal('dayOffEdit')" :id="id"></DayOffEdit>
     </teleport>
     <div class="box container-show-profile">
-        <img :src="src" />
+        <!-- <img :src="src" /> -->
         <div class="texts">
             <h1 class="h1">{{ name }}</h1>
             <p>{{ role }}</p>
@@ -45,7 +67,12 @@ defineProps({
                 </div>
             </div>
         </div>
-        <button class="button-select" @click="toggleModal()">Editar</button>
+        <Icon class="icon-options" icon="ant-design:more-outlined" @click.prevent="toggleOptions"/>
+        <div class="box-options" v-if="isOptionShow">
+            <button class="button-select" @click="toggleModal('employeeEdit')">Editar perfil</button>
+            <button class="button-select horario" @click="toggleModal('timeEdit')">Editar turno</button>
+            <button class="button-select horario" @click="toggleModal('dayOffEdit')">Editar folga</button>
+        </div>
     </div>
 </template>
 
@@ -69,9 +96,21 @@ defineProps({
             border-radius: 999px;
         }
 
-        .button-select{
+        .icon-options{
             position: absolute;
+            top: 16px;
             right: 16px;
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+        }
+
+        .box-options{
+            .button-select{
+                &.horario{
+                    right: 124px;
+                }
+            }
         }
 
         @media all and (min-width: 768px){

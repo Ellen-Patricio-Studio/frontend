@@ -42,7 +42,7 @@ export const useEquipeStore = defineStore('equipe', {
                 return { success: true }
             } catch (error){
                 console.error("Erro ao cadastrar funcionário: ", error)
-                return { success: false, error}
+                return { success: false, error: error.response?.data?.message }
             } finally {
                 this.loading = false
             }
@@ -61,7 +61,7 @@ export const useEquipeStore = defineStore('equipe', {
                 return { success: true }
             } catch(error) {
                 console.error("Erro ao atualizar funcionário: ", error)
-                return { success: false }
+                return { success: false, error: error.response?.data?.message }
             } finally {
                 this.loading = false
             }
@@ -96,6 +96,38 @@ export const useEquipeStore = defineStore('equipe', {
                 this.funcionarioSelecionado = null
             } finally {
                 this.loading = false
+            }
+        },
+
+        async configurarHorarios(id, listaHorarios) {
+            this.loading = true
+            try {
+                const response = await api.post(`/admin/funcionarios/${id}/horarios`, listaHorarios)
+                return { success: true, message: response.data.message }
+            } catch (error) {
+                console.error("Erro ao configurar horários: ", error)
+                return { 
+                    success: false, 
+                    error: error.response?.data?.errors || "Erro ao salvar horários" 
+                }
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async adicionarBloqueio(id, dadosBloqueio) {
+            this.loading = true;
+            try {
+                const response = await api.post(`/admin/funcionarios/${id}/bloqueios`, dadosBloqueio);
+                return { success: true, message: response.data.message };
+            } catch (error) {
+                console.error("Erro ao adicionar bloqueio:", error);
+                return { 
+                    success: false, 
+                    error: error.response?.data?.errors || "Erro ao bloquear agenda" 
+                };
+            } finally {
+                this.loading = false;
             }
         }
     },

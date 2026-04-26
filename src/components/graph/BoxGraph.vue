@@ -1,10 +1,25 @@
 <script setup>
 import BoxInfo from '@/components/BoxInfo.vue';
 import BarGraph from './BarGraph.vue';
+import { useFinanceiroStore } from '@/stores/useFinanceiroStore';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { onMounted } from 'vue';
+
+const auth = useAuthStore()
+const financeiroStore = useFinanceiroStore()
+
 defineProps({
     graphType: String,
     agendamentos: Array
 })
+
+onMounted(() => {
+  if (auth.isAdmin) {
+    financeiroStore.fetchDashboardOperacional();
+    // financeiroStore.fetchDashboardFinanceiro();
+    financeiroStore.fetchLancamentos({ page: 1 });
+  }
+});
 
 </script>
 

@@ -5,14 +5,23 @@ import imgAvatar from '@/assets/images/logo.jpeg'
 import { useEquipeStore } from '@/stores/useEquipeStore';
 import { ref, watch } from 'vue';
 import { usePhoneMask } from '@/composables/usePhoneMask';
+import { useServiceStore } from '@/stores/useServiceStore';
+import { useAuthStore } from '@/stores/useAuthStore';
+import { onMounted } from 'vue';
+import { computed } from 'vue';
 
-
+const auth = useAuthStore()
+const serviceStore = useServiceStore()
 const equipeStore = useEquipeStore()
-const alert = ref('')
+const allert = ref('')
+const alert2 = ref('')
 
 defineProps({
     toggleModal: Function
 })
+
+const categoriasSelecionadas = ref([null]);
+
 
 const dataForm = ref({
     nome_completo: '',
@@ -20,7 +29,7 @@ const dataForm = ref({
     telefone: '',
     senha: '',
     confirmar_senha: '',
-    ids_categorias: [1]
+    ids_categorias: categoriasSelecionadas.value
 })
 
 const { formatPhone } = usePhoneMask()
@@ -29,12 +38,59 @@ watch(() => dataForm.value.telefone, (val) => {
 })
 
 const enviar = async () => {
+    if(categoriasSelecionadas.value[categoriasSelecionadas.value.length-1] === null ){
+        alert2.value = 'Favor selecionar categoria'
+        return
+    }
+
     const response = await equipeStore.cadastrarFuncionario(dataForm.value)
     if(response.success){
-        toggleModal()
+        window.location.reload();
+    } else{
+        alert2.value = response.error
     }
 }
 
+onMounted(() => {
+  if (auth.isAdmin) {
+    serviceStore.carregarCategorias()
+  }
+});
+
+
+const adicionarSelecao = () => {
+  if (podeAdicionarMais) {
+    categoriasSelecionadas.value.push(null);
+  }
+};
+
+const removerSelecao = (index) => {
+  if (categoriasSelecionadas.value.length > 1) {
+    categoriasSelecionadas.value.splice(index, 1);
+  }
+};
+
+const podeAdicionarMais = computed(() => {
+    console.log(categoriasSelecionadas.value)
+  // 1. Verifica se não excedeu o total de categorias cadastradas
+  const temEspaco = categoriasSelecionadas.value.length < serviceStore.categorias.length;
+  
+  // 2. Pega o último item adicionado ao array
+  const ultimaEscolha = categoriasSelecionadas.value[categoriasSelecionadas.value.length - 1];
+  
+  // 3. Verifica se o último item já foi preenchido (não é null ou string vazia)
+  const ultimoEstaPreenchido = ultimaEscolha !== null && ultimaEscolha !== '';
+
+  return temEspaco && ultimoEstaPreenchido;
+});
+
+const getCategoriasDisponiveis = (indexAtual) => {
+  return serviceStore.categorias.filter(cat => {
+
+    const jaSelecionadaEmOutro = categoriasSelecionadas.value.some((id, idx) => id === cat.id && idx !== indexAtual);
+    return !jaSelecionadaEmOutro;
+  });
+};
 </script>
 
 <template>
@@ -74,15 +130,31 @@ const enviar = async () => {
                 <input v-model="dataForm.confirmar_senha" type="password" name="" id="" class="input">
             </div>
             <p v-if="dataForm.senha !== dataForm.confirmar_senha" class="alert">As senhas não conferem</p>
-            <!-- <div class="wrapper-input">
-                <label class="service-wrapper">Serviços  <Icon class="icon" icon="mingcute:add-fill" /> </label>
-                <select class="input">
-                    <option value="1">Cabeleireiro</option>
-                    <option value="1">Manicure</option>
-                    <option value="1">Pedicure</option>
-                    <option value="1">Geral</option>
-                </select>
-            </div> -->
+            <div class="wrapper-input">
+                <label class="service-wrapper">Categorias de serviço <Icon class="icon" icon="mingcute:add-fill" @click="adicionarSelecao" v-if="podeAdicionarMais"/> </label>
+                <div v-for="(selecao, index) in categoriasSelecionadas" :key="index" class="select-row">
+                    <select 
+                        class="input" 
+                        v-model="categoriasSelecionadas[index]"
+                        required
+                    >
+                        <option :value="null" disabled>Selecionar</option>
+                        <option 
+                            v-for="categoria in getCategoriasDisponiveis(index)" 
+                            :key="categoria.id" 
+                            :value="categoria.id"
+                        >
+                            {{ categoria.nome_categoria }}
+                        </option>
+                    </select>
+                    <Icon 
+                        v-if="categoriasSelecionadas.length > 1"
+                        icon="mdi:trash-can-outline" 
+                        @click="removerSelecao(index)"
+                        class="icon-remove"
+                    />
+                </div>
+            </div>
             <!-- <div class="wrapper-input">
                 <label>Cargo</label>
                 <select class="input">
@@ -90,6 +162,7 @@ const enviar = async () => {
                     <option value="1">Administrador</option>
                 </select>
             </div> -->
+            <p v-if="alert2 !== ''" class="alert">{{alert2}}</p>
             <button class="button-rosa button-voltar" @click="toggleModal">Cancelar</button>
             <input type="submit" value="Confirmar" class="button-rosa">
         </form>
@@ -98,6 +171,15 @@ const enviar = async () => {
 
 <style lang="scss">
 
+.select-row{
+    width: 100%;
+    @include flex(row, start, center);
+    gap: 16px;
+}
 
+.icon-remove{
+    cursor: pointer;
+    color: rgb(97, 22, 22);
+}
 
 </style>

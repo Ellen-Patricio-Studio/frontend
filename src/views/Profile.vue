@@ -40,7 +40,8 @@ onMounted(() => {
             role="Estilista" 
             :tel="equipeStore.funcionarioSelecionado?.telefone" 
             :email="equipeStore.funcionarioSelecionado?.email" 
-            :active="equipeStore.funcionarioSelecionado?.ativo">
+            :active="equipeStore.funcionarioSelecionado?.ativo"
+            :categorias="equipeStore.funcionarioSelecionado?.categorias">
         </ShowProfile>
         <div class="box box-calendario">
             <div class="top">

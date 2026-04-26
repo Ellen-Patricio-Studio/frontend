@@ -12,7 +12,7 @@ defineProps({
 
 <template>
     <div class="avatar">
-        <img v-if="src!==undefined" :src="src" :alt="alt" class="avatar-img">
+        <!-- <img v-if="src!==undefined" :src="src" :alt="alt" class="avatar-img"> -->
         <div class="role-area">
             <p class="name">{{name}}</p>
             <p class="role">{{role}}</p>
