@@ -1,6 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/useAuthStore';
-
 import Login from '@/views/Login.vue';
 import DashboardAdmin from '@/views/DashboardAdmin.vue';
 import Appointments from '@/views/Appointments.vue';
@@ -18,17 +17,20 @@ const routes = [
   {
     path: '/',
     name: 'login',
-    component: Login
+    component: Login,
+    meta: { requiresGuest: true }
   },
   {
     path: '/dashboard',
     name: 'dashboard',
-    component: DashboardAdmin
+    component: DashboardAdmin,
+    meta: { requiresAuth: true, role: ['ADMIN', 'FUNCIONARIO', 'CLIENTE']}
   },
   {
     path: '/agendamentos',
     name: 'agendamentos',
-    component: Appointments
+    component: Appointments,
+    meta: { requiresAuth: true, role: ['ADMIN', 'FUNCIONARIO', 'CLIENTE']}
   },
   {
     path: '/financas',
@@ -52,22 +54,26 @@ const routes = [
   {
     path: '/novo-agendamento',
     name: 'novo-agendamento',
-    component: NewAppointment
+    component: NewAppointment,
+    meta: { requiresAuth: true, role: ['ADMIN', 'CLIENTE']}
   },
   {
     path: '/novo-agendamento/selecionar-profissional',
     name: 'selecionar-profissional',
-    component: ProfessionalSelection
+    component: ProfessionalSelection,
+    meta: { requiresAuth: true, role: ['ADMIN', 'CLIENTE']}
   },
   {
     path: '/novo-agendamento/selecionar-data',
     name: 'selecionar-data',
-    component: DateSelection
+    component: DateSelection,
+    meta: { requiresAuth: true, role: ['ADMIN', 'CLIENTE']}
   },
   {
     path: '/novo-agendamento/resumo',
     name: 'resumo',
-    component: Confirmation
+    component: Confirmation,
+    meta: { requiresAuth: true, role: ['ADMIN', 'CLIENTE']}
   },
   {
     path: '/servicos',
@@ -78,13 +84,57 @@ const routes = [
   {
     path: '/conta',
     name: 'conta',
-    component: Account
+    component: Account,
+    meta: { requiresAuth: true, role: ['ADMIN', 'FUNCIONARIO', 'CLIENTE']}
   },
 ]
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: routes,
+})
+
+router.beforeEach(async (to, from, next) => {
+  const auth = useAuthStore()
+  
+  // Pegue o token direto do localStorage se a store ainda estiver "acordando"
+  const token = auth.token || localStorage.getItem('access_token')
+  const isAuthenticated = !!token
+
+  // 1. Visitante logado tentando ir pro Login
+  if (to.meta.requiresGuest && isAuthenticated) {
+    return next({ name: 'dashboard' })
+  }
+
+  // 2. Rota protegida e usuário não logado
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    return next({ name: 'login' })
+  }
+
+  // 3. Usuário logado mas sem os dados do perfil (ocorre no refresh ou logo após login)
+  if (isAuthenticated && !auth.user && to.name !== 'login') {
+    try {
+      await auth.carregarPerfil()
+      // Após carregar o perfil, as roles estarão disponíveis para a próxima checagem
+    } catch (error) {
+      auth.logout()
+      return next({ name: 'login' })
+    }
+  }
+
+  // 4. Validação de Roles (O ponto crítico)
+  if (to.meta.role) {
+    // Importante: use o getter 'roles' que limpa os espaços (conforme vimos na imagem do banco)
+    const userRoles = auth.roles 
+    const hasPermission = to.meta.role.some(r => userRoles.includes(r))
+    
+    if (!hasPermission) {
+      console.warn("Acesso negado: Usuário não tem a role necessária")
+      return next({ name: 'dashboard' }) 
+    }
+  }
+
+  next()
 })
 
 export default router

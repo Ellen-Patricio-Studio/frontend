@@ -9,6 +9,7 @@ import { useBreakpoints } from '@/composables/useBreakpoints';
 import { watch } from 'vue';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { onMounted } from 'vue';
+import api from '@/services/api';
 
 const menuStore = useMenuStore()
 const { width } = useBreakpoints()    
@@ -27,6 +28,14 @@ watch(width, (newWidth) => {
         menuStore.closeMenu()
     }
 })
+
+const logout = () => {
+    try{
+        auth.logout()
+    } catch (error) {
+        console.log(error)
+    }
+}
 
 </script>
 
@@ -49,7 +58,7 @@ watch(width, (newWidth) => {
         <div class="bottom">
             <Avatar :src="imgAvatar" alt="Foto de perfil do usuário" :name="auth.user?.nome_completo || 'Carregando...'" :role="auth.roles[0] || 'Carregando...'"></Avatar>
             <RouterLink :to="{name: 'login'}">
-                <Icon icon="famicons:log-out" class="nav-icon" />
+                <Icon icon="famicons:log-out" class="nav-icon" @click="logout" />
             </RouterLink>
         </div>
     </div>

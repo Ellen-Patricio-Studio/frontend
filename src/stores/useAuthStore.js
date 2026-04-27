@@ -10,7 +10,14 @@ export const useAuthStore = defineStore('auth', {
     }),
 
     getters: {
-        roles: (state) => state.roleString.split(','),
+        roles: (state) => {
+            // Se for nulo ou vazio, retorna array vazio para não quebrar o .map
+            if (!state.roleString) return [];
+            // Se por algum motivo já for um array, apenas limpa os espaços
+            if (Array.isArray(state.roleString)) return state.roleString.map(r => r.trim());
+            
+            return state.roleString.split(',').map(r => r.trim());
+        },
 
         isAdmin: (state) => state.roles.includes('ADMIN'),
         isFuncionario: (state) => state.roles.includes('FUNCIONARIO'),
@@ -30,6 +37,7 @@ export const useAuthStore = defineStore('auth', {
             } catch (error) {
                 console.error("Erro ao carregar dados do usuário", error)
                 this.logout()
+                return { error: error }
             } finally {
                 this.loading = false
             }
@@ -50,9 +58,10 @@ export const useAuthStore = defineStore('auth', {
 
         setAuth(token, role){
             this.token = token
-            this.roleString = role
+            const formattedRole = Array.isArray(role) ? role.join(',') : role;
+            this.roleString = formattedRole
             localStorage.setItem('access_token', token)
-            localStorage.setItem('role', role)
+            localStorage.setItem('role', formattedRole)
         },
 
         logout(){

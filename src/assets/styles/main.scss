@@ -465,3 +465,11 @@ body{
     border-radius: 20px;    /* Arredonda a própria barrinha */
     border: 2px solid var(--cor-de-fundo); /* Cria um espaçamento visual */
 }
+
+.status-pill { font-size: 10px; font-weight: 600; border-radius: 20px; padding: 2px 8px; }
+.status-pill.confirmado, .status-pill.agendado { background: #e6faf3; color: #10b981; }
+.status-pill.aguardando { background: #fff8e6; color: #f59e0b; }
+.status-pill.cancelado{ background: #fee2e2; color: #ef4444; }
+ .status-pill.ausente { background: #e7dac0; color: #6e380c; }
+.status-pill.realizado { background: #f0f0f0; color: #8c89a0; }
+

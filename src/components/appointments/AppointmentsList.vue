@@ -89,28 +89,28 @@ const toggleModal = (modal) => {
                 <span>{{ professional }}</span>
             </p>
             
+        </div>
+        
+        <div class="right">
+            <span class="status-pill" :class="`${status.toLocaleLowerCase()}`">{{ status }}</span>
             <div class="actions">
                 <template v-if="auth.isCliente && (status === 'AGENDADO' || status === 'CONFIRMADO')">
                     <button v-if="status === 'AGENDADO'" class="button-select confirm" @click.prevent="toggleModal('confirmar')">Confirmar</button>
                     <button class="button-select cancel" @click.prevent="toggleModal('cancelar')">Cancelar</button>
                 </template>
-
+    
                 <template v-if="auth.isPeloMenosFuncionario && (status === 'CONFIRMADO' || status === 'AGENDADO')">
                     <button class="button-select done" @click.prevent="toggleModal('realizar')">Realizado</button>
                     <button class="button-select absent" @click.prevent="toggleModal('ausentar')">Ausente</button>
                 </template>
             </div>
         </div>
-        
-        <div class="right">
-            <span :class="['status-badge', status.toLowerCase()]">{{ status }}</span>
-        </div>
     </li>
 </template>
 
 <style lang="scss">
     .appointments-list-item {
-        @include flex(row, space-between, start);
+        @include flex(row, space-between, stretch);
         width: 100%;
         font-size: 14px;
         color: var(--cinza-nav);
@@ -139,22 +139,29 @@ const toggleModal = (modal) => {
             }
         }
 
-        .actions {
-            @include flex(row, start, center);
-            gap: 8px;
-            margin-top: 8px;
+        .right{
 
-            .button-select{
-                padding: 6px;
-                font-size: 12px;
+            @include flex(column, space-between, end);
 
-                
-                &.confirm { color: green; border-color: green; }
-                &.cancel { color: rgb(141, 38, 38); border-color: rgb(136, 39, 39); }
-                &.done { background: var(--azul-claro-box); color: var(--azul-escuro-box); }
-                &.absent { background: #eee; color: #666; }
+            .actions {
+                @include flex(row, end, center);
+                gap: 8px;
+                margin-top: 8px;
+                width: 100%;
+    
+                .button-select{
+                    padding: 4px;
+                    font-size: 11px;
+                    cursor: pointer;
+
+                    &.confirm { background-color: #178d17; color: var(--cards); }
+                    &.cancel { background-color: #ac4545; color: var(--cards); }
+                    &.done { background-color: #178d17; color: var(--cards); }
+                    &.absent { background-color: #666; color: var(--cards);}
+                }
             }
         }
+
 
         .status-badge {
             font-weight: bold;

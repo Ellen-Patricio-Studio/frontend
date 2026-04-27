@@ -20,6 +20,34 @@ const hoje = startOfToday();
 const diasParaExibir = 30; 
 const diaSelecionado = ref(props.selectedDate || format(hoje, 'yyyy-MM-dd'));
 
+// ─── Lógica de Scroll por Arraste (Drag Scroll) ──────────────────────────────
+const agendaBody = ref(null);
+const isDragging = ref(false);
+const startX = ref(0);
+const scrollLeftStart = ref(0);
+
+const startDrag = (e) => {
+  // Apenas botão esquerdo do mouse
+  if (e.button !== 0) return;
+  
+  isDragging.value = true;
+  startX.value = e.pageX - agendaBody.value.offsetLeft;
+  scrollLeftStart.value = agendaBody.value.scrollLeft;
+};
+
+const stopDrag = () => {
+  isDragging.value = false;
+};
+
+const onDrag = (e) => {
+  if (!isDragging.value) return;
+  e.preventDefault();
+  
+  const x = e.pageX - agendaBody.value.offsetLeft;
+  const walk = (x - startX.value) * 1.5; // Multiplicador de velocidade
+  agendaBody.value.scrollLeft = scrollLeftStart.value - walk;
+};
+
 // Sincroniza diaSelecionado quando a prop selectedDate muda externamente
 watch(() => props.selectedDate, (novaData) => {
     if (novaData && novaData !== diaSelecionado.value) {
@@ -82,7 +110,6 @@ const MIN_CARD_W  = 180
 const START_MIN   = START_HOUR * 60
 const totalHeight = computed(() => (END_HOUR - START_HOUR + 1) * SLOT_MIN * PX_PER_MIN)
 
-// Largura total necessária para o slot com mais colunas simultâneas
 const slotsAreaMinWidth = computed(() => {
   if (!appointments.value.length) return 0
   const maxCols = Math.max(...appointments.value.map(a => {
@@ -102,26 +129,22 @@ function timeToMinutes(t) {
   return h * 60 + m
 }
 
-// ─── Dados das Props ──────────────────────────────────────────────────────
 const professionals = computed(() => props.professionalsData || [])
-
-// ID do único card aberto — null = nenhum expandido
 const expandedId = ref(null)
 
 function toggleExpand(appt) {
+  // Evita expandir se o usuário estava apenas arrastando o scroll
+  if (isDragging.value) return; 
   expandedId.value = expandedId.value === appt.id ? null : appt.id
 }
 
-// Filtra apenas agendamentos do dia selecionado (dados já normalizados pela store)
 const appointments = computed(() => {
   if (!props.appointmentsData) return []
-
   return props.appointmentsData
     .filter(appt => appt.date === diaSelecionado.value)
     .map(appt => ({ ...appt, expanded: expandedId.value === appt.id }))
 })
 
-// ─── Lógica de colunas ────────────────────────────────────────────────────────
 function getOverlappingGroup(appt) {
   const startA = timeToMinutes(appt.startTime)
   const endA   = startA + appt.durationMin
@@ -141,16 +164,14 @@ function getColumnInfo(appt) {
   }
 }
 
-const MAX_CARD_H = SLOT_MIN * PX_PER_MIN - 8  // altura máxima = 1 slot menos padding
+const MAX_CARD_H = SLOT_MIN * PX_PER_MIN - 8
 
 function getCardStyle(appt) {
   const top      = minutesToPx(timeToMinutes(appt.startTime) - START_MIN)
   const naturalH = minutesToPx(appt.durationMin)
-  // Colapso: nunca estoura o slot de 1h. Expandido: cresce até 180px mínimo
   const height   = appt.expanded ? Math.max(naturalH, 180) - 8 : Math.min(naturalH, MAX_CARD_H)
   const { colIndex, totalCols } = getColumnInfo(appt)
 
-  // Se o slot precisa de scroll, usa largura fixa em px; senão divide % normalmente
   const useFixedWidth = slotsAreaMinWidth.value > 0
   const left   = useFixedWidth
     ? CARD_PAD + colIndex * (MIN_CARD_W + CARD_PAD) + 'px'
@@ -188,20 +209,13 @@ function isSlotFree(slot) {
   })
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 function getProfessionalColor(id) {
   return professionals.value.find(p => p.id === id)?.color ?? '#7c6af7'
-}
-
-function getProfessionalName(id) {
-  return professionals.value.find(p => p.id === id)?.name ?? '—'
 }
 
 function statusLabel(s) {
   return { confirmado: 'Confirmado', aguardando: 'Aguardando', cancelado: 'Cancelado' }[s] ?? s
 }
-
-// Modais 
 
 const auth = useAuthStore();
 const agendamentoSelecionado = ref({})
@@ -217,8 +231,6 @@ const toggleModal = (modal, agendamento) => {
   agendamentoSelecionado.value = agendamento
   isModalOpen.value[modal] = !isModalOpen.value[modal];
 }
-
-
 </script>
 
 <template>
@@ -227,7 +239,6 @@ const toggleModal = (modal, agendamento) => {
       <ConfirmModal  
           :id="agendamentoSelecionado.id"
           :toggle-modal="toggleModal"
-          :allert="allert"
           :title="'Confirmar agendamento'"
           :acao="'confirmar'"
       ></ConfirmModal>
@@ -238,7 +249,6 @@ const toggleModal = (modal, agendamento) => {
       <ConfirmModal  
           :id="agendamentoSelecionado.id"
           :toggle-modal="toggleModal"
-          :allert="allert"
           :title="'Cancelar agendamento'"
           :acao="'cancelar'"
       ></ConfirmModal>
@@ -249,7 +259,6 @@ const toggleModal = (modal, agendamento) => {
       <ConfirmModal  
           :id="agendamentoSelecionado.id"
           :toggle-modal="toggleModal"
-          :allert="allert"
           :title="'Finalizar agendamento'"
           :acao="'realizar'"
       ></ConfirmModal>
@@ -260,7 +269,6 @@ const toggleModal = (modal, agendamento) => {
       <ConfirmModal  
           :id="agendamentoSelecionado.id"
           :toggle-modal="toggleModal"
-          :allert="allert"
           :title="'Ausentar agendamento'"
           :acao="'ausentar'"
       ></ConfirmModal>
@@ -277,6 +285,7 @@ const toggleModal = (modal, agendamento) => {
       </div>
       <Icon icon="mingcute:right-fill" class="icon" @click="moverScroll('proximo')"/>
     </div>
+
     <div class="agenda-header">
       <div class="agenda-date">
         <span class="day-name">{{ headerDate.name }}</span>
@@ -291,8 +300,14 @@ const toggleModal = (modal, agendamento) => {
       </div>
     </div>
 
-    <div class="agenda-body">
-      <!-- Trilha de horários -->
+    <div 
+      class="agenda-body" 
+      ref="agendaBody"
+      @mousedown="startDrag"
+      @mousemove="onDrag"
+      @mouseup="stopDrag"
+      @mouseleave="stopDrag"
+    >
       <div class="time-rail" :style="{ height: totalHeight + 'px' }">
         <div
           v-for="slot in timeSlots"
@@ -304,10 +319,7 @@ const toggleModal = (modal, agendamento) => {
         </div>
       </div>
 
-      <!-- Área de agendamentos -->
       <div class="slots-area" :style="{ height: totalHeight + 'px', minWidth: slotsAreaMinWidth > 0 ? slotsAreaMinWidth + 'px' : undefined }">
-
-        <!-- Linhas separadoras por hora -->
         <div
           v-for="slot in timeSlots"
           :key="'line-' + slot"
@@ -315,13 +327,12 @@ const toggleModal = (modal, agendamento) => {
           :style="{ top: minutesToPx(timeToMinutes(slot) - START_MIN) + 'px' }"
         ></div>
 
-        <!-- Faixas "horário disponível" — apenas onde não há NENHUM card ativo -->
         <template v-for="slot in timeSlots" :key="'avail-' + slot">
           <div
             v-if="isSlotFree(slot)"
             class="slot-available"
             :style="{
-              top:    minutesToPx(timeToMinutes(slot) - START_MIN) + 4 + 'px',
+              top:     minutesToPx(timeToMinutes(slot) - START_MIN) + 4 + 'px',
               height: minutesToPx(SLOT_MIN) - 8 + 'px',
             }"
           >
@@ -329,7 +340,6 @@ const toggleModal = (modal, agendamento) => {
           </div>
         </template>
 
-        <!-- Cards de agendamento -->
         <div
           v-for="appt in appointments"
           :key="appt.id"
@@ -338,10 +348,7 @@ const toggleModal = (modal, agendamento) => {
           :style="getCardStyle(appt)"
           @click="toggleExpand(appt)"
         >
-          <div
-            class="card-accent"
-            :style="{ background: getProfessionalColor(appt.professionalId) }"
-          ></div>
+          <div class="card-accent" :style="{ background: getProfessionalColor(appt.professionalId) }"></div>
           <div class="card-content">
             <div class="card-header-row">
               <strong class="client-name">{{ appt.cliente }}</strong>
@@ -367,24 +374,19 @@ const toggleModal = (modal, agendamento) => {
                 </div>
                 <div class="detail-price">{{ appt.valor }}</div>
                 <div class="card-actions">
-                  <!-- <button class="btn-reschedule" @click.stop="reschedule(appt)">Reagendar</button>
-                  <button class="btn-cancel" @click.stop="cancel(appt)">Cancelar</button> -->
-                  
                   <template v-if="auth.isCliente && (appt.status === 'AGENDADO' || appt.status === 'CONFIRMADO')">
-                    <button v-if="appt.status === 'AGENDADO'" class="btn-reschedule" @click.prevent="toggleModal('confirmar', appt)">Confirmar</button>
-                    <button class="btn-cancel" @click.prevent="toggleModal('cancelar', appt)">Cancelar</button>
+                    <button v-if="appt.status === 'AGENDADO'" class="btn-reschedule" @click.stop="toggleModal('confirmar', appt)">Confirmar</button>
+                    <button class="btn-cancel" @click.stop="toggleModal('cancelar', appt)">Cancelar</button>
                   </template>
-
                   <template v-if="auth.isPeloMenosFuncionario && (appt.status === 'CONFIRMADO' || appt.status === 'AGENDADO')">
                       <button class="btn-reschedule" @click.prevent="toggleModal('realizar', appt)">Realizado</button>
-                      <button class="btn-cancel" @click.prevent="toggleModal('ausentar', appt)">Ausente</button>
+                      <button class="btn-cancel ausente" @click.prevent="toggleModal('ausentar', appt)">Ausente</button>
                   </template>
                 </div>
               </div>
             </transition>
           </div>
         </div>
-
       </div>
     </div>
   </div>
@@ -393,28 +395,21 @@ const toggleModal = (modal, agendamento) => {
 <style lang="scss" scoped>
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@600;700&display=swap');
 
-/* ── Variáveis ── */
 .agenda-wrapper {
-  --bg:      #f4f3f8;
+  --bg: #f4f3f8;
   --surface: #ffffff;
-  --border:  #e8e6f0;
-  --text:    #1a1825;
-  --muted:   #8b87a0;
-  --radius:  14px;
-  --shadow:  0 2px 12px rgba(80,60,140,.08);
-
+  --border: #e8e6f0;
+  --text: #1a1825;
+  --muted: #8b87a0;
+  --radius: 14px;
+  --shadow: 0 2px 12px rgba(80,60,140,.08);
   font-family: 'DM Sans', sans-serif;
-  /* background: var(--bg); */
   min-height: 100vh;
   padding: 24px 20px 60px;
   color: var(--text);
-  box-sizing: border-box;
   width: 100%;
 }
 
-*, *::before, *::after { box-sizing: border-box; }
-
-/* ── Header ── */
 .agenda-header {
   display: flex;
   align-items: center;
@@ -425,313 +420,126 @@ const toggleModal = (modal, agendamento) => {
 }
 
 .agenda-date { display: flex; align-items: baseline; gap: 8px; }
-
-.day-name {
-  font-family: 'Sora', sans-serif;
-  font-size: 20px;
-  font-weight: 700;
-}
-
-.day-number {
-  font-family: 'Sora', sans-serif;
-  font-size: 28px;
-  font-weight: 700;
-  color: #7c6af7;
-  line-height: 1;
-}
-
+.day-name { font-family: 'Sora', sans-serif; font-size: 20px; font-weight: 700; }
+.day-number { font-family: 'Sora', sans-serif; font-size: 28px; font-weight: 700; color: #7c6af7; line-height: 1; }
 .month { font-size: 13px; color: var(--muted); }
-
 .agenda-legend { display: flex; gap: 14px; flex-wrap: wrap; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); font-weight: 500; }
+.legend-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
 
-.legend-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--muted);
-  font-weight: 500;
-}
-
-.legend-dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-/* ── Body ── */
 .agenda-body {
   display: flex;
   overflow-x: auto;
   overflow-y: visible;
-  -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
   
-  // user-select: none;
-  // -webkit-user-drag: none;
-
+  // Drag Scroll Styles
+  cursor: grab;
+  user-select: none; // Impede seleção de texto ao arrastar
+  -webkit-user-select: none;
+  
+  &:active {
+    cursor: grabbing;
+  }
 }
 
-/* ── Time rail ── */
-.time-rail {
-  width: 56px;
-  flex-shrink: 0;
-  position: relative;
-}
+.time-rail { width: 56px; flex-shrink: 0; position: relative; }
+.time-label { position: absolute; right: 10px; transform: translateY(-50%); font-size: 12px; font-weight: 500; color: var(--muted); white-space: nowrap; }
 
-.time-label {
-  position: absolute;
-  right: 10px;
-  transform: translateY(-50%);
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--muted);
-  white-space: nowrap;
-  user-select: none;
-}
+.slots-area { flex: 1; flex-shrink: 0; position: relative; }
+.slot-line { position: absolute; left: 0; right: 0; height: 1px; background: var(--border); pointer-events: none; }
+.slot-available { position: absolute; left: 4px; right: 4px; border-radius: var(--radius); border: 1.5px dashed #d4d0e6; display: flex; align-items: center; justify-content: center; pointer-events: none; }
+.slot-available span { font-size: 12px; color: #c0bbda; font-weight: 500; }
 
-/* ── Slots area ── */
-.slots-area {
-  flex: 1;
-  flex-shrink: 0;
-  position: relative;
-  overflow: visible;
-}
-
-/* Linha separadora de hora */
-.slot-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 1px;
-  background: var(--border);
-  pointer-events: none;
-}
-
-/* Faixa de horário livre */
-.slot-available {
-  position: absolute;
-  left: 4px;
-  right: 4px;
-  border-radius: var(--radius);
-  border: 1.5px dashed #d4d0e6;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-.slot-available span {
-  font-size: 12px;
-  color: #c0bbda;
-  font-weight: 500;
-}
-
-/* ── Card ── */
 .appointment-card {
   position: absolute;
   border-radius: var(--radius);
   background: var(--surface);
   box-shadow: var(--shadow);
   display: flex;
-  cursor: grab;
   min-width: 120px;
-  min-height: 36px;
   overflow: hidden;
   transition: box-shadow .2s ease, transform .15s ease, height .3s ease;
-  &:active { cursor: grabbing; }
+  
+  // Garante que o card não tenha comportamentos de drag nativos de imagem/link
+  -webkit-user-drag: none; 
 }
 
-.appointment-card:hover {
-  box-shadow: 0 6px 20px rgba(80,60,140,.13);
-  transform: translateY(-1px);
+.appointment-card:hover { box-shadow: 0 6px 20px rgba(80,60,140,.13); transform: translateY(-1px); }
+.appointment-card.is-expanded { z-index: 20; box-shadow: 0 8px 32px rgba(80,60,140,.18); }
+
+.card-accent { width: 4px; border-radius: var(--radius) 0 0 var(--radius); }
+.card-content { flex: 1; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+.card-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
+.client-name { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+
+
+.service-name { font-size: 12px; color: var(--muted); }
+.duration { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #aaa8be; }
+
+.card-details { margin-top: 10px; border-top: 1px solid var(--border); padding-top: 10px; display: flex; flex-direction: column; gap: 8px; }
+.detail-row { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.detail-price { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; color: #7c6af7; }
+.card-actions { display: flex; gap: 8px; }
+
+.btn-reschedule, .btn-cancel { 
+  flex: 1; 
+  padding: 7px 0; 
+  border-radius: 8px; 
+  font-size: 12px; 
+  font-weight: 600; 
+  cursor: pointer; 
+  border: none; 
+  background-color: transparent;
 }
 
-.appointment-card.is-expanded {
-  overflow: visible;
-  box-shadow: 0 8px 32px rgba(80,60,140,.18);
-  z-index: 20;
+.btn-reschedule { 
+  background-color: #178d17; color: var(--cards);
 }
 
-.card-accent {
-  width: 4px;
-  min-width: 4px;
-  border-radius: var(--radius) 0 0 var(--radius);
-  align-self: stretch;
+.btn-cancel { 
+  background-color: #ac4545; color: var(--cards);
+
+  &.ausente{
+    background-color: #666; color: var(--cards);
+  }
 }
 
-.card-content {
-  flex: 1;
-  padding: 10px 12px;
+.carousel {
+  width: 100%;
   display: flex;
-  flex-direction: column;
-  gap: 3px;
-  min-width: 0;
-}
-
-.card-header-row {
-  display: flex;
-  align-items: flex-start;
   justify-content: space-between;
-  gap: 6px;
-}
-
-.client-name {
-  font-family: 'Sora', sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  min-width: 0;
-}
-
-.status-pill {
-  font-size: 10px;
-  font-weight: 600;
-  border-radius: 20px;
-  padding: 2px 8px;
-  white-space: nowrap;
-  flex-shrink: 0;
-  line-height: 1.6;
-}
-
-.status-pill.confirmado,
-.status-pill.agendado    { background: #e6faf3; color: #10b981; }
-.status-pill.aguardando  { background: #fff8e6; color: #f59e0b; }
-.status-pill.cancelado,
-.status-pill.ausente     { background: #fee2e2; color: #ef4444; }
-.status-pill.realizado   { background: #ede9fe; color: #7c6af7; }
-
-.service-name {
-  font-size: 12px;
-  color: var(--muted);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.duration {
-  display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 11px;
-  color: #aaa8be;
-  font-weight: 500;
-  margin-top: 1px;
-}
+  gap: 16px;
+  margin-bottom: 32px;
+  
+  .circles {
+    overflow-x: auto;
+    display: flex;
+    gap: 16px;
+    flex: 1;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
 
-/* ── Detalhes expandidos ── */
-.card-details {
-  margin-top: 10px;
-  border-top: 1px solid var(--border);
-  padding-top: 10px;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
+    .circle {
+      flex-shrink: 0;
+      width: 64px;
+      height: 64px;
+      background-color: #dfdfdf;
+      border-radius: 12px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
 
-.detail-row {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.detail-price {
-  font-family: 'Sora', sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  color: #7c6af7;
-}
-
-.card-actions { display: flex; gap: 8px; margin-top: 2px; }
-
-.btn-reschedule,
-.btn-cancel {
-  flex: 1;
-  padding: 7px 0;
-  border-radius: 8px;
-  font-family: 'DM Sans', sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-  border: none;
-  transition: opacity .15s, transform .15s;
-}
-
-.btn-reschedule:hover,
-.btn-cancel:hover { opacity: .85; transform: translateY(-1px); }
-
-.btn-reschedule { background: #7c6af7; color: #fff; }
-.btn-cancel     { background: transparent; color: var(--text); border: 1.5px solid var(--border); }
-
-/* ── Transição expand ── */
-.expand-enter-active,
-.expand-leave-active {
-  transition: opacity .25s ease, max-height .3s ease;
-  max-height: 240px;
-  overflow: hidden;
-}
-
-.expand-enter-from,
-.expand-leave-to {
-  opacity: 0;
-  max-height: 0;
-}
-
-
-.carousel{
-        width: 100%;
-        @include flex(row, space-between, center);
-        gap: 16px;
-        margin-bottom: 32px;
-        
-        .circles{
-            overflow-x: auto;
-            gap: 16px;
-            @include flex(row, start, center);
-            flex: 1;
-
-            .circle{
-                flex-shrink: 0;
-                width: 64px;
-                height: 64px;
-                background-color: #dfdfdf;
-                border-radius: 12px;
-                @include flex(column, center, center);
-    
-                p{
-                    font-size: 12px;
-                    color: var(--cinza-nav);   
-                    font-weight: 300;
-                }
-    
-                &.active{
-                    background-color: mediumslateblue;
-    
-                    p{
-                        color: white;
-                    }
-                }
-            }
-
-            &::-webkit-scrollbar {
-                display: none;
-            }
-            -ms-overflow-style: none; 
-            scrollbar-width: none;
-        }
-
-
-        .icon{
-            color: var(--cinza-nav);
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-        }
+      p { font-size: 12px; color: #8b87a0; font-weight: 300; }
+      &.active { background-color: mediumslateblue; p { color: white; } }
     }
+  }
+
+  .icon { color: #8b87a0; width: 24px; height: 24px; cursor: pointer; }
+}
 </style>

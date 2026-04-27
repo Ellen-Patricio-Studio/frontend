@@ -21,18 +21,18 @@ const logar = async () => {
 
     try{
         const response = await api.post('auth/login', modeloReq.value);
-
         const auth = useAuthStore()
+
         auth.setAuth(response.data.access_token, response.data.usuario.roles);
         
         await auth.carregarPerfil()
 
-        handleSubmit('dashboard')
+        await router.push({name: 'dashboard'})
         
         // localStorage.setItem('access_token', response.data.access_token)
         // localStorage.setItem('role', response.data.usuario.roles)
     } catch (error) {
-        errorMsg.value = error.response.data.message
+        errorMsg.value = error.response?.data?.message
     } finally {
         loading.value = false
     }
