@@ -12,6 +12,8 @@ import DateSelection from '@/views/newAppointments/DateSelection.vue';
 import Confirmation from '@/views/newAppointments/Confirmation.vue';
 import ServicesAdmin from '@/views/ServicesAdmin.vue';
 import Account from '@/views/Account.vue';
+import ClientesAdmin from '@/views/ClientesAdmin.vue';
+import ClienteProfile from '@/views/ClienteProfile.vue';
 
 const routes = [
   {
@@ -87,6 +89,18 @@ const routes = [
     component: Account,
     meta: { requiresAuth: true, role: ['ADMIN', 'FUNCIONARIO', 'CLIENTE']}
   },
+  {
+    path: '/clientes',
+    name: 'clientes',
+    component: ClientesAdmin,
+    meta: { requiresAuth: true, role: ['ADMIN']}  
+  },
+  {
+    path: '/clientes/:id',
+    name: 'cliente-perfil',
+    component: ClienteProfile,
+    meta: { requiresAuth: true, role: ['ADMIN']}  
+  }
 ]
 
 const router = createRouter({

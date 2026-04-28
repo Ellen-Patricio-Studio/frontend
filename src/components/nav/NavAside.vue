@@ -59,7 +59,8 @@ themeStore.applyTheme();
                 <NavLink v-if="auth.isAdmin" icon="boxicons:dollar" texto="Financeiro" :active="route.name === 'financas'" redirect="financas"></NavLink>
                 <NavLink v-if="auth.isAdmin" icon="fa7-solid:gears" texto="Serviços" :active="route.name === 'servicos'" redirect="servicos"></NavLink>
                 <NavLink v-if="auth.isAdmin" icon="fluent:people-team-24-filled" texto="Equipe" :active="route.name === 'equipe'" redirect="equipe"></NavLink>
-                <NavLink  icon="mdi:account" texto="Conta" :active="route.name === 'conta'" redirect="conta"></NavLink>
+                <NavLink v-if="auth.isAdmin" icon="f7:person-2-fill" texto="Clientes" :active="route.name === 'clientes'" redirect="clientes"></NavLink>
+                <NavLink v-if="auth.isAdmin" icon="mdi:account" texto="Conta" :active="route.name === 'conta'" redirect="conta"></NavLink>
                 <NavLink icon="ri:toggle-line" texto="Modo escuro" @click="themeStore.toggleTheme"></NavLink>
 
             
