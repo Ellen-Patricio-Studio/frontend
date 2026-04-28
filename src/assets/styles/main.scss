@@ -1,4 +1,7 @@
-@use "variaveis";
+@import "variaveis";
+@import "mixins";
+
+@include themable();
 
 *{
     margin: 0; padding: 0;
@@ -103,11 +106,19 @@ body{
 
 .input{
     outline: none;
-    border: 1px solid rgba(0, 0, 0, 0.12);
     width: 256px;
     border-radius: 8px;
     height: 36px;
     padding-left: 8px;
+    border: var(--input-border);
+    background-color: var(--input-bg);
+    border: var(--input-border);
+    color: var(--input-text);
+    box-shadow: var(--input-shadow);
+    
+    &:hover{ border: var(--input-border-hover) };
+    &:focus { border: var(--input-border-focus); box-shadow: var(--input-shadow-focus) };
+    &::placeholder{ color: var(--input-placeholder); };
 }
 
 .boxes{

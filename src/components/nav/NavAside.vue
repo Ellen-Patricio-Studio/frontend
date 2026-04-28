@@ -1,6 +1,6 @@
 <script setup>
 import Avatar from '@/components/Avatar.vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import NavLink from './NavLink.vue';
 import { Icon } from '@iconify/vue';
 import imgAvatar from '@/assets/images/logo.jpeg'
@@ -10,11 +10,14 @@ import { watch } from 'vue';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { onMounted } from 'vue';
 import api from '@/services/api';
+import { useThemeStore } from '@/stores/useThemeStore';
 
+const themeStore = useThemeStore()
 const menuStore = useMenuStore()
 const { width } = useBreakpoints()    
 
 const route = useRoute()
+const router = useRouter()
 const auth = useAuthStore()
 
 onMounted(async () => {
@@ -29,13 +32,17 @@ watch(width, (newWidth) => {
     }
 })
 
-const logout = () => {
+const logout = async () => {
     try{
         auth.logout()
+        await router.push({name: 'login'})
+        
     } catch (error) {
         console.log(error)
     }
 }
+
+themeStore.applyTheme();
 
 </script>
 
@@ -44,7 +51,7 @@ const logout = () => {
         <div class="topo">
             <RouterLink :to="{name: 'dashboard'}" class="logo-area">
                 <img src="@/assets/images/logo.jpeg" alt="">
-                <span>Ellen Patricio Studio</span>
+                <span>Ellen Patricio Studio </span>
             </RouterLink>
             <ul>
                 <NavLink  icon="material-symbols:dashboard-rounded" texto="Dashboard" :active="route.name === 'dashboard'" redirect="dashboard"></NavLink>
@@ -53,13 +60,16 @@ const logout = () => {
                 <NavLink v-if="auth.isAdmin" icon="fa7-solid:gears" texto="Serviços" :active="route.name === 'servicos'" redirect="servicos"></NavLink>
                 <NavLink v-if="auth.isAdmin" icon="fluent:people-team-24-filled" texto="Equipe" :active="route.name === 'equipe'" redirect="equipe"></NavLink>
                 <NavLink  icon="mdi:account" texto="Conta" :active="route.name === 'conta'" redirect="conta"></NavLink>
+                <NavLink icon="ri:toggle-line" texto="Modo escuro" @click="themeStore.toggleTheme"></NavLink>
+
+            
             </ul>
         </div>
         <div class="bottom">
             <Avatar :src="imgAvatar" alt="Foto de perfil do usuário" :name="auth.user?.nome_completo || 'Carregando...'" :role="auth.roles[0] || 'Carregando...'"></Avatar>
-            <RouterLink :to="{name: 'login'}">
-                <Icon icon="famicons:log-out" class="nav-icon" @click="logout" />
-            </RouterLink>
+            <Icon icon="famicons:log-out" class="nav-icon" @click="logout" />
+
+
         </div>
     </div>
 </template>

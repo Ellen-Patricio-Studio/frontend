@@ -3,5 +3,15 @@
     flex-direction: $dir;
     justify-content: $jc;
     align-items: $ai;
-}
+};
 
+@mixin themable(){
+    @each $theme, $map in $themes {
+        // Se theme for light usa :root, senão usa html.dark-mode
+        #{if($theme == 'light', ":root", "html.dark-mode")} {
+            @each $key, $value in $map {
+                --#{$key}: #{$value};
+            }
+        }
+    }
+}
