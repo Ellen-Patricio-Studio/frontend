@@ -9,6 +9,7 @@ import RecentsTransitionList from '@/components/finances/RecentsTransitionList.v
 import { useFinanceiroStore } from '@/stores/useFinanceiroStore';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { onMounted } from 'vue';
+import BoxGraph_Finances from '@/components/finances/BoxGraph_Finances.vue';
 
 const auth = useAuthStore()
 const financeiroStore = useFinanceiroStore()
@@ -27,11 +28,11 @@ onMounted(() => {
     <div class="finances-container-admin">
         <div class="h1 h1-top">Finanças</div>
         <div class="boxes">
-            <BoxInfo icon="boxicons:dollar" texto="Receitas" :numero="financeiroStore.receita_total || 'R$ 0,00'" background-color="--verde-claro-box" icon-color="--verde-escuro-box"></BoxInfo>
-            <BoxInfo icon="mdi:dollar-off" texto="Despesas" :numero="financeiroStore.dashboardFinanceiro?.despesas_total || 'R$ 0,00'" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"></BoxInfo>
-            <BoxInfo icon="healthicons:low-income-level-outline" texto="Saldo" :numero="financeiroStore.dashboardFinanceiro?.saldo_total || 'R$ 0,00'" background-color="--roxo-claro-box" icon-color="--roxo-escuro-box"></BoxInfo>
+            <BoxInfo icon="boxicons:dollar" texto="Receitas" :numero="financeiroStore.dashboardFinanceiro?.receita_total || 'R$ 0,00'" background-color="--verde-claro-box" icon-color="--verde-escuro-box"></BoxInfo>
+            <BoxInfo icon="mdi:account-off" texto="Taxa no-show" :numero="financeiroStore.dashboardFinanceiro?.taxa_no_show || 'R$ 0,00'" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"></BoxInfo>
+            <BoxInfo icon="mdi:chart-line" texto="Ticket médio" :numero="financeiroStore.dashboardFinanceiro?.ticket_medio || 'R$ 0,00'" background-color="--roxo-claro-box" icon-color="--roxo-escuro-box"></BoxInfo>
         </div>
-        <BoxGraph graph-type="line"></BoxGraph>
+        <BoxGraph_Finances></BoxGraph_Finances>
         <ul class="box-lists box recent-transitions-list">
             <div class="top">
                 <h2 class="h2">Transações recentes</h2>

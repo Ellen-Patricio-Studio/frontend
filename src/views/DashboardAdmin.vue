@@ -86,7 +86,9 @@ const historicoAgendamentosProximos = computed(() => {
             <!-- Ultima caixa a fazer -->
 
         </div>
-        <BoxGraph :agendamentos="agendamentosStore.agendamentos" v-if="auth.isAdmin" graph-type="bar"></BoxGraph>
+
+        <BoxGraph v-if="auth.isAdmin"></BoxGraph> 
+        
         <ul class="appointments-list box">
            <div class="top">
                <h2 class="h2">Próximos agendamentos</h2>
