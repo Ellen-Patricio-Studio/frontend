@@ -37,7 +37,7 @@ body{
 .button-select{
     border-radius: 8px;
     padding: 8px;
-    border: 1px solid rgba(0, 0, 0, 0.12);
+    border: 1px solid var(--cinza-btn);
     background-color: transparent;
     color: var(--cinza-nav);
     font-size: 14px;
@@ -273,7 +273,8 @@ body{
 .new-appointment-list-item{
     width: 100%;
     color: var(--cinza-nav);
-    box-shadow: var(--box-shadow-item);
+    // box-shadow: var(--box-shadow-item);
+    border: 1px solid var(--cinza-btn);
     border-radius: 12px;
     padding: 18px 12px;
     cursor: pointer;

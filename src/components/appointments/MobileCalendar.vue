@@ -397,9 +397,9 @@ const toggleModal = (modal, agendamento) => {
 
 .agenda-wrapper {
   --bg: #f4f3f8;
-  --surface: #ffffff;
+  --surface: var(--cards);
   --border: #e8e6f0;
-  --text: #1a1825;
+  --text: var(--preto-comprovante);
   --muted: #8b87a0;
   --radius: 14px;
   --shadow: 0 2px 12px rgba(80,60,140,.08);
@@ -496,14 +496,14 @@ const toggleModal = (modal, agendamento) => {
 }
 
 .btn-reschedule { 
-  background-color: #178d17; color: var(--cards);
+  background-color: var(--verde-ag); color: var(--cards);
 }
 
 .btn-cancel { 
-  background-color: #ac4545; color: var(--cards);
+  background-color: var(--vermelho-ag); color: var(--cards);
 
   &.ausente{
-    background-color: #666; color: var(--cards);
+    background-color: var(--cinza-ag); color: var(--cards);
   }
 }
 

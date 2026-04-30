@@ -28,7 +28,7 @@ defineProps({
         
             .status{
                 font-size: 12px;
-                color: green; /* alterar depois */
+                color: var(--verde-ag); /* alterar depois */
             }
         }
     }

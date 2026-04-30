@@ -123,6 +123,7 @@ onMounted(async () => {
     margin: calc(80px + 16px) 0;
     transition: 1s;
     font-size: 14px;
+    color: var(--cinza-nav);
 
     .wrapper-name {
         @include flex(row, space-between, center);

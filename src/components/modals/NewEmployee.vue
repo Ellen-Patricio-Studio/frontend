@@ -101,14 +101,14 @@ const getCategoriasDisponiveis = (indexAtual) => {
         </div>
         <hr>
         <form class="form" @submit.prevent="enviar()" >
-            <div class="wrapper-input">
+            <!-- <div class="wrapper-input">
                 <label>Foto de perfil</label>
                 <img :src="imgAvatar" alt="Foto de perfil">
                 <div class="buttons">
                     <button class="button-select">Editar</button>
                     <button class="button-select button-remove">Remover</button>
                 </div>
-            </div>
+            </div> -->
             <div class="wrapper-input">
                 <label>Nome completo</label>
                 <input v-model="dataForm.nome_completo" type="text" name="" id="" class="input">

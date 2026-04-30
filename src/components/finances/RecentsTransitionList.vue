@@ -62,7 +62,7 @@ const toggleConfirmationModal = () => {
                 @include flex(row, center, center);
 
                 .icon{
-                    color: black;
+                    color: var(--cinza-nav);
                     width: 20px;
                     height: 20px;
                     cursor: pointer;

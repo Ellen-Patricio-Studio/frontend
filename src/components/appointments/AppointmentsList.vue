@@ -154,10 +154,10 @@ const toggleModal = (modal) => {
                     font-size: 11px;
                     cursor: pointer;
 
-                    &.confirm { background-color: #178d17; color: var(--cards); }
-                    &.cancel { background-color: #ac4545; color: var(--cards); }
-                    &.done { background-color: #178d17; color: var(--cards); }
-                    &.absent { background-color: #666; color: var(--cards);}
+                    &.confirm { background-color: var(--verde-ag); color: var(--cards); }
+                    &.cancel { background-color: var(--vermelho-ag); color: var(--cards); }
+                    &.done { background-color: var(--verde-ag); color: var(--cards); }
+                    &.absent { background-color: var(--cinza-ag); color: var(--cards);}
                 }
             }
         }
@@ -170,9 +170,9 @@ const toggleModal = (modal) => {
             padding: 4px 8px;
             border-radius: 12px;
             
-            &.realizado { color: green; }
-            &.cancelado { color: red; }
-            &.agendado { color: orange; }
+            &.realizado { color: var(--verde-ag); }
+            &.cancelado { color: var(--vermelho-ag); }
+            &.agendado { color: var(--laranja-ag); }
         }
     }
 </style>

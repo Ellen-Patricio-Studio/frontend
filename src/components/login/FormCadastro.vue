@@ -53,23 +53,23 @@ const cadastrar = async () => {
     <form @submit.prevent="cadastrar">
         <div class="wrapper-input">
             <label for="">Nome completo</label>
-            <input v-model="modeloReq.nome_completo" type="text" name="" id="" placeholder="Digite aqui..." required>
+            <input class="input" v-model="modeloReq.nome_completo" type="text" name="" id="" placeholder="Digite aqui..." required>
         </div>
         <div class="wrapper-input">
             <label for="">Telefone</label>
-            <input v-model="modeloReq.telefone" type="text" name="" id="" placeholder="(11) 99999-9999" required>
+            <input class="input" v-model="modeloReq.telefone" type="text" name="" id="" placeholder="(11) 99999-9999" required>
         </div>
         <div class="wrapper-input">
             <label for="">Email</label>
-            <input v-model="modeloReq.email" type="email" name="" id="" placeholder="Email@dominio.com" required>
+            <input class="input" v-model="modeloReq.email" type="email" name="" id="" placeholder="Email@dominio.com" required>
         </div>
         <div class="wrapper-input">
             <label for="">Senha</label>
-            <input v-model="modeloReq.senha" type="password" name="" id="" placeholder="Digite aqui..." required>
+            <input class="input" v-model="modeloReq.senha" type="password" name="" id="" placeholder="Digite aqui..." required>
         </div>
         <div class="wrapper-input">
             <label for="">Repita a senha</label>
-            <input v-model="modeloReq.confirmar_senha" type="password" name="" id="" placeholder="Digite aqui..." required>
+            <input class="input" v-model="modeloReq.confirmar_senha" type="password" name="" id="" placeholder="Digite aqui..." required>
         </div>
         <p class="alert" v-if="modeloReq.senha !== modeloReq.confirmar_senha">As senhas não correspondem</p>
         <p v-for="(message, idx) in errorMsg" :key="idx" class="alert">

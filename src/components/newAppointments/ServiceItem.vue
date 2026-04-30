@@ -42,6 +42,7 @@ const emit = defineEmits(['click'])
         .new-appointment-list-item{
             @include flex(row, space-between, stretch);
             
+
             &.checked {
                 border: 2px solid var(--rosa-nav);
                 background-color: rgba(var(--rosa-rgb), 0.05);

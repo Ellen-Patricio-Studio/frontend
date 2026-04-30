@@ -67,6 +67,15 @@ $themes: (
         preto-comprovante: #111827,
         cinza-claro: #E5E7EB,
         vermelho: #913939,
+        cinza-btn: #D1D5DB,
+
+
+        //botoes agendamentos
+        verde-ag: #178d17,
+        vermelho-ag: #ac4545,
+        cinza-ag: #666,
+        laranja-agr: orange,
+        box-shadow-ag: 0 2px 12px rgba(80,60,140,.08),
 
         input-bg: #FFFFFF,
         input-border: 1px solid #E5E7EB,           // cinza-claro — sutil no repouso
@@ -107,20 +116,26 @@ $themes: (
         preto-comprovante: #F3F4F6,
         cinza-claro: #374151,
         vermelho: #B45555,
+        cinza-btn: #5f6468,
+
+        //agendamentos
+        box-shadow-ag: 0 2px 12px rgb(0, 0, 0),
+
+
 
         input-bg: #111827,
         input-border: 1px solid rgba(255,255,255,0.12),
         input-border-hover: 1px solid rgba(255,255,255,0.20),
         input-border-focus: 1px solid #E05AA0,
         input-text: #F3F4F6,
-        input-placeholder: #6B7280,
+        input-placeholder: #ffffff,
         input-shadow: inset 0px 1px 3px rgba(0,0,0,0.40),   // reforça o efeito de cavidade
         input-shadow-focus: 0px 0px 0px 3px rgba(224,90,160,0.15),
 
         box-shadow: 0px 0px 8px 0px rgba(0,0,0,0.40) 0px 0px 0px 0.5px rgba(255,255,255,0.06),
         box-shadow-top: 0px 0px 4px 0px rgba(0,0,0,0.60) 0px 0px 0px 0.5px rgba(255,255,255,0.08),
         box-shadow-bottom: 0px -2px 4px 0px rgba(0,0,0,0.40) 0px -1px 0px 0px rgba(255,255,255,0.05),
-        box-shadow-item: 0px 0px 2px 0px rgba(0,0,0,0.80) 0px 0px 0px 0.5px rgba(255,255,255,0.10),
+        box-shadow-item: 0px 0px 2px 0px rgba(0, 0, 0, 0.8) 0px 0px 0px 0.5px rgba(255,255,255,0.10),
         box-shadow-checkbox: 0px 0px 2px 0px rgba(0,0,0,1) 0px 0px 0px 1px rgba(255,255,255,0.20),
     ),
 );

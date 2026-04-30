@@ -44,7 +44,7 @@ const linkRedirect = `/clientes/${props.id}`
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background-color: var(--color-rosa, #e91e8c);
+            background-color: var(--rosa);
             color: #fff;
             @include flex(row, center, center);
             font-weight: bold;
@@ -59,11 +59,13 @@ const linkRedirect = `/clientes/${props.id}`
             .cliente-name {
                 font-weight: 600;
                 font-size: 14px;
+                color: var(--cinza-nav);
             }
 
             .cliente-email {
                 font-size: 12px;
                 opacity: 0.6;
+                color: var(--cinza-nav);
             }
         }
     }

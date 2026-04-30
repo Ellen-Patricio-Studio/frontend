@@ -45,11 +45,11 @@ const logar = async () => {
     <form @submit.prevent="logar">
         <div class="wrapper-input">
             <label for="">Email</label>
-            <input v-model="modeloReq.email" type="email" name="" id="" placeholder="Email@dominio.com">
+            <input class="input" v-model="modeloReq.email" type="email" name="" id="" placeholder="Email@dominio.com">
         </div>
         <div class="wrapper-input">
             <label for="">Senha <a>Esqueci a senha</a></label>
-            <input v-model="modeloReq.senha" type="password" name="" id="" placeholder="Digite aqui...">
+            <input class="input" v-model="modeloReq.senha" type="password" name="" id="" placeholder="Digite aqui...">
         </div>
         <p v-if="errorMsg" class="alert">{{errorMsg}}</p>
         <div class="wrapper-checkbox">
