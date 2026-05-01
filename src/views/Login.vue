@@ -3,6 +3,9 @@ import imgAvatar from '@/assets/images/logo.jpeg'
 import FormCadastro from '@/components/login/FormCadastro.vue';
 import FormLogin from '@/components/login/FormLogin.vue';
 import { ref } from 'vue'
+import { useThemeStore } from '@/stores/useThemeStore';
+const themeStore = useThemeStore()
+import { Icon } from '@iconify/vue';
 
 const formularioAtivo = ref('login')
 
@@ -14,14 +17,15 @@ function mudarForm(formName){
 
 <template>
     <div class="wrapper-login">
+        <Icon icon="ri:toggle-line" @click="themeStore.toggleTheme" class="toggle-icon"/>
         <div class="box container-login">
             <div class="top">
                 <img :src="imgAvatar" alt="Logo Ellen Studio" />
                 <h1 class="h1">Ellen Patricio Studio</h1>
             </div>
             <div class="buttons">
-                <button @click.prevent="mudarForm('login')" class="button-select"    :class="{'active': formularioAtivo === 'login'}" >Login</button>
-                <button @click.prevent="mudarForm('cadastro')" class="button-select" :class="{'active': formularioAtivo === 'cadastro'}" >Criar conta</button>
+                <button @click.prevent="mudarForm('login')" class="button-select"    :class="{'active': formularioAtivo === 'login'}" aria-label="Login">Login</button>
+                <button @click.prevent="mudarForm('cadastro')" class="button-select" :class="{'active': formularioAtivo === 'cadastro'}" aria-label="Criar conta">Criar conta</button>
             </div>
             <FormLogin v-if="formularioAtivo === 'login'"></FormLogin>
             <FormCadastro v-else-if="formularioAtivo === 'cadastro'" :mudar-form="mudarForm"></FormCadastro>
@@ -37,6 +41,16 @@ function mudarForm(formName){
         width: 100%;
         min-height: 100vh;
         padding: 32px 0;
+
+        .toggle-icon{
+            width: 24px;
+            height: 24px;
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            color: var(--cinza-nav);
+            cursor: pointer;
+        }
     }
 
     .container-login{

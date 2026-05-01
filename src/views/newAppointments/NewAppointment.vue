@@ -47,6 +47,7 @@ const selecionarCategoria = (id) => {
                         class="button-select categories-li" 
                         :class="{ 'active': categoriaAtiva === null }"
                         @click="selecionarCategoria(null)"
+                        aria-label="Todos"
                     >
                         Todos
                     </li>
@@ -56,6 +57,7 @@ const selecionarCategoria = (id) => {
                         class="button-select categories-li"
                         :class="{ 'active': categoriaAtiva === cat.id }"
                         @click="selecionarCategoria(cat.id)"
+                        :aria-label="cat.nome_categoria"
                     >
                         {{ cat.nome_categoria }}
                     </li>
@@ -87,7 +89,7 @@ const selecionarCategoria = (id) => {
                     <p class="total-services">Total : {{ formatarMoeda(totalPreco) }}</p>
                 </div>
                 <div class="right">
-                    <RouterLink :to="{name: 'selecionar-data'}" class="button-rosa">
+                    <RouterLink :to="{name: 'selecionar-data'}" class="button-rosa" aria-label="Prosseguir">
                         Prosseguir
                     </RouterLink>
                 </div>

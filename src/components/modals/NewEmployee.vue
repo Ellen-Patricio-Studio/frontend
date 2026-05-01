@@ -97,10 +97,10 @@ const getCategoriasDisponiveis = (indexAtual) => {
     <div class="box box-modal">
         <div class="top">
             <p class="title">Novo funcionário</p>
-            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal"/>
+            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal" aria-label="Fechar"/>
         </div>
         <hr>
-        <form class="form" @submit.prevent="enviar()" >
+        <form class="form scroll" @submit.prevent="enviar()" >
             <!-- <div class="wrapper-input">
                 <label>Foto de perfil</label>
                 <img :src="imgAvatar" alt="Foto de perfil">
@@ -163,8 +163,8 @@ const getCategoriasDisponiveis = (indexAtual) => {
                 </select>
             </div> -->
             <p v-if="alert2 !== ''" class="alert">{{alert2}}</p>
-            <button class="button-rosa button-voltar" @click="toggleModal">Cancelar</button>
-            <input type="submit" value="Confirmar" class="button-rosa">
+            <button class="button-rosa button-voltar" @click="toggleModal" aria-label="Cancelar">Cancelar</button>
+            <input type="submit" value="Confirmar" class="button-rosa" aria-label="Submit">
         </form>
     </div>
 </template>

@@ -78,7 +78,7 @@ const cadastrar = async () => {
         <p v-if=errorMsg2>
             Este e-mail já está cadastrado em nosso sistema. Realize o login.
         </p>
-        <button type="submit" class="button-rosa" :disabled="loading">{{ loading ? 'Criando...' : 'Criar' }}</button>
+        <button type="submit" class="button-rosa" :disabled="loading" aria-label="Submit">{{ loading ? 'Criando...' : 'Criar' }}</button>
     </form>
 </template>
 

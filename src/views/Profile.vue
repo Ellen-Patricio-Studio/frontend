@@ -43,7 +43,7 @@ const agendamentosFiltrados = computed(() => {
                 <p>></p>
                 <p>{{equipeStore.funcionarioSelecionado?.nome_completo}}</p>
             </div>
-            <RouterLink :to="{name: 'equipe'}">
+            <RouterLink :to="{name: 'equipe'}" aria-label="Retornar">
                 <Icon icon="icon-park-outline:return"/>
             </RouterLink>
         </div>

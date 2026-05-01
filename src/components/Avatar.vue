@@ -13,6 +13,9 @@ defineProps({
 <template>
     <div class="avatar">
         <!-- <img v-if="src!==undefined" :src="src" :alt="alt" class="avatar-img"> -->
+        <div class="avatar-placeholder">
+            {{ name.charAt(0).toUpperCase() }}
+        </div>
         <div class="role-area">
             <p class="name">{{name}}</p>
             <p class="role">{{role}}</p>

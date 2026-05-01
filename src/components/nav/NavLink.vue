@@ -12,7 +12,7 @@ const redirectComposable = useRedirect()
 </script>
 
 <template>
-    <a @click.prevent="redirectComposable.handleSubmit(redirect)" class="nav-link" :class="{'is-active': active}">
+    <a @click.prevent="redirectComposable.handleSubmit(redirect)" class="nav-link" :class="{'is-active': active}" :aria-label="texto">
         <Icon :icon="icon" class="nav-icon" />
         <p>{{texto}}</p>
     </a>

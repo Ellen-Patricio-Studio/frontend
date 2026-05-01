@@ -41,7 +41,7 @@ const alterarSenha = async () => {
     <div class="box box-modal password-modal">
         <div class="top">
             <p class="title">Editar senha</p>
-            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal()"/>
+            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal()" aria-label="Fechar"/>
         </div>
         <hr>
         <form class="form" @submit.prevent="alterarSenha">
@@ -59,8 +59,8 @@ const alterarSenha = async () => {
             </div>
             <p v-if="alert" class="alert">{{alert}}</p>
             <p v-if="nova_senha !== confirmar_nova_senha" class="alert">As senhas não correspondem</p>
-            <button class="button-rosa button-voltar" @click="toggleModal">Cancelar</button>
-            <input type="submit" value="Confirmar" class="button-rosa">
+            <button class="button-rosa button-voltar" @click="toggleModal" aria-label="Cancelar">Cancelar</button>
+            <input type="submit" value="Confirmar" class="button-rosa" aria-label="Submit">
         </form>
     </div>
 </template>

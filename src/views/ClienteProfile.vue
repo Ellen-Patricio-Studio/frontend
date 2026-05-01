@@ -75,7 +75,7 @@ onMounted(async () => {
                     <span class="role-tag">Cliente</span>
                 </div>
                 <div class="perfil-actions">
-                    <button class="button-select" @click="toggleEditModal">
+                    <button class="button-select" @click="toggleEditModal" aria-label="Editar">
                         <Icon icon="mingcute:edit-line" /> Editar
                     </button>
                     <!-- <button class="button-select button-remove" @click="toggleDeleteModal">

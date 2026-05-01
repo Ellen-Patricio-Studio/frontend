@@ -25,7 +25,7 @@ onMounted(() => {
  
 <template>
     <div class="appointment-container">
-        <h1 class="h1 h1-top">Agendamentos <RouterLink v-if="auth.isCliente" :to="{name: 'novo-agendamento'}" class="button-rosa btn-dash">+ Novo agendamento</RouterLink></h1>
+        <h1 class="h1 h1-top">Agendamentos <RouterLink v-if="auth.isCliente" :to="{name: 'novo-agendamento'}" class="button-rosa btn-dash" aria-label="+ Novo agendamento">+ Novo agendamento</RouterLink></h1>
         <div class="appointment-content">
             <div class="appointment-calendar box">
                 <MobileCalendar

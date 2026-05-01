@@ -95,13 +95,13 @@ const toggleModal = (modal) => {
             <span class="status-pill" :class="`${status.toLocaleLowerCase()}`">{{ status }}</span>
             <div class="actions">
                 <template v-if="auth.isCliente && (status === 'AGENDADO' || status === 'CONFIRMADO')">
-                    <button v-if="status === 'AGENDADO'" class="button-select confirm" @click.prevent="toggleModal('confirmar')">Confirmar</button>
-                    <button class="button-select cancel" @click.prevent="toggleModal('cancelar')">Cancelar</button>
+                    <button v-if="status === 'AGENDADO'" class="button-select confirm" @click.prevent="toggleModal('confirmar')" aria-label="confirmar">Confirmar</button>
+                    <button class="button-select cancel" @click.prevent="toggleModal('cancelar')" aria-label="cancelar">Cancelar</button>
                 </template>
     
                 <template v-if="auth.isPeloMenosFuncionario && (status === 'CONFIRMADO' || status === 'AGENDADO')">
-                    <button class="button-select done" @click.prevent="toggleModal('realizar')">Realizado</button>
-                    <button class="button-select absent" @click.prevent="toggleModal('ausentar')">Ausente</button>
+                    <button class="button-select done" @click.prevent="toggleModal('realizar')" aria-label="realizar">Realizado</button>
+                    <button class="button-select absent" @click.prevent="toggleModal('ausentar')" aria-label="ausentar">Ausente</button>
                 </template>
             </div>
         </div>

@@ -28,7 +28,7 @@ onMounted(() => {
     <div class="container-clientes">
         <h1 class="h1 h1-top">
             Clientes
-            <button class="button-select" @click="toggleModal">Novo cliente</button>
+            <button class="button-select" @click="toggleModal" aria-label="Novo cliente">Novo cliente</button>
         </h1>
 
         <input type="text" class="input" placeholder="Buscar...">

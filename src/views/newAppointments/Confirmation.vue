@@ -33,8 +33,8 @@ const imprimir = () => {
                     <h1>Reserva confirmada!</h1>
                     <p>Uma cópia deste comprovante foi enviada ao seu endereço de email.</p>
                     <div class="buttons">
-                        <button class="button-select" @click="$router.push({name: 'agendamentos'})"><Icon icon="solar:calendar-broken" />Ver calendário</button>
-                        <button class="button-select" @click="imprimir"><Icon icon="solar:calendar-broken" />Imprimir</button>
+                        <button class="button-select" @click="$router.push({name: 'agendamentos'})" aria-label="Ver calendário"><Icon icon="solar:calendar-broken" />Ver calendário</button>
+                        <button class="button-select" @click="imprimir"><Icon icon="solar:calendar-broken" aria-label="Imprimir"/>Imprimir</button>
                     </div>
                 </div>
                 <div class="informations">
@@ -60,7 +60,7 @@ const imprimir = () => {
                 </div>
                 <div class="buttons">
                     <!-- <RouterLink class="button-rosa button-voltar">Cancelar reserva</RouterLink> -->
-                    <RouterLink :to="{name: 'dashboard'}" class="button-rosa">Ir para o dashboard</RouterLink>
+                    <RouterLink :to="{name: 'dashboard'}" class="button-rosa" aria-label="Ir para o dashboard">Ir para o dashboard</RouterLink>
                 </div>
             </div>   
             <div class="notice">

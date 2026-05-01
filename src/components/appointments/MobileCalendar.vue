@@ -276,14 +276,14 @@ const toggleModal = (modal, agendamento) => {
 
   <div class="agenda-wrapper">
     <div class="carousel">
-      <Icon icon="mingcute:left-fill" class="icon" @click="moverScroll('anterior')"/>
+      <Icon icon="mingcute:left-fill" class="icon" @click="moverScroll('anterior')" aria-label="anterior"/>
       <div class="circles" ref="scrollContainer">
         <div class="circle" v-for="dia in dias" :key="dia.id" :class="{active: diaSelecionado === dia.id}" @click="selecionarDia(dia.id)">
           <p>{{dia.isHoje ? 'Hoje' : dia.nomeDia}}</p>
           <p>{{dia.numero}}</p>
         </div>
       </div>
-      <Icon icon="mingcute:right-fill" class="icon" @click="moverScroll('proximo')"/>
+      <Icon icon="mingcute:right-fill" class="icon" @click="moverScroll('proximo')" aria-label="próximo"/>
     </div>
 
     <div class="agenda-header">
@@ -375,12 +375,12 @@ const toggleModal = (modal, agendamento) => {
                 <div class="detail-price">{{ appt.valor }}</div>
                 <div class="card-actions">
                   <template v-if="auth.isCliente && (appt.status === 'AGENDADO' || appt.status === 'CONFIRMADO')">
-                    <button v-if="appt.status === 'AGENDADO'" class="btn-reschedule" @click.stop="toggleModal('confirmar', appt)">Confirmar</button>
-                    <button class="btn-cancel" @click.stop="toggleModal('cancelar', appt)">Cancelar</button>
+                    <button v-if="appt.status === 'AGENDADO'" class="btn-reschedule" @click.stop="toggleModal('confirmar', appt)" aria-label="confirmar">Confirmar</button>
+                    <button class="btn-cancel" @click.stop="toggleModal('cancelar', appt)" aria-label="cancelar">Cancelar</button>
                   </template>
                   <template v-if="auth.isPeloMenosFuncionario && (appt.status === 'CONFIRMADO' || appt.status === 'AGENDADO')">
-                      <button class="btn-reschedule" @click.prevent="toggleModal('realizar', appt)">Realizado</button>
-                      <button class="btn-cancel ausente" @click.prevent="toggleModal('ausentar', appt)">Ausente</button>
+                      <button class="btn-reschedule" @click.prevent="toggleModal('realizar', appt)" aria-label="realizar">Realizado</button>
+                      <button class="btn-cancel ausente" @click.prevent="toggleModal('ausentar', appt)" aria-label="ausentar">Ausente</button>
                   </template>
                 </div>
               </div>
@@ -467,7 +467,7 @@ const toggleModal = (modal, agendamento) => {
 }
 
 .appointment-card:hover { box-shadow: 0 6px 20px rgba(80,60,140,.13); transform: translateY(-1px); }
-.appointment-card.is-expanded { z-index: 20; box-shadow: 0 8px 32px rgba(80,60,140,.18); }
+.appointment-card.is-expanded { z-index: 4 !important; box-shadow: 0 8px 32px rgba(80,60,140,.18); }
 
 .card-accent { width: 4px; border-radius: var(--radius) 0 0 var(--radius); }
 .card-content { flex: 1; padding: 10px 12px; display: flex; flex-direction: column; gap: 3px; min-width: 0; }

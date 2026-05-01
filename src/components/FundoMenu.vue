@@ -1,9 +1,13 @@
 <script setup>
 
+import { useMenuStore } from '@/stores/useMenuStore';
+const menuStore = useMenuStore()
+
+
 </script>
 
 <template>
-    <div class="fundo-menu"></div>
+    <div class="fundo-menu" @click="menuStore.toggleMenu()"></div>
 </template>
 
 <style lang="scss">

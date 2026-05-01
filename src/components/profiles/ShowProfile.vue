@@ -51,7 +51,9 @@ const props = defineProps({
         <DayOffEdit :toggle-modal="() => toggleModal('dayOffEdit')" :id="id"></DayOffEdit>
     </teleport>
     <div class="box container-show-profile">
-        <!-- <img :src="src" /> -->
+        <div class="avatar-placeholder large">
+            {{ name?.charAt(0).toUpperCase() }}
+        </div>
         <div class="texts">
             <h1 class="h1">{{ name }}</h1>
             <p>{{ role }}</p>
@@ -69,9 +71,9 @@ const props = defineProps({
         </div>
         <Icon class="icon-options" icon="ant-design:more-outlined" @click.prevent="toggleOptions"/>
         <div class="box-options" v-if="isOptionShow">
-            <button class="button-select" @click="toggleModal('employeeEdit')">Editar perfil</button>
-            <button class="button-select horario" @click="toggleModal('timeEdit')">Editar turno</button>
-            <button class="button-select horario" @click="toggleModal('dayOffEdit')">Editar folga</button>
+            <button class="button-select" @click="toggleModal('employeeEdit')" aria-label="Editar perfil">Editar perfil</button>
+            <button class="button-select horario" @click="toggleModal('timeEdit')" aria-label="Editar turno">Editar turno</button>
+            <button class="button-select horario" @click="toggleModal('dayOffEdit')" aria-label="Editar folga">Editar folga</button>
         </div>
     </div>
 </template>

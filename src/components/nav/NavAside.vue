@@ -60,15 +60,19 @@ themeStore.applyTheme();
                 <NavLink v-if="auth.isAdmin" icon="fa7-solid:gears" texto="Serviços" :active="route.name === 'servicos'" redirect="servicos"></NavLink>
                 <NavLink v-if="auth.isAdmin" icon="fluent:people-team-24-filled" texto="Equipe" :active="route.name === 'equipe'" redirect="equipe"></NavLink>
                 <NavLink v-if="auth.isAdmin" icon="f7:person-2-fill" texto="Clientes" :active="route.name === 'clientes'" redirect="clientes"></NavLink>
-                <NavLink v-if="auth.isAdmin" icon="mdi:account" texto="Conta" :active="route.name === 'conta'" redirect="conta"></NavLink>
-                <NavLink icon="ri:toggle-line" texto="Modo escuro" @click="themeStore.toggleTheme"></NavLink>
+                <NavLink icon="mdi:account" texto="Conta" :active="route.name === 'conta'" redirect="conta"></NavLink>
+                
+                <!-- <NavLink icon="ri:toggle-line" texto="Modo escuro" @click="themeStore.toggleTheme"></NavLink> -->
 
             
             </ul>
         </div>
         <div class="bottom">
             <Avatar :src="imgAvatar" alt="Foto de perfil do usuário" :name="auth.user?.nome_completo || 'Carregando...'" :role="auth.roles[0] || 'Carregando...'"></Avatar>
-            <Icon icon="famicons:log-out" class="nav-icon" @click="logout" />
+            <div class="bottom-icons">
+                <Icon icon="ri:toggle-line" @click="themeStore.toggleTheme" class="nav-icon"/>
+                <Icon icon="famicons:log-out" class="nav-icon" @click="logout" aria-label="logout"/>
+            </div>
 
 
         </div>
@@ -84,32 +88,14 @@ themeStore.applyTheme();
         position: fixed;
         top: 0;
         box-shadow: 2px 0px 4px 0px rgba(0,0,0,0.06);
-        z-index: 10;
+        z-index: 11;
         
         .topo{
             @include flex(column, space-between, start);
             width: 100%;
             padding: 10px;
         
-            .logo-area{
-                @include flex(row, center, center);
-                gap: 8px;
-                height: 80px;
-                padding: 0 8px;
 
-                img{
-                    width: 32px;
-                    height: 32px;
-                    border-radius: 8px;
-                }
-
-                span{
-                    font-size: 14px;
-                    font-weight: bold;
-                    color: var(--cinza-nav);
-
-                }
-            }
 
             ul{
                 @include flex(column, start, start);
@@ -139,13 +125,19 @@ themeStore.applyTheme();
             width: 100%;
             height: 80px;
             @include flex(row, space-between, center);
-            padding: 8px 32px 8px 8px;
+            padding: 8px 8px 8px 8px;
             box-shadow: 0px -2px 4px 0px rgba(0,0,0,0.06);
 
-            .nav-icon{
-                width: 24px;
-                height: 24px;
-                color: var(--cinza-nav);
+            .bottom-icons{
+                @include flex(row, start, start);
+                gap: 8px;
+
+                .nav-icon{
+                    width: 24px;
+                    height: 24px;
+                    color: var(--cinza-nav);
+                    cursor: pointer;
+                }
             }
         }
     }

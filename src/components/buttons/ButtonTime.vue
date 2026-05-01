@@ -9,7 +9,7 @@ defineProps({
 </script>
 
 <template>
-    <button class="button-time" :class="{'active': active}">
+    <button class="button-time" :class="{'active': active}" :aria-label="time">
         {{ time }}
     </button>
 </template>

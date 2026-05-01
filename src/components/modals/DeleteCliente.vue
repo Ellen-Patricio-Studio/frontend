@@ -33,7 +33,7 @@ const confirmarExclusao = async () => {
     <div class="box box-modal">
         <div class="top">
             <p class="title">Excluir cliente</p>
-            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal" />
+            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal" aria-label="Fechar"/>
         </div>
         <hr>
         <div class="form">
@@ -42,12 +42,13 @@ const confirmarExclusao = async () => {
                 <p>Tem certeza que deseja excluir a conta de <strong>{{ cliente?.nome_completo }}</strong>? Esta ação não pode ser desfeita.</p>
             </div>
             <p v-if="alertMsg" class="alert">{{ alertMsg }}</p>
-            <button type="button" class="button-rosa button-voltar" @click="toggleModal">Cancelar</button>
+            <button type="button" class="button-rosa button-voltar" @click="toggleModal" aria-label="Cancelar">Cancelar</button>
             <button
                 type="button"
                 class="button-rosa button-danger"
                 @click="confirmarExclusao"
                 :disabled="loading"
+                aria-label="Confirmar exclusão"
             >
                 {{ loading ? 'Excluindo...' : 'Confirmar exclusão' }}
             </button>

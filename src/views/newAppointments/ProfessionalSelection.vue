@@ -75,8 +75,8 @@ const toggleModal = () => {
                     <Avatar :src="imgAvatar" :name="bookingData._temp.nome_funcionario || 'Selecione um profissional'"></Avatar>
                 </div>
                 <div class="right">
-                    <RouterLink :to="{name: 'selecionar-data'}" class="button-rosa button-voltar">Voltar</RouterLink>
-                    <button v-if="bookingData.id_funcionario" class="button-rosa" @click.prevent="toggleModal()">Resumo</button>
+                    <RouterLink :to="{name: 'selecionar-data'}" class="button-rosa button-voltar" aria-label="Voltar">Voltar</RouterLink>
+                    <button v-if="bookingData.id_funcionario" class="button-rosa" @click.prevent="toggleModal()" aria-label="Resumo">Resumo</button>
                 </div>
             </div>
         </div>

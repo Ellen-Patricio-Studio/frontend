@@ -20,7 +20,7 @@ defineProps({
 <template>
     <li class="item">
         <p class="avatar-area" v-if="!authStore.isCliente">
-            <img v-if="src!==undefined" :src="src" :alt="alt" class="avatar-img">
+            <!-- <img v-if="src!==undefined" :src="src" :alt="alt" class="avatar-img"> -->
             <span class="name">{{ name }}</span>
         </p>
         <p class="service">{{ service }}</p>
@@ -28,7 +28,7 @@ defineProps({
         <p class="date">{{ date }}</p>
         <p class="value">{{ value }}</p>
         <p class="status">{{ status }}</p>
-        <button v-if="src!==undefined">...</button>
+        <button v-if="src!==undefined" aria-label="Opções">...</button>
     </li>
 </template>
 

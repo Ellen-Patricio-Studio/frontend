@@ -44,7 +44,7 @@ const cadastrarServico = async () => {
     <div class="box box-modal">
         <div class="top">
             <p class="title">Novo serviço</p>
-            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal('newService')"/>
+            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal('newService')" aria-label="Fechar"/>
         </div>
         <hr>
         <form class="form" @submit.prevent="cadastrarServico">
@@ -74,8 +74,8 @@ const cadastrarServico = async () => {
                 </select>
             </div>
             <p v-if="alert !== ''" class="alert">{{ alert }}</p>
-            <button class="button-rosa button-voltar" @click.prevent="toggleModal('newService')">Cancelar</button>
-            <input type="submit" value="Confirmar" class="button-rosa">
+            <button class="button-rosa button-voltar" @click.prevent="toggleModal('newService')" aria-label="Cancelar">Cancelar</button>
+            <input type="submit" value="Confirmar" class="button-rosa" aria-label="Submit">
         </form>
     </div>
 </template>

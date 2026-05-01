@@ -25,7 +25,7 @@ const linkRedirect = `/clientes/${props.id}`
         </div>
         <div class="right">
             <Icon icon="qlementine-icons:menu-dots-16" />
-            <RouterLink :to="linkRedirect" class="button-select">Perfil</RouterLink>
+            <RouterLink :to="linkRedirect" class="button-select" aria-label="Perfil">Perfil</RouterLink>
         </div>
     </li>
 </template>

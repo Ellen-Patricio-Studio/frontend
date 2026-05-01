@@ -58,10 +58,10 @@ const enviar = async () => {
     <div class="box box-modal">
         <div class="top">
             <p class="title">Editar cliente</p>
-            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal" />
+            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal" aria-label="Fechar"/>
         </div>
         <hr>
-        <form class="form" @submit.prevent="enviar()">
+        <form class="form scroll" @submit.prevent="enviar()">
             <div class="wrapper-input">
                 <label>Nome completo</label>
                 <input v-model="dataForm.nome_completo" type="text" class="input" required>
@@ -86,8 +86,8 @@ const enviar = async () => {
                 As senhas não conferem
             </p>
             <p v-if="alertMsg" class="alert">{{ alertMsg }}</p>
-            <button type="button" class="button-rosa button-voltar" @click="toggleModal">Cancelar</button>
-            <input type="submit" value="Salvar alterações" class="button-rosa">
+            <button type="button" class="button-rosa button-voltar" @click="toggleModal" aria-label="Cancelar">Cancelar</button>
+            <input type="submit" value="Salvar alterações" class="button-rosa" aria-label="Submit">
         </form>
     </div>
 </template>

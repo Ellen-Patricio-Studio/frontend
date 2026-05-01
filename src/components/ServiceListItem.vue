@@ -56,7 +56,7 @@ const nomeCategoria = computed(() => {
         <div class="top">
             <p class="title">{{name}}</p>
             <div class="icons">
-                <Icon class="icon icon-edit" icon="tabler:edit-filled" @click="toggleModal()"/>
+                <Icon class="icon icon-edit" icon="tabler:edit-filled" @click="toggleModal()" aria-label="Editar serviço"/>
                 <!-- <Icon class="icon icon-remove" icon="ic:outline-delete"/> -->
             </div>
         </div>

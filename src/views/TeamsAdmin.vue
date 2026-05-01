@@ -29,7 +29,7 @@ onMounted(() => {
         <NewEmployee :toggle-modal="toggleModal"></NewEmployee>
     </Teleport>
     <div class="container-teams">
-        <h1 class="h1 h1-top">Equipe <button class="button-select" @click="toggleModal">Novo funcionário</button></h1>
+        <h1 class="h1 h1-top">Equipe <button class="button-select" @click="toggleModal" aria-label="Novo funcionário">Novo funcionário</button></h1>
         <input type="text" class="input" placeholder="Buscar...">
         <EmployeesList v-for="funcionario in equipeStore.funcionarios" :key="funcionario.id" :src="AvatarImg" alt="Foto de perfil" :name="funcionario.nome_completo" :role="funcionario.cargo" :id="funcionario.id"></EmployeesList>          
     </div>
@@ -44,9 +44,7 @@ onMounted(() => {
         transition: 1s;
 
         h1{
-            @include flex(row, space-between, center);
-            padding-right: 24px;
-
+            
             .button-select{
                 cursor: pointer;
             }

@@ -48,7 +48,7 @@ const toggleConfirmationModal = () => {
         <p>{{ transacao.status_pagamento }}</p>
         <p>{{ transacao.data_pagamento }}</p>
         <div class="button-item">
-            <Icon @click="toggleModal('conciliar_pagamento')" class="icon" icon="material-symbols-light:subtitles-gear-outline" v-if="transacao.status_pagamento !== 'PAGO'">...</Icon>
+            <Icon @click="toggleModal('conciliar_pagamento')" class="icon" icon="material-symbols-light:subtitles-gear-outline" v-if="transacao.status_pagamento !== 'PAGO'" aria-label="Opções">...</Icon>
         </div>
     </li>
 </template>

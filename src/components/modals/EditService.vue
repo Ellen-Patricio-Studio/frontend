@@ -46,7 +46,7 @@ const atualizarServico = async () => {
     <div class="box box-modal">
         <div class="top">
             <p class="title">Editar serviço</p>
-            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal()"/>
+            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal()" aria-label="Fechar"/>
         </div>
         <hr>
         <form class="form" @submit.prevent="atualizarServico">
@@ -80,8 +80,8 @@ const atualizarServico = async () => {
                 <label>Ativo?</label>
             </div> -->
             <p v-if="alert !== ''" class="alert">{{ alert }}</p>
-            <button class="button-rosa button-voltar" @click.prevent="toggleModal()">Cancelar</button>
-            <input type="submit" value="Confirmar" class="button-rosa">
+            <button class="button-rosa button-voltar" @click.prevent="toggleModal()" aria-label="Cancelar">Cancelar</button>
+            <input type="submit" value="Confirmar" class="button-rosa" aria-label="Submit">
         </form>
     </div>
 </template>

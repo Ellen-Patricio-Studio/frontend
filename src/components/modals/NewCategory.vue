@@ -28,7 +28,7 @@ const cadastrar = async () => {
     <div class="box box-modal">
         <div class="top">
             <p class="title">Nova categoria</p>
-            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal('newCategory')"/>
+            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal('newCategory')" aria-label="Fechar"/>
         </div>
         <hr>
         <form class="form" @submit.prevent="cadastrar">
@@ -37,8 +37,8 @@ const cadastrar = async () => {
                 <input v-model="nome_categoria" type="text" name="" id="" class="input">
             </div>
             <p v-if="alert !== ''" class="alert">{{ alert }}</p>
-            <button class="button-rosa button-voltar" @click.prevent="toggleModal('newCategory')">Cancelar</button>
-            <input type="submit" value="Confirmar" class="button-rosa">
+            <button class="button-rosa button-voltar" @click.prevent="toggleModal('newCategory')" aria-label="Cancelar">Cancelar</button>
+            <input type="submit" value="Confirmar" class="button-rosa" aria-label="Submit">
         </form>
     </div>
 </template>

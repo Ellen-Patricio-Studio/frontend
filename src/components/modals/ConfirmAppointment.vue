@@ -15,7 +15,7 @@ const props = defineProps({
     <div class="box box-modal box-resume-appointment">
         <div class="top">
             <p class="title">Resumo de agendamento</p>
-            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal()"/>
+            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal()" aria-label="Fechar"/>
         </div>
         <hr>
         <div class="info">
@@ -38,8 +38,8 @@ const props = defineProps({
              </div>
              <p v-if="alertt !== ''" class="alert">{{ alertt }}</p>
              <div class="buttons">
-                 <button class="button-rosa button-voltar" @click.prevent="toggleModal()">Cancelar</button>
-                 <button class="button-rosa" @click.prevent="agendar()">Confirmar</button>
+                 <button class="button-rosa button-voltar" @click.prevent="toggleModal()" aria-label="Cancelar">Cancelar</button>
+                 <button class="button-rosa" @click.prevent="agendar()" aria-label="Confirmar">Confirmar</button>
              </div>
         </div>
     </div>

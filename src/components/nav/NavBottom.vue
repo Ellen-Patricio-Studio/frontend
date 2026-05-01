@@ -22,6 +22,7 @@ onMounted(async () => {
         <NavLink v-if="auth.isAdmin" icon="boxicons:dollar" texto="Financeiro" :active="route.name === 'financas'" redirect="financas"></NavLink>
         <NavLink v-if="auth.isAdmin" icon="fa7-solid:gears" texto="Serviços" :active="route.name === 'servicos'" redirect="servicos"></NavLink>
         <NavLink v-if="auth.isAdmin" icon="fluent:people-team-24-filled" texto="Equipe" :active="route.name === 'equipe'" redirect="equipe"></NavLink>
+        <NavLink v-if="auth.isAdmin" icon="f7:person-2-fill" texto="Clientes" :active="route.name === 'clientes'" redirect="clientes"></NavLink>
         <NavLink  icon="mdi:account" texto="Conta" :active="route.name === 'conta'" redirect="conta"></NavLink>
     </ul>
 </template>
@@ -38,7 +39,8 @@ onMounted(async () => {
         z-index: 10;
 
         a{
-            font-size: 10px;
+            font-size: 9px;
+            flex: 1;
         }
 
         .nav-link{

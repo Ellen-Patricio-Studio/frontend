@@ -5,13 +5,21 @@ import { Icon } from '@iconify/vue';
 import imgAvatar from '@/assets/images/logo.jpeg'
 import { useMenuStore } from '@/stores/useMenuStore';
 const menuStore = useMenuStore()
+import { useThemeStore } from '@/stores/useThemeStore';
+const themeStore = useThemeStore()
     
 </script>
 
 <template>
     <div class="nav-top">
-        <Avatar :src="imgAvatar" alt="Foto de perfil" name="" role=""></Avatar>
-        <Icon icon="mingcute:menu-fill" class="nav-icon" @click="menuStore.toggleMenu()"/>
+        <RouterLink :to="{name: 'dashboard'}" class="logo-area">
+            <img src="@/assets/images/logo.jpeg" alt="">
+            <span>Ellen Patricio Studio </span>
+        </RouterLink>
+        <div class="icons">
+            <Icon icon="ri:toggle-line" @click="themeStore.toggleTheme" class="nav-icon"/>
+            <Icon icon="mingcute:menu-fill" class="nav-icon" @click="menuStore.toggleMenu()" aria-label="Abrir menu"/>
+        </div>
     </div>
 </template>
 
@@ -28,11 +36,17 @@ const menuStore = useMenuStore()
         top: 0;
         z-index: 10;
 
-        .nav-icon{
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
+        .icons{
+            @include flex (row, start,center);
+            gap: 8px;
+
+            .nav-icon{
+                width: 24px;
+                height: 24px;
+                cursor: pointer;
+            }
         }
+
      
     }
 </style>

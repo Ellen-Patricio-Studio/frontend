@@ -56,7 +56,7 @@ const logar = async () => {
             <input type="checkbox" name="" id="">
             <label for="">Lembrar-me</label>
         </div>
-        <button type="submit" class="button-rosa">{{ loading ? 'Logando...' : 'Entrar'  }}</button>
+        <button type="submit" class="button-rosa" aria-label="Submit">{{ loading ? 'Logando...' : 'Entrar'  }}</button>
     </form>
 </template>
 

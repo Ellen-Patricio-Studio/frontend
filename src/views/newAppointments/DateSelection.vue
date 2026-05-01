@@ -42,7 +42,7 @@ const selecionarHorario = (hora) => {
             
             <div class="content">
                 <div class="dates">
-                    <VDatePicker v-model="date" transparent borderless trim-weeks expanded :min-date="new Date()" />
+                    <VDatePicker class="teste" v-model="date" transparent borderless trim-weeks expanded :min-date="new Date()" />
                 </div>
                 <div class="times">
                     <p v-if="dispStore.loading">Carregando horários...</p>
@@ -53,7 +53,7 @@ const selecionarHorario = (hora) => {
                         :key="hora" 
                         :time="hora" 
                         :active="bookingData.hora_inicio === hora"
-                        @click="selecionarHorario(hora)"
+                        @click="selecionarHorario(hora)"   
                     />
                 </div>
             </div>
@@ -64,11 +64,12 @@ const selecionarHorario = (hora) => {
                     <p class="total">R$ {{ totalPreco.toFixed(2).replace('.', ',') }}</p>
                 </div>
                 <div class="right">
-                    <RouterLink :to="{name: 'novo-agendamento'}" class="button-rosa button-voltar">Voltar</RouterLink>
+                    <RouterLink :to="{name: 'novo-agendamento'}" class="button-rosa button-voltar" aria-label="Voltar">Voltar</RouterLink>
                     <RouterLink 
                         v-if="bookingData.hora_inicio" 
                         :to="{name: 'selecionar-profissional'}" 
                         class="button-rosa"
+                        aria-label="Prosseguir"
                     >Prosseguir</RouterLink>
                 </div>
             </div>
@@ -105,6 +106,11 @@ const selecionarHorario = (hora) => {
                 width: 100%;
                 @include flex(column, center, center);
                 gap: 32px;
+            }
+
+            .teste{
+                color: var(--cinza-nav);
+
             }
 
             .dates{

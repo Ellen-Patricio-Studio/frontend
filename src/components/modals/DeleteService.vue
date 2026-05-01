@@ -9,12 +9,12 @@ import { Icon } from '@iconify/vue';
     <div class="box box-modal">
         <div class="top">
             <p class="title">Deletar serviço</p>
-            <Icon class="icon" icon="mingcute:close-fill"/>
+            <Icon class="icon" icon="mingcute:close-fill" aria-label="Fechar"/>
         </div>
         <hr>
         <p>Tem certeza que deseja excluir esse serviço?</p>
-        <button class="button-voltar button-rosa">Cancelar</button>
-        <button class="button-rosa">Confirmar</button>
+        <button class="button-voltar button-rosa" aria-label="Cancelar">Cancelar</button>
+        <button class="button-rosa" aria-label="Confirmar">Confirmar</button>
     </div>
 </template>
 

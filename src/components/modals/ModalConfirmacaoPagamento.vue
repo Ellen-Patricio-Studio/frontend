@@ -20,7 +20,7 @@ const recharge = () => {
         </div>
         <hr>
             <p>{{mensagem}}</p>
-            <button class="button-rosa" @click="recharge">Ok</button>
+            <button class="button-rosa" @click="recharge" aria-label="Ok">Ok</button>
     </div>
 </template>
 

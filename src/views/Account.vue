@@ -49,7 +49,7 @@ const toggleModal = (modal) => {
         <div class="h1 h1-top">Minha conta</div>
         <div class="box profile-info">
             <Avatar :src="imgAvatar" alt="Foto de perfil" :name="user.nome_completo || 'Carregando...'" :role="user.roles[0] || 'Carregando...'"></Avatar>
-            <button class="button-select" @click.prevent="toggleModal('profileEdit')">Editar</button>
+            <button class="button-select" @click.prevent="toggleModal('profileEdit')" aria-label="Editar">Editar</button>
         </div>
         <ul class="box-lists box">
             <div class="top">
@@ -81,7 +81,7 @@ const toggleModal = (modal) => {
         <ul class="box-lists box">
             <div class="top">
                 <h2 class="h2">Senha</h2>
-                <button class="button-select" @click.prevent="toggleModal('passwordEdit')">Editar</button>
+                <button class="button-select" @click.prevent="toggleModal('passwordEdit')" aria-label="Editar">Editar</button>
             </div>
         </ul>
     </div>

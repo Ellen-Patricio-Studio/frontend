@@ -135,7 +135,7 @@ const historicoAgendamentosProximos = computed(() => {
                 :status="item.status"
             ></RecentAppointmentsList>
         </ul>
-        <RouterLink v-if="auth.isCliente" :to="{name: 'novo-agendamento'}" class="button-rosa btn-dash">+ Novo agendamento</RouterLink>
+        <RouterLink v-if="auth.isCliente" :to="{name: 'novo-agendamento'}" class="button-rosa btn-dash" aria-label="+ Novo agendamento">+ Novo agendamento</RouterLink>
     </div>
 </template>
 

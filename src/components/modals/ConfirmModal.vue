@@ -64,7 +64,7 @@ const ausentar = async (id) => {
     <div class="box box-modal box-resume-appointment">
         <div class="top">
             <p class="title">{{title}}</p>
-            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal(acao)"/>
+            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal(acao)" aria-label="Fechar"/>
         </div>
         <hr>
         <div class="info">
@@ -73,13 +73,13 @@ const ausentar = async (id) => {
              </div>
              <p v-if="allert !== ''" class="alert">{{ allert }}</p>
              <div class="buttons">
-                 <button class="button-rosa button-voltar" @click.prevent="toggleModal(acao)">Cancelar</button>
+                 <button class="button-rosa button-voltar" @click.prevent="toggleModal(acao)" aria-label="Cancelar">Cancelar</button>
                  <button class="button-rosa" 
                     @click.prevent="() => {
                         acao === 'confirmar' ? confirmar(id) : 
                         acao === 'cancelar'  ? cancelar(id) :
                         acao === 'realizar'  ? realizar(id) : ausentar(id)
-                        }">
+                        }" aria-label="Confirmar">
                     
                     Confirmar
                 </button>

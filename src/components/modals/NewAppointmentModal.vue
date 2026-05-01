@@ -8,7 +8,7 @@ import { Icon } from '@iconify/vue';
     <div class="box box-modal">
         <div class="top">
             <p class="title">Novo agendamento</p>
-            <Icon class="icon" icon="mingcute:close-fill"/>
+            <Icon class="icon" icon="mingcute:close-fill" aria-label="Fechar"/>
         </div>
         <hr>
         <form class="form" action="">
@@ -36,8 +36,8 @@ import { Icon } from '@iconify/vue';
                 <label for="">Observação</label>
                 <textarea name="" id="" class="input"></textarea>
             </div>
-            <button class="button-rosa button-voltar">Cancelar</button>
-            <input type="submit" value="Confirmar" class="button-rosa">
+            <button class="button-rosa button-voltar" aria-label="Cancelar">Cancelar</button>
+            <input type="submit" value="Confirmar" class="button-rosa" aria-label="Submit">
         </form>
     </div>
 </template>

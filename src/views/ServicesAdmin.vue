@@ -62,8 +62,8 @@ const servicosFiltrados = computed(() => {
         
         <h1 class="h1 h1-top">Serviços
             <div>
-                <button class="button-select" @click="toggleModal('newCategory')">Nova categoria</button>
-                <button class="button-select" @click="toggleModal('newService')">Novo serviço</button>
+                <button class="button-select" @click="toggleModal('newCategory')" aria-label="Nova categoria">Nova categoria</button>
+                <button class="button-select" @click="toggleModal('newService')"  aria-label="Novo serviço">Novo serviço</button>
             </div>
         </h1>
         <div class="categories-wrapper wrapper-boxes box">
@@ -102,9 +102,6 @@ const servicosFiltrados = computed(() => {
         transition: 1s;
 
         h1{
-            @include flex(row, space-between, center);
-            padding-right: 24px;
-
             div{
                 @include flex(row, start, center);
                 gap: 16px;

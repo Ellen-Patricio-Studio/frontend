@@ -52,7 +52,7 @@ const salvarBloqueio = async () => {
     <div class="box box-modal timeEdit">
         <div class="top">
             <p class="title">Editar folga</p>
-            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal()"/>
+            <Icon class="icon" icon="mingcute:close-fill" @click="toggleModal()" aria-label="Fechar"/>
         </div>
         <hr>
         <form class="form" @submit.prevent="salvarBloqueio">
@@ -63,8 +63,8 @@ const salvarBloqueio = async () => {
                 <input v-model="novoBloqueio.motivo" type="text" name="" id="" class="input" placeholder="Motivo">
             </div>
             <p v-if="alert2 !== ''" class="alert">{{ alert2 }}</p>
-            <button type="button" class="button-rosa button-voltar" @click="toggleModal">Cancelar</button>
-            <input type="submit" value="Confirmar" class="button-rosa">
+            <button type="button" class="button-rosa button-voltar" @click="toggleModal" aria-label="Cancelar">Cancelar</button>
+            <input type="submit" value="Confirmar" class="button-rosa" aria-label="Submit">
         </form>
     </div>
 </template>
