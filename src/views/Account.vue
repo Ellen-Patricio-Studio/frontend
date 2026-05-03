@@ -12,7 +12,7 @@ import PasswordEdit from '@/components/modals/PasswordEdit.vue';
 import FundoModais from '@/components/FundoModais.vue';
 import { ref } from 'vue';
 import ProfileEdit from '@/components/modals/ProfileEdit.vue';
-
+import ConfirmDeleteAccount from '@/components/modals/ConfirmDeleteAccount.vue';
 
 const { width } = useBreakpoints()
 const authStore = useAuthStore()
@@ -28,6 +28,7 @@ const user = computed(() => authStore.user)
 const isModalOpen = ref({
     passwordEdit: false,
     profileEdit: false,
+    confirmationDelete: false,
 });
 
 const toggleModal = (modal) => {
@@ -45,11 +46,18 @@ const toggleModal = (modal) => {
         <FundoModais  :toggle-modal="() => toggleModal('profileEdit')" ></FundoModais>
         <ProfileEdit  :toggle-modal="() => toggleModal('profileEdit')" :data="authStore.user"  ></ProfileEdit>
     </Teleport>
+    <Teleport to="body" v-if="isModalOpen.confirmationDelete">
+        <FundoModais  :toggle-modal="() => toggleModal('confirmationDelete')" ></FundoModais>
+        <ConfirmDeleteAccount title="Excluir conta" acao="excluir sua conta" :toggle-modal="() => toggleModal('confirmationDelete')" ></ConfirmDeleteAccount>
+    </Teleport>
     <div class="account-container">
         <div class="h1 h1-top">Minha conta</div>
         <div class="box profile-info">
             <Avatar :src="imgAvatar" alt="Foto de perfil" :name="user.nome_completo || 'Carregando...'" :role="user.roles[0] || 'Carregando...'"></Avatar>
-            <button class="button-select" @click.prevent="toggleModal('profileEdit')" aria-label="Editar">Editar</button>
+            <div class="buttons">
+                <button class="button-select" @click.prevent="toggleModal('profileEdit')" aria-label="Editar">Editar</button>
+                <button class="button-select excluir" @click.prevent="toggleModal('confirmationDelete')" aria-label="Excluir">Excluir</button>
+            </div>
         </div>
         <ul class="box-lists box">
             <div class="top">
@@ -98,6 +106,15 @@ const toggleModal = (modal) => {
         .profile-info{
             width: 100%;
             @include flex (row, space-between, center);
+
+            .buttons{
+                @include flex(row, start, start);
+                gap: 16px;
+
+                button{
+                    cursor: pointer;
+                }
+            }
         }
 
         .data-item{

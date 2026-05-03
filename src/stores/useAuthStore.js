@@ -56,6 +56,22 @@ export const useAuthStore = defineStore('auth', {
             }
         },
 
+        async excluirConta() {
+            try {
+                const response = await api.delete('/auth/excluir-conta');
+
+                this.logout(); 
+
+                return { success: true, message: response.data.message };
+            } catch (error) {
+                console.error("Erro ao excluir conta:", error);
+                return { 
+                    success: false, 
+                    message: error.response?.data?.message || "Erro ao excluir conta." 
+                };
+            }
+        },
+
         setAuth(token, role){
             this.token = token
             const formattedRole = Array.isArray(role) ? role.join(',') : role;

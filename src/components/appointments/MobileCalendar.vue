@@ -1,7 +1,7 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { Icon } from '@iconify/vue';
-import { format, addDays, startOfToday, eachDayOfInterval, parseISO, isValid } from 'date-fns';
+import { format, addDays, startOfToday, eachDayOfInterval, parseISO, isValid, startOfYear, startOfMonth } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { useAuthStore } from '@/stores/useAuthStore';
 import FundoModais from '../FundoModais.vue';
@@ -16,7 +16,7 @@ const props = defineProps({
 const emit = defineEmits(['update:selectedDate']);
 
 const dias = ref([]);
-const hoje = startOfToday();
+const hoje = startOfToday(); // editado para mês
 const diasParaExibir = 30; 
 const diaSelecionado = ref(props.selectedDate || format(hoje, 'yyyy-MM-dd'));
 
