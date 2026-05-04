@@ -8,18 +8,37 @@ import RecentAppointmentsList from '@/components/appointments/RecentAppointments
 import RecentsTransitionList from '@/components/finances/RecentsTransitionList.vue';
 import { useFinanceiroStore } from '@/stores/useFinanceiroStore';
 import { useAuthStore } from '@/stores/useAuthStore';
-import { onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import BoxGraph_Finances from '@/components/finances/BoxGraph_Finances.vue';
 
 const auth = useAuthStore()
 const financeiroStore = useFinanceiroStore()
 const { width } = useBreakpoints()
 
+const buscaTransacao = ref('');
+
 onMounted(() => {
     if (auth.isAdmin) {
         financeiroStore.fetchLancamentos({page: 1});
         financeiroStore.fetchDashboardFinanceiro();
     }
+});
+
+const lancamentosFiltrados = computed(() => {
+    const termo = buscaTransacao.value.toLowerCase().trim();
+    const lista = financeiroStore.lancamentos;
+
+    if (!termo) return lista;
+
+    return lista.filter(t => {
+        return (
+            t.descricao?.toLowerCase().includes(termo) ||
+            t.id?.toString().includes(termo) ||
+            t.agendamento_id?.toString().includes(termo) ||
+            t.valor?.toString().includes(termo) ||
+            t.status?.toLowerCase().includes(termo)
+        );
+    });
 });
 
 </script>
@@ -36,7 +55,7 @@ onMounted(() => {
         <ul class="box-lists box recent-transitions-list">
             <div class="top">
                 <h2 class="h2">Transações recentes</h2>
-                <input type="text" class="input" placeholder="Buscar...">
+                <input v-model="buscaTransacao" type="text" class="input" placeholder="Buscar...">
             </div>
             <div class="titles">
                 <p>Nº</p>
@@ -49,7 +68,10 @@ onMounted(() => {
                 <p>Data pagamento</p>
                 <p>Opções</p>
             </div>
-            <RecentsTransitionList v-for="transacao in financeiroStore.lancamentos" :transacao="transacao"></RecentsTransitionList>
+            <RecentsTransitionList v-for="transacao in lancamentosFiltrados" :key="transacao.id" :transacao="transacao"></RecentsTransitionList>
+            <div v-if="lancamentosFiltrados.length === 0" class="sem-resultados">
+                Nenhuma transação encontrada.
+            </div>
         </ul>
     </div>
 </template>

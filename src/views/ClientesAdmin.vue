@@ -31,14 +31,14 @@ onMounted(() => {
             <button class="button-select" @click="toggleModal" aria-label="Novo cliente">Novo cliente</button>
         </h1>
 
-        <input type="text" class="input" placeholder="Buscar...">
+        <input v-model="clientesStore.filtroBusca" type="text" class="input" placeholder="Buscar...">
 
         <p v-if="clientesStore.loading">Carregando clientes...</p>
         <p v-else-if="clientesStore.error" class="alert">{{ clientesStore.error }}</p>
 
         <ul v-else class="clientes-lista">
             <ClientesList
-                v-for="cliente in clientesStore.clientes"
+                v-for="cliente in clientesStore.clientesFiltrados"
                 :key="cliente.id"
                 :id="cliente.id"
                 :name="cliente.nome_completo"
@@ -47,8 +47,8 @@ onMounted(() => {
             />
         </ul>
 
-        <p v-if="!clientesStore.loading && clientesStore.clientes.length === 0" class="alert">
-            Nenhum cliente encontrado.
+        <p v-if="!clientesStore.loading && clientesStore.clientesFiltrados.length === 0" class="alert">
+            Nenhum cliente encontrado para esta busca.
         </p>
     </div>
 </template>

@@ -30,8 +30,11 @@ onMounted(() => {
     </Teleport>
     <div class="container-teams">
         <h1 class="h1 h1-top">Equipe <button class="button-select" @click="toggleModal" aria-label="Novo funcionário">Novo funcionário</button></h1>
-        <input type="text" class="input" placeholder="Buscar...">
-        <EmployeesList v-for="funcionario in equipeStore.funcionarios" :key="funcionario.id" :src="AvatarImg" alt="Foto de perfil" :name="funcionario.nome_completo" :role="funcionario.cargo" :id="funcionario.id"></EmployeesList>          
+        <input v-model="equipeStore.filtros.busca" type="text" class="input" placeholder="Buscar...">
+        <EmployeesList v-for="funcionario in equipeStore.funcionariosFiltrados" :key="funcionario.id" :src="AvatarImg" alt="Foto de perfil" :name="funcionario.nome_completo" :role="funcionario.cargo" :id="funcionario.id"></EmployeesList>          
+        <p v-if="equipeStore.funcionariosFiltrados.length === 0 && !equipeStore.loading">
+            Nenhum funcionário encontrado com esse nome.
+        </p>
     </div>
 </template>
 

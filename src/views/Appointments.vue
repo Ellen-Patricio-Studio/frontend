@@ -4,6 +4,7 @@ import { useAgendamentosStore } from '@/stores/useAgendamentosStore';
 import { useAgendaUIStore } from '@/stores/useAgendaUIStore';
 import { useAuthStore } from '@/stores/useAuthStore';
 import { useEquipeStore } from '@/stores/useEquipeStore';
+import { useDateUtils } from '@/composables/useDateUtils';
 import AppointmentsList from '@/components/appointments/AppointmentsList.vue';
 import MobileCalendar from '@/components/appointments/MobileCalendar.vue';
 import imgAvatar from '@/assets/images/logo.jpeg'
@@ -12,6 +13,7 @@ const agendamentosStore = useAgendamentosStore();
 const agendaUI = useAgendaUIStore();
 const auth = useAuthStore();
 const equipeStore = useEquipeStore();
+const { formatarParaDataBR } = useDateUtils()
  
 onMounted(() => {
     if (auth.isAdmin) {
@@ -21,6 +23,7 @@ onMounted(() => {
         agendamentosStore.fetchMeusAgendamentos();
     }
 });
+
 </script>
  
 <template>
@@ -72,7 +75,7 @@ onMounted(() => {
                     :status="item.status" 
                     :role="item.servico"
                     :hour="item.horario"
-                    :date="item.data"
+                    :date="formatarParaDataBR(item.data)"
                 />
  
                 <div v-if="agendamentosStore.loading">Carregando...</div>

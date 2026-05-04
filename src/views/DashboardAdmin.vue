@@ -34,11 +34,26 @@ const agendamentosCompletos = computed(() => {
 
 
 const proximoAgendamentoData = computed(() => {
+    // 1. Filtramos apenas os agendamentos com status relevante
     const futuros = agendamentosStore.agendamentos.filter(agendamento => 
         agendamento.status === 'AGENDADO' || agendamento.status === 'CONFIRMADO'
     );
-    
-    return futuros.length > 0 ? futuros[0].data : '--/--';
+
+    if (futuros.length === 0) return '--/--';
+
+    // 2. Ordenamos para garantir que a data mais próxima venha primeiro
+    const ordenados = [...futuros].sort((a, b) => {
+        // Converte "dd/mm/yyyy" para um objeto Date comparável
+        const converter = (dataStr) => {
+            const [dia, mes, ano] = dataStr.split('/').map(Number);
+            return new Date(ano, mes - 1, dia); // Meses no JS começam em 0
+        };
+
+        return converter(a.data) - converter(b.data);
+    });
+
+    // 3. Retorna a data do primeiro item (o mais próximo)
+    return ordenados[0].data;
 });
 
 const gastoTotal = computed(() => {
@@ -54,12 +69,30 @@ const gastoTotal = computed(() => {
     return total.toLocaleString('pt-br', { style: 'currency', currency: 'BRL' });
 });
 
+// ... outros imports
+const buscaRecentes = ref(''); // Adicione esta linha
+
 const historicoAgendamentos = computed(() => {
     return agendamentosStore.agendamentos.filter(a => 
         a.status === 'REALIZADO' || 
         a.status === 'AUSENTE' || 
         a.status === 'CANCELADO'
     );
+});
+
+const historicoFiltrado = computed(() => {
+    const termo = buscaRecentes.value.toLowerCase();
+    
+    if (!termo) return historicoAgendamentos.value;
+
+    return historicoAgendamentos.value.filter(a => {
+        return (
+            a.cliente?.toLowerCase().includes(termo) ||
+            a.servico?.toLowerCase().includes(termo) ||
+            a.funcionario?.toLowerCase().includes(termo) ||
+            a.data?.includes(termo)
+        );
+    });
 });
 
 const historicoAgendamentosProximos = computed(() => {
@@ -69,6 +102,52 @@ const historicoAgendamentosProximos = computed(() => {
     );
 })
 
+const agendamentosHojeContagem = computed(() => {
+    // 1. Pegamos a data de hoje no formato dd/mm/yyyy
+    const hoje = new Date().toLocaleDateString('pt-BR');
+
+    // 2. Filtramos a lista da store
+    const filtrados = agendamentosStore.agendamentos.filter(agendamento => {
+        // Verifica se a data é hoje
+        const dataBate = agendamento.data === hoje;
+        
+        // Verifica se o status é um dos permitidos
+        const statusValido = ['AGENDADO', 'CONFIRMADO'].includes(agendamento.status);
+        
+        return dataBate && statusValido;
+    });
+
+    return filtrados.length;
+});
+
+const receitaHoje = computed(() => {
+    // 1. Pega a data de hoje no formato dd/mm/yyyy para bater com o backend
+    const hoje = new Date().toLocaleDateString('pt-BR');
+
+    // 2. Filtra os agendamentos de hoje que não foram cancelados
+    const agendamentosHoje = agendamentosStore.agendamentos.filter(a => {
+        const dataBate = a.data === hoje;
+        // Consideramos CONFIRMADO (promessa de dinheiro) e REALIZADO (dinheiro em caixa)
+        const statusValido = ['CONFIRMADO', 'REALIZADO', 'AGENDADO'].includes(a.status);
+        return dataBate && statusValido;
+    });
+
+    // 3. Soma os valores
+    const total = agendamentosHoje.reduce((acc, atual) => {
+        // Remove "R$ ", troca a vírgula por ponto e converte para número
+        const valorLimpo = atual.valor
+            .replace('R$', '')
+            .replace(/\./g, '') // Remove pontos de milhar, se houver
+            .replace(',', '.')  // Troca vírgula decimal por ponto
+            .trim();
+        
+        return acc + parseFloat(valorLimpo || 0);
+    }, 0);
+
+    // 4. Retorna formatado para exibir no BoxInfo
+    return total.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+});
+
 </script>
 
 <template>
@@ -76,8 +155,8 @@ const historicoAgendamentosProximos = computed(() => {
         <div class="h1 h1-top">Overview</div>
         <div class="boxes">
             <BoxInfo v-if="auth.isFuncionario && !auth.isAdmin" icon="ic:round-check" texto="Agendamentos completos" :numero="agendamentosCompletos" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"    ></BoxInfo>
-            <BoxInfo v-if="auth.isPeloMenosFuncionario" icon="solar:calendar-bold" texto="Agendamentos hoje" numero="123" background-color="--azul-claro-box" icon-color="--azul-escuro-box"      ></BoxInfo>
-            <BoxInfo v-if="auth.isAdmin" icon="boxicons:dollar" texto="Receita de hoje" numero="123" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"    ></BoxInfo>
+            <BoxInfo v-if="auth.isPeloMenosFuncionario" icon="solar:calendar-bold" texto="Agendamentos hoje" :numero="agendamentosHojeContagem" background-color="--azul-claro-box" icon-color="--azul-escuro-box"      ></BoxInfo>
+            <BoxInfo v-if="auth.isAdmin" icon="boxicons:dollar" texto="Receita de hoje" :numero="receitaHoje" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"    ></BoxInfo>
             <BoxInfo v-if="auth.isPeloMenosFuncionario" icon="fluent:people-team-24-filled" texto="Novos clientes" numero="123" background-color="--roxo-claro-box" icon-color="--roxo-escuro-box"></BoxInfo>
             
             <BoxInfo v-if="auth.isCliente" icon="solar:calendar-bold" texto="Próximo agendamento" :numero="proximoAgendamentoData" background-color="--azul-claro-box" icon-color="--azul-escuro-box"      ></BoxInfo>
@@ -112,7 +191,7 @@ const historicoAgendamentosProximos = computed(() => {
         <ul class="box-lists box recent-appointments">
             <div class="top">
                 <h2 class="h2">Agendamentos recentes</h2>
-                <input type="search" name="" id="input-search" placeholder="Buscar.." class="input">
+                <input v-model="buscaRecentes" type="search" name="" id="input-search" placeholder="Buscar.." class="input">
             </div>
             <div class="titles">
                 <p v-if="!auth.isCliente">Cliente</p>
@@ -121,10 +200,10 @@ const historicoAgendamentosProximos = computed(() => {
                 <p>Data</p>
                 <p>Valor</p>
                 <p>Status</p>
-                <p>Ação</p>
+                <!-- <p>Ação</p> -->
             </div>
             <RecentAppointmentsList
-                v-for="item in historicoAgendamentos"
+                v-for="item in historicoFiltrado"
                 :key="item.id"
                 :src="imgAvatar" 
                 :name="item.cliente"
@@ -134,6 +213,9 @@ const historicoAgendamentosProximos = computed(() => {
                 :value="item.valor" 
                 :status="item.status"
             ></RecentAppointmentsList>
+            <div v-if="historicoFiltrado.length === 0" style="padding: 20px; text-align: center;">
+                Nenhum agendamento encontrado para "{{ buscaRecentes }}".
+            </div>
         </ul>
         <RouterLink v-if="auth.isCliente" :to="{name: 'novo-agendamento'}" class="button-rosa btn-dash" aria-label="+ Novo agendamento">+ Novo agendamento</RouterLink>
     </div>

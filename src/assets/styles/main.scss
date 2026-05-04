@@ -490,12 +490,14 @@ body{
 
             .icon{
                 cursor: pointer;
-                color: var(--vermelho);
+                color: var(--azul-escuro-box);
             }
             
-            &.active{
-                background-color: var(--rosa-nav);
-                color: var(--cards);
+            p.active{
+                color: var(--verde-escuro-box);
+            }
+            p.no-active{
+                color: var(--vermelho);
             }
         }
     }

@@ -82,6 +82,13 @@ export const useAgendaUIStore = defineStore('agendaUI', () => {
     function setData(novaData) {
         dataSelecionada.value = novaData;
     }
+
+    function resetFiltros() {
+        busca.value = '';
+        status.value = '';
+        funcionarioSelecionado.value = '';
+        dataSelecionada.value = format(startOfToday(), 'yyyy-MM-dd');
+    }
  
     return {
         busca,
@@ -93,5 +100,6 @@ export const useAgendaUIStore = defineStore('agendaUI', () => {
         agendamentosDoDiaFiltrados,
         normalizeAgendamento,
         setData,
+        resetFiltros,
     };
 });

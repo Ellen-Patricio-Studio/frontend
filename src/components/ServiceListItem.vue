@@ -1,12 +1,11 @@
 <script setup>
 import { Icon } from '@iconify/vue';
 import EditService from './modals/EditService.vue';
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import FundoModais from './FundoModais.vue';
 import { useCategorias } from '@/composables/useCategory';
-import { computed } from 'vue';
 
-const { categorias, isLoading } = useCategorias()
+const { categorias } = useCategorias()
 const isModalOpen = ref(false)
 
 const props = defineProps({
@@ -16,27 +15,26 @@ const props = defineProps({
     time: [Number, String],
     value: [Number, String],
     active: Boolean
-
 })
 
-
-const formatarMoeda = (valor) => {
-    return new Intl.NumberFormat('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    }).format(valor);
-};
-
-const toggleModal = () => {
-    isModalOpen.value = !isModalOpen.value;
-}
+const toggleModal = () => { isModalOpen.value = !isModalOpen.value }
 
 const nomeCategoria = computed(() => {
-    const categoriaEncontrada = categorias.value.find(categoria => categoria.id === props.id_categoria);
-    return categoriaEncontrada ? categoriaEncontrada.nome_categoria : 'Carregando...';
-});
+    const cat = categorias.value.find(c => c.id === props.id_categoria)
+    return cat ? cat.nome_categoria : '—'
+})
 
+const formatarMoeda = (valor) =>
+    new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor)
 
+const formatarDuracao = (min) => {
+    if (!min) return '—'
+    const h = Math.floor(min / 60)
+    const m = min % 60
+    if (h && m) return `${h}h ${m}min`
+    if (h)      return `${h}h`
+    return `${m}min`
+}
 </script>
 
 <template>
@@ -50,81 +48,115 @@ const nomeCategoria = computed(() => {
             :value="value"
             :active="active"
             :toggle-modal="toggleModal"
-        ></EditService>
+        />
     </Teleport>
-    <li class="servicesListItem box">
-        <div class="top">
-            <p class="title">{{name}}</p>
-            <div class="icons">
-                <Icon class="icon icon-edit" icon="tabler:edit-filled" @click="toggleModal()" aria-label="Editar serviço"/>
-                <!-- <Icon class="icon icon-remove" icon="ic:outline-delete"/> -->
+
+    <li class="svc-card" :class="{ 'svc-inactive': !active }">
+        <span class="svc-name" :title="name">{{ name }}</span>
+        <span class="svc-categoria">{{ nomeCategoria }}</span>
+        <div class="svc-footer">
+            <div class="svc-meta">
+                <span class="svc-price">{{ formatarMoeda(value) }}</span>
+                <span class="svc-dur">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                    {{ formatarDuracao(time) }}
+                </span>
+            </div>
+            <div class="svc-actions">
+                <span :class="['status-badge', active ? 'active' : 'no-active']">
+                    {{ active ? 'Ativo' : 'Desativado' }}
+                </span>
+                <Icon
+                    class="icon icon-edit"
+                    icon="tabler:edit-filled"
+                    @click="toggleModal"
+                    aria-label="Editar serviço"
+                />
             </div>
         </div>
-        <hr>
-        <p class="subtitle">Categoria</p>
-        <p class="descricao">{{nomeCategoria}}</p>
-        <p class="subtitle">Duração</p>
-        <p class="descricao">{{time}}</p>
-        <p class="subtitle">Valor</p>
-        <p class="descricao">{{formatarMoeda(value)}}</p>
-        <!-- <p class="active">{{ active ? "Ativo" : "Desativado"}}</p> -->
     </li>
 </template>
 
 <style lang="scss">
-    .servicesListItem{
-        min-width: 250px;
-        // max-width: 250px;
-        border-radius: 12px;
-        border: 1px solid rgba(0, 0, 0, 0.137);
-        box-shadow: none;
-        @include flex(column, start, start);
-        gap: 8px;
-        font-size: 12px;
-        flex: 1;
+.svc-card {
+    background: var(--cards);
+    border: 0.5px solid var(--cinza-service);
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
 
-        .top{
-            width: 100%;
-            @include flex(row, space-between, center);
-            font-size: 14px;
-
-            .title{
-                font-weight: bold;
-                color: var(--cinza-nav);
-            }
-
-            .icons{
-                @include flex(row, space-between, center);
-                gap: 8px;
-                cursor: pointer;
-                font-size: 16px;
-            
-                .icon-edit{
-                    color: var(--azul-escuro-box);
-                }
-
-                .icon-remove{
-                    color: var(--rosa)
-                }
-            }
-        }
-
-
-        hr{
-            width: 100%;
-            border: 1px solid #e2e2e2;
-        }
-
-        .subtitle{
-            color: var(--cinza-nav);
-        }
-
-        .active{
-            color: red;
-
-            &.active{
-                color: green;
-            }
-        }
+    &.svc-inactive {
+        opacity: .65;
     }
+
+    .svc-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--cinza-nav);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+    }
+
+    .svc-categoria {
+        font-size: 11px;
+        color: var(--cinza-nav);
+        opacity: .7;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .svc-footer {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        margin-top: 4px;
+        border-top: 0.5px solid var(--cinza-service, #e8e6f0);
+        padding-top: 8px;
+    }
+
+    .svc-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .svc-price {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--cinza-nav);
+    }
+
+    .svc-dur {
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        font-size: 11px;
+        color: var(--cinza-nav);
+        opacity: .7;
+    }
+
+    .svc-actions {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+    }
+
+    .icon-edit {
+        flex-shrink: 0;
+        width: 15px;
+        height: 15px;
+        cursor: pointer;
+        color: var(--azul-escuro-box);
+    }
+}
 </style>

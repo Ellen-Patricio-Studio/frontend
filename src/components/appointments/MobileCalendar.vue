@@ -1,54 +1,91 @@
 <script setup>
 import { ref, computed, onMounted, watch } from 'vue'
 import { Icon } from '@iconify/vue';
-import { format, addDays, startOfToday, eachDayOfInterval, parseISO, isValid, startOfYear, startOfMonth } from 'date-fns';
+import { format, addDays, startOfToday, eachDayOfInterval, parseISO, isValid, startOfYear, startOfMonth, addMonths, subMonths, subYears, endOfMonth } from 'date-fns'
 import { ptBR } from 'date-fns/locale';
 import { useAuthStore } from '@/stores/useAuthStore';
 import FundoModais from '../FundoModais.vue';
 import ConfirmModal from '../modals/ConfirmModal.vue';
 
 const props = defineProps({
-    selectedDate: String,      // Data controlada pela store (yyyy-MM-dd)
-    appointmentsData: Array,   // Agendamentos já normalizados vindos da store
-    professionalsData: Array   // Lista de profissionais para legenda e cores
+    selectedDate: String,
+    appointmentsData: Array,
+    professionalsData: Array
 })
 
 const emit = defineEmits(['update:selectedDate']);
 
 const dias = ref([]);
-const hoje = startOfToday(); // editado para mês
-const diasParaExibir = 30; 
+const hoje = startOfToday();
 const diaSelecionado = ref(props.selectedDate || format(hoje, 'yyyy-MM-dd'));
 
-// ─── Lógica de Scroll por Arraste (Drag Scroll) ──────────────────────────────
+// ─── Mês exibido no seletor ───────────────────────────────────────────────────
+const mesSelecionado = ref(startOfMonth(hoje));
+
+const mesLabel = computed(() =>
+  format(mesSelecionado.value, "MMMM 'de' yyyy", { locale: ptBR })
+)
+
+const irMesAnterior = () => {
+  const limite = subYears(startOfMonth(hoje), 1);
+  const candidato = subMonths(mesSelecionado.value, 1);
+  if (candidato >= limite) {
+    mesSelecionado.value = candidato;
+  }
+};
+
+const irProximoMes = () => {
+  const limite = startOfMonth(addDays(hoje, 30));
+  const candidato = addMonths(mesSelecionado.value, 1);
+  if (candidato <= limite) {
+    mesSelecionado.value = candidato;
+  }
+};
+
+// Reconstrói os dias sempre que o mês selecionado muda
+watch(mesSelecionado, gerarDias, { immediate: false });
+
+function gerarDias() {
+  const inicioIntervalo = subYears(hoje, 1);
+  const fimIntervalo    = addDays(hoje, 30);
+  const inicioMes       = mesSelecionado.value;
+  const fimMes          = endOfMonth(mesSelecionado.value);
+
+  const start = inicioMes < inicioIntervalo ? inicioIntervalo : inicioMes;
+  const end   = fimMes   > fimIntervalo    ? fimIntervalo    : fimMes;
+
+  if (start > end) { dias.value = []; return; }
+
+  const intervalo = eachDayOfInterval({ start, end });
+  dias.value = intervalo.map(data => ({
+    id: format(data, 'yyyy-MM-dd'),
+    nomeDia: format(data, 'EEE', { locale: ptBR }).replace('.', ''),
+    numero: format(data, 'd'),
+    isHoje: format(data, 'yyyy-MM-dd') === format(hoje, 'yyyy-MM-dd')
+  }));
+}
+
+// ─── Drag Scroll ──────────────────────────────────────────────────────────────
 const agendaBody = ref(null);
 const isDragging = ref(false);
 const startX = ref(0);
 const scrollLeftStart = ref(0);
 
 const startDrag = (e) => {
-  // Apenas botão esquerdo do mouse
   if (e.button !== 0) return;
-  
   isDragging.value = true;
   startX.value = e.pageX - agendaBody.value.offsetLeft;
   scrollLeftStart.value = agendaBody.value.scrollLeft;
 };
-
-const stopDrag = () => {
-  isDragging.value = false;
-};
-
+const stopDrag = () => { isDragging.value = false; };
 const onDrag = (e) => {
   if (!isDragging.value) return;
   e.preventDefault();
-  
   const x = e.pageX - agendaBody.value.offsetLeft;
-  const walk = (x - startX.value) * 1.5; // Multiplicador de velocidade
+  const walk = (x - startX.value) * 1.5;
   agendaBody.value.scrollLeft = scrollLeftStart.value - walk;
 };
 
-// Sincroniza diaSelecionado quando a prop selectedDate muda externamente
 watch(() => props.selectedDate, (novaData) => {
     if (novaData && novaData !== diaSelecionado.value) {
         diaSelecionado.value = novaData;
@@ -56,28 +93,15 @@ watch(() => props.selectedDate, (novaData) => {
 });
 
 onMounted(() => {
-  const intervalo = eachDayOfInterval({
-    start: hoje,
-    end: addDays(hoje, diasParaExibir - 1)
-  });
-
-  dias.value = intervalo.map(data => {
-    return {
-      id: format(data, 'yyyy-MM-dd'),
-      nomeDia: format(data, 'EEE', { locale: ptBR }).replace('.', ''),
-      numero: format(data, 'd'),
-      isHoje: format(data, 'yyyy-MM-dd') === format(hoje, 'yyyy-MM-dd')
-    };
-  });
+  gerarDias();
 });
 
-// ─── Lógica do Cabeçalho Dinâmico ───────────────────────────────────────────
+// ─── Cabeçalho dinâmico ───────────────────────────────────────────────────────
 const headerDate = computed(() => {
   const date = parseISO(diaSelecionado.value)
   if (!isValid(date)) return { name: '', day: '', monthYear: '' }
-  
   return {
-    name: `${format(date, 'eeee', { locale: ptBR })}-feira`,
+    name: `${format(date, 'eeee', { locale: ptBR })}`,
     day: format(date, 'dd'),
     monthYear: format(date, "MMMM, yyyy", { locale: ptBR })
   }
@@ -89,18 +113,16 @@ const selecionarDia = (id) => {
 };
 
 const scrollContainer = ref(null);
-
 const moverScroll = (direcao) => {
   if (scrollContainer.value) {
-    const larguraItem = 80; 
     scrollContainer.value.scrollBy({
-      left: direcao === 'proximo' ? larguraItem : -larguraItem,
+      left: direcao === 'proximo' ? 80 : -80,
       behavior: 'smooth'
     });
   }
 };
 
-// ─── Configuração de Layout ──────────────────────────────────────────────────
+// ─── Layout ───────────────────────────────────────────────────────────────────
 const START_HOUR  = 8
 const END_HOUR    = 20
 const SLOT_MIN    = 60
@@ -133,8 +155,7 @@ const professionals = computed(() => props.professionalsData || [])
 const expandedId = ref(null)
 
 function toggleExpand(appt) {
-  // Evita expandir se o usuário estava apenas arrastando o scroll
-  if (isDragging.value) return; 
+  if (isDragging.value) return;
   expandedId.value = expandedId.value === appt.id ? null : appt.id
 }
 
@@ -146,11 +167,9 @@ const appointments = computed(() => {
 })
 
 function getOverlappingGroup(appt) {
-  const startA = timeToMinutes(appt.startTime)
-  const endA   = startA + appt.durationMin
+  const startA = timeToMinutes(appt.startTime), endA = startA + appt.durationMin
   return appointments.value.filter(b => {
-    const startB = timeToMinutes(b.startTime)
-    const endB   = startB + b.durationMin
+    const startB = timeToMinutes(b.startTime), endB = startB + b.durationMin
     return startB < endA && endB > startA
   })
 }
@@ -158,10 +177,7 @@ function getOverlappingGroup(appt) {
 function getColumnInfo(appt) {
   const group = getOverlappingGroup(appt)
   group.sort((a, b) => a.id - b.id)
-  return { 
-    colIndex: group.findIndex(a => a.id === appt.id), 
-    totalCols: group.length 
-  }
+  return { colIndex: group.findIndex(a => a.id === appt.id), totalCols: group.length }
 }
 
 const MAX_CARD_H = SLOT_MIN * PX_PER_MIN - 8
@@ -171,40 +187,27 @@ function getCardStyle(appt) {
   const naturalH = minutesToPx(appt.durationMin)
   const height   = appt.expanded ? Math.max(naturalH, 180) - 8 : Math.min(naturalH, MAX_CARD_H)
   const { colIndex, totalCols } = getColumnInfo(appt)
-
   const useFixedWidth = slotsAreaMinWidth.value > 0
-  const left   = useFixedWidth
+  const left  = useFixedWidth
     ? CARD_PAD + colIndex * (MIN_CARD_W + CARD_PAD) + 'px'
     : `calc(${100 / totalCols * colIndex}% + ${CARD_PAD + (colIndex > 0 ? CARD_PAD * colIndex / totalCols : 0)}px)`
-  const width  = useFixedWidth
+  const width = useFixedWidth
     ? MIN_CARD_W + 'px'
     : `calc(${100 / totalCols}% - ${(CARD_PAD * (totalCols + 1)) / totalCols}px)`
-
-  return {
-    top: top + 4 + 'px',
-    height: height + 'px',
-    left,
-    width,
-    zIndex: appt.expanded ? 20 : colIndex + 1,
-    transition: 'height 0.3s ease',
-  }
+  return { top: top + 4 + 'px', height: height + 'px', left, width, zIndex: appt.expanded ? 20 : colIndex + 1, transition: 'height 0.3s ease' }
 }
 
 const timeSlots = computed(() => {
   const slots = []
-  for (let h = START_HOUR; h <= END_HOUR; h++) {
-    slots.push(`${String(h).padStart(2, '0')}:00`)
-  }
+  for (let h = START_HOUR; h <= END_HOUR; h++) slots.push(`${String(h).padStart(2, '0')}:00`)
   return slots
 })
 
 function isSlotFree(slot) {
-  const slotStart = timeToMinutes(slot)
-  const slotEnd   = slotStart + SLOT_MIN
+  const slotStart = timeToMinutes(slot), slotEnd = slotStart + SLOT_MIN
   return !appointments.value.some(a => {
     if (!a.startTime) return false
-    const s = timeToMinutes(a.startTime)
-    const e = s + a.durationMin
+    const s = timeToMinutes(a.startTime), e = s + a.durationMin
     return s < slotEnd && e > slotStart
   })
 }
@@ -219,14 +222,7 @@ function statusLabel(s) {
 
 const auth = useAuthStore();
 const agendamentoSelecionado = ref({})
-
-const isModalOpen = ref({
-    confirmar: false,
-    cancelar: false,
-    realizar: false,
-    ausentar: false
-});
-
+const isModalOpen = ref({ confirmar: false, cancelar: false, realizar: false, ausentar: false });
 const toggleModal = (modal, agendamento) => {
   agendamentoSelecionado.value = agendamento
   isModalOpen.value[modal] = !isModalOpen.value[modal];
@@ -234,47 +230,34 @@ const toggleModal = (modal, agendamento) => {
 </script>
 
 <template>
+  <!-- Teleports (sem alteração) -->
   <Teleport to="body" v-if="isModalOpen.confirmar">
       <FundoModais :toggle-modal="() => toggleModal('confirmar')"></FundoModais>
-      <ConfirmModal  
-          :id="agendamentoSelecionado.id"
-          :toggle-modal="toggleModal"
-          :title="'Confirmar agendamento'"
-          :acao="'confirmar'"
-      ></ConfirmModal>
+      <ConfirmModal :id="agendamentoSelecionado.id" :toggle-modal="toggleModal" :title="'Confirmar agendamento'" :acao="'confirmar'"></ConfirmModal>
   </Teleport>
-  
   <Teleport to="body" v-if="isModalOpen.cancelar">
       <FundoModais :toggle-modal="() => toggleModal('cancelar')"></FundoModais>
-      <ConfirmModal  
-          :id="agendamentoSelecionado.id"
-          :toggle-modal="toggleModal"
-          :title="'Cancelar agendamento'"
-          :acao="'cancelar'"
-      ></ConfirmModal>
+      <ConfirmModal :id="agendamentoSelecionado.id" :toggle-modal="toggleModal" :title="'Cancelar agendamento'" :acao="'cancelar'"></ConfirmModal>
   </Teleport>
-
   <Teleport to="body" v-if="isModalOpen.realizar">
       <FundoModais :toggle-modal="() => toggleModal('realizar')"></FundoModais>
-      <ConfirmModal  
-          :id="agendamentoSelecionado.id"
-          :toggle-modal="toggleModal"
-          :title="'Finalizar agendamento'"
-          :acao="'realizar'"
-      ></ConfirmModal>
+      <ConfirmModal :id="agendamentoSelecionado.id" :toggle-modal="toggleModal" :title="'Finalizar agendamento'" :acao="'realizar'"></ConfirmModal>
   </Teleport>
-
   <Teleport to="body" v-if="isModalOpen.ausentar">
       <FundoModais :toggle-modal="() => toggleModal('ausentar')"></FundoModais>
-      <ConfirmModal  
-          :id="agendamentoSelecionado.id"
-          :toggle-modal="toggleModal"
-          :title="'Ausentar agendamento'"
-          :acao="'ausentar'"
-      ></ConfirmModal>
+      <ConfirmModal :id="agendamentoSelecionado.id" :toggle-modal="toggleModal" :title="'Ausentar agendamento'" :acao="'ausentar'"></ConfirmModal>
   </Teleport>
 
   <div class="agenda-wrapper">
+
+    <!-- ── Seletor de mês (NOVO) ── -->
+    <div class="month-selector">
+      <Icon icon="mingcute:left-fill" class="icon" @click="irMesAnterior" aria-label="mês anterior"/>
+      <span class="month-label">{{ mesLabel }}</span>
+      <Icon icon="mingcute:right-fill" class="icon" @click="irProximoMes" aria-label="próximo mês"/>
+    </div>
+
+    <!-- Carrossel de dias (sem alteração estrutural) -->
     <div class="carousel">
       <Icon icon="mingcute:left-fill" class="icon" @click="moverScroll('anterior')" aria-label="anterior"/>
       <div class="circles" ref="scrollContainer">
@@ -300,87 +283,49 @@ const toggleModal = (modal, agendamento) => {
       </div>
     </div>
 
-    <div 
-      class="agenda-body" 
-      ref="agendaBody"
-      @mousedown="startDrag"
-      @mousemove="onDrag"
-      @mouseup="stopDrag"
-      @mouseleave="stopDrag"
-    >
+    <div class="agenda-body" ref="agendaBody" @mousedown="startDrag" @mousemove="onDrag" @mouseup="stopDrag" @mouseleave="stopDrag">
       <div class="time-rail" :style="{ height: totalHeight + 'px' }">
-        <div
-          v-for="slot in timeSlots"
-          :key="slot"
-          class="time-label"
-          :style="{ top: minutesToPx(timeToMinutes(slot) - START_MIN) + 'px' }"
-        >
+        <div v-for="slot in timeSlots" :key="slot" class="time-label" :style="{ top: minutesToPx(timeToMinutes(slot) - START_MIN) + 'px' }">
           {{ slot }}
         </div>
       </div>
 
       <div class="slots-area" :style="{ height: totalHeight + 'px', minWidth: slotsAreaMinWidth > 0 ? slotsAreaMinWidth + 'px' : undefined }">
-        <div
-          v-for="slot in timeSlots"
-          :key="'line-' + slot"
-          class="slot-line"
-          :style="{ top: minutesToPx(timeToMinutes(slot) - START_MIN) + 'px' }"
-        ></div>
+        <div v-for="slot in timeSlots" :key="'line-' + slot" class="slot-line" :style="{ top: minutesToPx(timeToMinutes(slot) - START_MIN) + 'px' }"></div>
 
         <template v-for="slot in timeSlots" :key="'avail-' + slot">
-          <div
-            v-if="isSlotFree(slot)"
-            class="slot-available"
-            :style="{
-              top:     minutesToPx(timeToMinutes(slot) - START_MIN) + 4 + 'px',
-              height: minutesToPx(SLOT_MIN) - 8 + 'px',
-            }"
-          >
+          <div v-if="isSlotFree(slot)" class="slot-available" :style="{ top: minutesToPx(timeToMinutes(slot) - START_MIN) + 4 + 'px', height: minutesToPx(SLOT_MIN) - 8 + 'px' }">
             <span>Horário disponível</span>
           </div>
         </template>
 
-        <div
-          v-for="appt in appointments"
-          :key="appt.id"
-          class="appointment-card"
-          :class="{ 'is-expanded': appt.expanded }"
-          :style="getCardStyle(appt)"
-          @click="toggleExpand(appt)"
-        >
+        <div v-for="appt in appointments" :key="appt.id" class="appointment-card" :class="{ 'is-expanded': appt.expanded }" :style="getCardStyle(appt)" @click="toggleExpand(appt)">
           <div class="card-accent" :style="{ background: getProfessionalColor(appt.professionalId) }"></div>
           <div class="card-content">
             <div class="card-header-row">
-              <strong class="client-name">{{ appt.cliente }}</strong>
-              <span class="status-pill" :class="appt.status.toLowerCase()">
-                {{ statusLabel(appt.status) }}
-              </span>
+              <strong class="client-name">{{ appt.servico }}</strong>
+              <span class="status-pill" :class="appt.status.toLowerCase()">{{ statusLabel(appt.status) }}</span>
             </div>
-            <span class="service-name">{{ appt.servico }}</span>
+            <span class="service-name">{{ auth.isCliente ? appt.funcionario : appt.cliente }}</span>
             <span class="duration">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
-              </svg>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
               {{ appt.durationMin >= 60 ? Math.floor(appt.durationMin/60) + 'h' + (appt.durationMin%60 ? appt.durationMin%60+'min' : '') : appt.durationMin + 'min' }}
             </span>
-
             <transition name="expand">
               <div v-if="appt.expanded" class="card-details">
-                <div class="detail-row">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
-                  </svg>
-                  <span>{{ appt.funcionario }}</span>
-                </div>
+                <!-- <div class="detail-row">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                  <span>{{ auth.isCliente ? appt.cliente : appt.funcionario }}</span>
+                </div> -->
                 <div class="detail-price">{{ appt.valor }}</div>
                 <div class="card-actions">
                   <template v-if="auth.isCliente && (appt.status === 'AGENDADO' || appt.status === 'CONFIRMADO')">
-                    <button v-if="appt.status === 'AGENDADO'" class="btn-reschedule" @click.stop="toggleModal('confirmar', appt)" aria-label="confirmar">Confirmar</button>
-                    <button class="btn-cancel" @click.stop="toggleModal('cancelar', appt)" aria-label="cancelar">Cancelar</button>
+                    <button v-if="appt.status === 'AGENDADO'" class="btn-reschedule" @click.stop="toggleModal('confirmar', appt)">Confirmar</button>
+                    <button class="btn-cancel" @click.stop="toggleModal('cancelar', appt)">Cancelar</button>
                   </template>
                   <template v-if="auth.isPeloMenosFuncionario && (appt.status === 'CONFIRMADO' || appt.status === 'AGENDADO')">
-                      <button class="btn-reschedule" @click.prevent="toggleModal('realizar', appt)" aria-label="realizar">Realizado</button>
-                      <button class="btn-cancel ausente" @click.prevent="toggleModal('ausentar', appt)" aria-label="ausentar">Ausente</button>
+                    <button class="btn-reschedule" @click.prevent="toggleModal('realizar', appt)">Realizado</button>
+                    <button class="btn-cancel ausente" @click.prevent="toggleModal('ausentar', appt)">Ausente</button>
                   </template>
                 </div>
               </div>
@@ -393,6 +338,7 @@ const toggleModal = (modal, agendamento) => {
 </template>
 
 <style lang="scss" scoped>
+/* === todo o style original é mantido === */
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Sora:wght@600;700&display=swap');
 
 .agenda-wrapper {
@@ -408,6 +354,34 @@ const toggleModal = (modal, agendamento) => {
   padding: 24px 20px 60px;
   color: var(--text);
   width: 100%;
+}
+
+/* ── Seletor de mês (NOVO) ── */
+.month-selector {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-bottom: 16px;
+
+  .month-label {
+    font-family: 'Sora', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    min-width: 180px;
+    text-align: center;
+    text-transform: capitalize;
+  }
+
+  .icon {
+    color: #8b87a0;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    transition: color .15s;
+    &:hover { color: mediumslateblue; }
+  }
 }
 
 .agenda-header {
@@ -433,15 +407,10 @@ const toggleModal = (modal, agendamento) => {
   overflow-y: visible;
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
-  
-  // Drag Scroll Styles
   cursor: grab;
-  user-select: none; // Impede seleção de texto ao arrastar
+  user-select: none;
   -webkit-user-select: none;
-  
-  &:active {
-    cursor: grabbing;
-  }
+  &:active { cursor: grabbing; }
 }
 
 .time-rail { width: 56px; flex-shrink: 0; position: relative; }
@@ -461,9 +430,7 @@ const toggleModal = (modal, agendamento) => {
   min-width: 120px;
   overflow: hidden;
   transition: box-shadow .2s ease, transform .15s ease, height .3s ease;
-  
-  // Garante que o card não tenha comportamentos de drag nativos de imagem/link
-  -webkit-user-drag: none; 
+  -webkit-user-drag: none;
 }
 
 .appointment-card:hover { box-shadow: 0 6px 20px rgba(80,60,140,.13); transform: translateY(-1px); }
@@ -474,8 +441,6 @@ const toggleModal = (modal, agendamento) => {
 .card-header-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 6px; }
 .client-name { font-family: 'Sora', sans-serif; font-size: 14px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-
-
 .service-name { font-size: 12px; color: var(--muted); }
 .duration { display: flex; align-items: center; gap: 4px; font-size: 11px; color: #aaa8be; }
 
@@ -484,28 +449,11 @@ const toggleModal = (modal, agendamento) => {
 .detail-price { font-family: 'Sora', sans-serif; font-size: 16px; font-weight: 700; color: #7c6af7; }
 .card-actions { display: flex; gap: 8px; }
 
-.btn-reschedule, .btn-cancel { 
-  flex: 1; 
-  padding: 7px 0; 
-  border-radius: 8px; 
-  font-size: 12px; 
-  font-weight: 600; 
-  cursor: pointer; 
-  border: none; 
-  background-color: transparent;
+.btn-reschedule, .btn-cancel {
+  flex: 1; padding: 7px 0; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; border: none; background-color: transparent;
 }
-
-.btn-reschedule { 
-  background-color: var(--verde-ag); color: var(--cards);
-}
-
-.btn-cancel { 
-  background-color: var(--vermelho-ag); color: var(--cards);
-
-  &.ausente{
-    background-color: var(--cinza-ag); color: var(--cards);
-  }
-}
+.btn-reschedule { background-color: var(--verde-ag); color: var(--cards); }
+.btn-cancel { background-color: var(--vermelho-ag); color: var(--cards); &.ausente { background-color: var(--cinza-ag); color: var(--cards); } }
 
 .carousel {
   width: 100%;
@@ -514,7 +462,7 @@ const toggleModal = (modal, agendamento) => {
   align-items: center;
   gap: 16px;
   margin-bottom: 32px;
-  
+
   .circles {
     overflow-x: auto;
     display: flex;
@@ -534,7 +482,6 @@ const toggleModal = (modal, agendamento) => {
       justify-content: center;
       align-items: center;
       cursor: pointer;
-
       p { font-size: 12px; color: #8b87a0; font-weight: 300; }
       &.active { background-color: mediumslateblue; p { color: white; } }
     }

@@ -24,14 +24,28 @@ onMounted(async () => {
     }
 })
 
+const categoriasAtivas = computed(() => {
+    return serviceStore.categorias.filter(cat => cat.ativo === true);
+});
+
 const servicosFiltrados = computed(() => {
-    if (!categoriaAtiva.value) return serviceStore.servicos;
-    return serviceStore.servicos.filter(s => s.id_categoria === categoriaAtiva.value);
+    // Passo A: Pega apenas os serviços ativos
+    let lista = serviceStore.servicos.filter(s => s.ativo === true);
+
+    // Passo B: Se houver uma categoria selecionada, filtra por ela também
+    if (categoriaAtiva.value) {
+        lista = lista.filter(s => s.id_categoria === categoriaAtiva.value);
+    }
+
+    return lista;
 });
 
 const selecionarCategoria = (id) => {
     categoriaAtiva.value = id;
 };
+
+
+
 </script>
 
 <template>
@@ -52,7 +66,7 @@ const selecionarCategoria = (id) => {
                         Todos
                     </li>
                     <li 
-                        v-for="cat in serviceStore.categorias" 
+                        v-for="cat in categoriasAtivas" 
                         :key="cat.id" 
                         class="button-select categories-li"
                         :class="{ 'active': categoriaAtiva === cat.id }"
@@ -104,6 +118,10 @@ const selecionarCategoria = (id) => {
         margin: calc(80px + 16px) 0;
         transition: 1s;
         font-size: 14px;
+
+        .categories-li{
+            cursor: pointer;
+        }
 
         .box{
             width: 100%;

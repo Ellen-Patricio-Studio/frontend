@@ -28,7 +28,7 @@ defineProps({
         <p class="date">{{ date }}</p>
         <p class="value">{{ value }}</p>
         <p class="status">{{ status }}</p>
-        <button v-if="src!==undefined" aria-label="Opções">...</button>
+        <!-- <button v-if="src!==undefined" aria-label="Opções">...</button> -->
     </li>
 </template>
 

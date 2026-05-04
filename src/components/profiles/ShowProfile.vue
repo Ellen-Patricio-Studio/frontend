@@ -56,8 +56,8 @@ const props = defineProps({
         </div>
         <div class="texts">
             <h1 class="h1">{{ name }}</h1>
-            <p>{{ role }}</p>
-            <p v-if="width>=768" class="active">{{active ? 'Ativo' : 'Desativado'}}</p>
+            <!-- <p>{{ role }}</p> -->
+            <p v-if="width>=768" :class="{'active': active, 'no-active': !active}">{{active ? 'Ativo' : 'Desativado'}}</p>
             <div v-if="width>=768" class="contacts">
                 <div class="contact">
                     <Icon class="icon" icon="mynaui:telephone-solid"/>
@@ -109,6 +109,8 @@ const props = defineProps({
 
         .box-options{
             .button-select{
+                cursor: pointer;
+
                 &.horario{
                     right: 124px;
                 }
@@ -127,6 +129,10 @@ const props = defineProps({
 
                 .active{
                     color: var(--verde-escuro-box);
+                }
+
+                .no-active{
+                    color: var(--vermelho)
                 }
 
                 .contacts{

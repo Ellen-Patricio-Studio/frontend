@@ -52,7 +52,7 @@ const agendamentosFiltrados = computed(() => {
             :id="equipeStore.funcionarioSelecionado?.id"
             :src="imgAvatar" 
             :name="equipeStore.funcionarioSelecionado?.nome_completo" 
-            role="Estilista" 
+             
             :tel="equipeStore.funcionarioSelecionado?.telefone" 
             :email="equipeStore.funcionarioSelecionado?.email" 
             :active="equipeStore.funcionarioSelecionado?.ativo"

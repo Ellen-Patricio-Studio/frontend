@@ -1,6 +1,6 @@
 // stores/useClientesStore.js
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import api from '@/services/api' // ajuste conforme seu setup de axios/fetch
 
 export const useClientesStore = defineStore('clientes', () => {
@@ -8,11 +8,36 @@ export const useClientesStore = defineStore('clientes', () => {
     const clienteSelecionado = ref(null)
     const loading = ref(false)
     const error = ref(null)
+    const filtroBusca = ref('')
 
     // Paginação
     const totalPages = ref(1)
     const currentPage = ref(1)
     const total = ref(0)
+
+    const clientesFiltrados = computed(() => {
+        const busca = filtroBusca.value.toLowerCase()
+
+        // 1. Primeiro filtramos a lista com base na busca
+        let lista = clientes.value
+        if (busca) {
+            lista = clientes.value.filter(c => 
+                c.nome_completo.toLowerCase().includes(busca) || 
+                c.email.toLowerCase().includes(busca)
+            )
+        }
+
+        // 2. Aplicamos a ordenação para jogar 'Anonimizado' para o fim
+        // Usamos [...lista] para não mutar o array original caso necessário
+        return [...lista].sort((a, b) => {
+            const nomeA = a.nome_completo === 'Anonimizado'
+            const nomeB = b.nome_completo === 'Anonimizado'
+
+            if (nomeA && !nomeB) return 1  // 'a' vai para o final
+            if (!nomeA && nomeB) return -1 // 'b' vai para o final
+            return a.nome_completo.localeCompare(b.nome_completo)                       // mantém a ordem entre eles
+        })
+    })
 
     const carregarClientes = async (page = 1) => {
         loading.value = true
@@ -80,6 +105,8 @@ export const useClientesStore = defineStore('clientes', () => {
 
     return {
         clientes,
+        filtroBusca,
+        clientesFiltrados,
         clienteSelecionado,
         loading,
         error,

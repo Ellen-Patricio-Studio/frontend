@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import api from '@/services/api';
+import { useAgendaUIStore } from "./useAgendaUIStore";
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
@@ -81,11 +82,14 @@ export const useAuthStore = defineStore('auth', {
         },
 
         logout(){
+            const agenda = useAgendaUIStore()
+
             this.user = null
             this.token = null
             this.roleString = ''
             localStorage.removeItem('access_token');
             localStorage.removeItem('role')
+            agenda.resetFiltros()
         }
     }
 })

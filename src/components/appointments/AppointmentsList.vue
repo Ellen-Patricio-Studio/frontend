@@ -32,7 +32,6 @@ const toggleModal = (modal) => {
     isModalOpen.value[modal] = !isModalOpen.value[modal];
 }
 
-
 </script>
 
 <template>
@@ -83,11 +82,11 @@ const toggleModal = (modal) => {
     <li class="appointments-list-item">
         <div class="left">
             <p class="service-name">{{ role }}</p>
-            <Avatar :src="imgAvatar" :alt="alt" :name="name" :role="date" :hour="hour"></Avatar>
-            <p class="professional">
+            <Avatar :src="imgAvatar" :alt="alt" :name="auth.isCliente ? professional : name" :role="date" :hour="hour"></Avatar>
+            <!-- <p class="professional">
                 <Icon icon="healthicons:city-worker" class="icon"/>
                 <span>{{ professional }}</span>
-            </p>
+            </p> -->
             
         </div>
         

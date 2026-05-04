@@ -42,18 +42,18 @@ const chartData = computed(() => ({
       tension: 0.4,
       fill: true,
     },
-    {
-      label: 'Despesas',
-      data: props.despesas,
-      borderColor: COLORS.pink,
-      backgroundColor: COLORS.pinkFill,
-      borderWidth: 2.5,
-      pointRadius: 0,
-      pointHoverRadius: 5,
-      pointHoverBackgroundColor: COLORS.pink,
-      tension: 0.4,
-      fill: true,
-    },
+    // {
+    //   label: 'Despesas',
+    //   data: props.despesas,
+    //   borderColor: COLORS.pink,
+    //   backgroundColor: COLORS.pinkFill,
+    //   borderWidth: 2.5,
+    //   pointRadius: 0,
+    //   pointHoverRadius: 5,
+    //   pointHoverBackgroundColor: COLORS.pink,
+    //   tension: 0.4,
+    //   fill: true,
+    // },
   ],
 }));
 
@@ -90,22 +90,22 @@ const chartOptions = computed(() => ({
       border: { display: false },
       ticks:  { color: '#888', font: { size: 11 } },
     },
-    y: {
-      grid: {
-        color: 'rgba(200, 200, 200, 0.15)',
-        drawBorder: false,
-      },
-      border: { display: false, dash: [4, 4] },
-      ticks: {
-        color: '#888',
-        font: { size: 11 },
-        callback: (value) => {
-          if (value >= 1000) return `${(value / 1000).toFixed(0)}k`;
-          return value;
-        },
-      },
-      beginAtZero: true,
+y: {
+  // ... suas outras configs
+  ticks: {
+    color: '#888',
+    font: { size: 11 },
+    precision: 2, // Garante precisão decimal na escala se necessário
+    callback: (value) => {
+        return value.toLocaleString('pt-BR', { 
+            style: 'currency', 
+            currency: 'BRL', 
+            maximumFractionDigits: 0 
+        });
     },
+  },
+  beginAtZero: true,
+}
   },
 }));
 </script>

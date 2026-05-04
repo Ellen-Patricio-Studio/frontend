@@ -31,7 +31,6 @@ const imprimir = () => {
                         <Icon class="icon" icon="streamline-ultimate:check-bold"/>
                     </div>
                     <h1>Reserva confirmada!</h1>
-                    <p>Uma cópia deste comprovante foi enviada ao seu endereço de email.</p>
                     <div class="buttons">
                         <button class="button-select" @click="$router.push({name: 'agendamentos'})" aria-label="Ver calendário"><Icon icon="solar:calendar-broken" />Ver calendário</button>
                         <button class="button-select" @click="imprimir"><Icon icon="solar:calendar-broken" aria-label="Imprimir"/>Imprimir</button>
@@ -47,7 +46,7 @@ const imprimir = () => {
                     <Information title="Data" :description="bookingData.data_atendimento" :subdescription="bookingData.hora_inicio"></Information>
                     <div class="information">
                         <p class="title">Profissional</p>
-                        <Avatar :src="imgAvatar" alt="Foto de perfil" :name="bookingData._temp.nome_funcionario" role="Estilista"></Avatar>
+                        <Avatar :src="imgAvatar" alt="Foto de perfil" :name="bookingData._temp.nome_funcionario"></Avatar>
                     </div>
                     <Information title="Local" description="Rua do salão" subdescription="123"></Information>
                 </div>
@@ -56,7 +55,7 @@ const imprimir = () => {
                     <h2 class="h2">Resumo financeiro</h2>
                     <!-- <p>Subtotal<span>R$350,00</span></p>
                     <p>Taxas e tarifas<span>R$30,00</span></p> -->
-                    <p>Total pago<span class="total">{{useFormatterComposable.formatarMoeda(totalPreco)}}</span></p>
+                    <p>Total a pagar<span class="total">{{useFormatterComposable.formatarMoeda(totalPreco)}}</span></p>
                 </div>
                 <div class="buttons">
                     <!-- <RouterLink class="button-rosa button-voltar">Cancelar reserva</RouterLink> -->

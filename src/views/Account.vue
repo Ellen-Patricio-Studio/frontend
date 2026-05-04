@@ -56,7 +56,7 @@ const toggleModal = (modal) => {
             <Avatar :src="imgAvatar" alt="Foto de perfil" :name="user.nome_completo || 'Carregando...'" :role="user.roles[0] || 'Carregando...'"></Avatar>
             <div class="buttons">
                 <button class="button-select" @click.prevent="toggleModal('profileEdit')" aria-label="Editar">Editar</button>
-                <button class="button-select excluir" @click.prevent="toggleModal('confirmationDelete')" aria-label="Excluir">Excluir</button>
+                <button v-if="!authStore.isPeloMenosFuncionario" class="button-select excluir" @click.prevent="toggleModal('confirmationDelete')" aria-label="Excluir">Excluir</button>
             </div>
         </div>
         <ul class="box-lists box">

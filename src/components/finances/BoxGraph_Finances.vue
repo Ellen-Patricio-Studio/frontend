@@ -10,7 +10,7 @@ const financeiroStore = useFinanceiroStore();
 
 // ─── SELECT ──────────────────────────────────────────────────────────────────
 const opcoes = [
-  { value: 'periodo',    label: 'Receitas - Despesas'         },
+  { value: 'periodo',    label: 'Evolução de receita'         },
   { value: 'pagamento',  label: 'Receita por forma de pagamento' },
   { value: 'servico',    label: 'Receita por serviço'         },
 ];
@@ -24,14 +24,42 @@ const MESES_PT = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','N
  * Agrega um array de { data: 'dd/mm/yyyy', valor: number }
  * somando por mês. Retorna Map<'MM/YYYY', number>.
  */
+/**
+ * Agrega um array somando por mês. 
+ * Garante que o valor seja tratado como número decimal.
+ */
 function agregarPorMes(itens = []) {
   const map = new Map();
-  itens.forEach(({ data, valor }) => {
-    if (!data) return;
-    const [, mes, ano] = data.split('/');
+  
+  itens.forEach((item) => {
+    if (!item.data || item.valor === undefined) return;
+
+    const [, mes, ano] = item.data.split('/');
     const chave = `${mes}/${ano}`;
-    map.set(chave, (map.get(chave) ?? 0) + valor);
+
+    let valorNumerico = 0;
+
+    if (typeof item.valor === 'string') {
+        // Verifica se a string usa vírgula (padrão BR) ou apenas ponto (padrão US)
+        if (item.valor.includes(',')) {
+            // Padrão BR: 1.200,50 -> 1200.50
+            valorNumerico = parseFloat(item.valor.replace(/\./g, '').replace(',', '.'));
+        } else {
+            // Padrão US ou Limpo: 120.00 -> 120.00
+            valorNumerico = parseFloat(item.valor);
+        }
+    } else {
+        // Já é um Number
+        valorNumerico = item.valor;
+    }
+
+    // Validação para evitar NaN (Not a Number) na soma
+    if (isNaN(valorNumerico)) valorNumerico = 0;
+
+    const atual = map.get(chave) ?? 0;
+    map.set(chave, atual + valorNumerico);
   });
+  
   return map;
 }
 
@@ -40,17 +68,24 @@ function agregarPorMes(itens = []) {
  * Converte "05/2025" → "Mai"
  */
 function mapParaSerie(map) {
+  // 1. Ordena as entradas por data
   const entradas = [...map.entries()].sort((a, b) => {
     const [ma, aa] = a[0].split('/').map(Number);
     const [mb, ab] = b[0].split('/').map(Number);
     return aa !== ab ? aa - ab : ma - mb;
   });
+
+  let totalAcumulado = 0; // Variável para guardar a soma progressiva
+
   return {
     labels: entradas.map(([chave]) => {
       const [mes] = chave.split('/').map(Number);
       return MESES_PT[mes - 1];
     }),
-    dados: entradas.map(([, v]) => v),
+    dados: entradas.map(([, v]) => {
+      totalAcumulado += v; // Soma o valor do mês atual ao que já tinha antes
+      return totalAcumulado; // Retorna o acumulado para o gráfico
+    }),
   };
 }
 
@@ -64,6 +99,8 @@ const FORMA_PT = {
 
 // ─── COMPUTED CENTRAL ────────────────────────────────────────────────────────
 const grafico = computed(() => {
+
+  
   const df = financeiroStore.dashboardFinanceiro;
 
   if (!df) return { tipo: 'line', labels: [], receitas: [], despesas: [], barDados: [], titulo: '' };
@@ -71,6 +108,7 @@ const grafico = computed(() => {
   switch (opcaoSelecionada.value) {
 
     case 'periodo': {
+      console.log("Dados que o gráfico recebeu:", df.receita_por_periodo);
       // Receitas: agrega receita_por_periodo por mês
       const receitaMap = agregarPorMes(df.receita_por_periodo ?? []);
       const { labels, dados: receitas } = mapParaSerie(receitaMap);
@@ -80,7 +118,7 @@ const grafico = computed(() => {
       // inventar dados — quando a API evoluir, basta mapear aqui.
       const despesas = labels.map(() => 0);
 
-      return { tipo: 'line', labels, receitas, despesas, titulo: 'Receitas - Despesas' };
+      return { tipo: 'line', labels, receitas, despesas, titulo: 'Evolução de receita' };
     }
 
     case 'pagamento': {
@@ -106,7 +144,7 @@ const grafico = computed(() => {
     }
 
     default:
-      return { tipo: 'line', labels: [], receitas: [], despesas: [], barDados: [], titulo: '' };
+      return { tipo: 'line', labels: [], receitas: [], despesas: [], barDados: [], titulo: '' }; 
   }
 });
 
@@ -131,8 +169,8 @@ const temDados  = computed(() => grafico.value.labels?.length > 0);
         v-if="grafico.tipo === 'line'"
         :labels="grafico.labels"
         :receitas="grafico.receitas"
-        :despesas="grafico.despesas"
-      />
+        />
+        <!-- :despesas="grafico.despesas" na linha de cima -->
 
       <!-- Gráfico de barras: por pagamento ou serviço -->
       <BarGraph

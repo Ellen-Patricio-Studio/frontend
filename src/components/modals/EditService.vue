@@ -24,7 +24,7 @@ const dataForm = ref({
     nome_servico: props.name,
     duracao_minutos: props.time,
     valor: props.value,
-    // ativo: props.active
+    ativo: props.active
 })
 
 const atualizarServico = async () => {
@@ -75,10 +75,10 @@ const atualizarServico = async () => {
                     </option>
                 </select>
             </div>
-            <!-- <div class="wrapper-input wrapper-check">
+            <div class="wrapper-input wrapper-check">
                 <input v-model="dataForm.ativo" type="checkbox" name="" id="">
                 <label>Ativo?</label>
-            </div> -->
+            </div>
             <p v-if="alert !== ''" class="alert">{{ alert }}</p>
             <button class="button-rosa button-voltar" @click.prevent="toggleModal()" aria-label="Cancelar">Cancelar</button>
             <input type="submit" value="Confirmar" class="button-rosa" aria-label="Submit">

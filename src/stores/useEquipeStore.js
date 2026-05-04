@@ -14,7 +14,21 @@ export const useEquipeStore = defineStore('equipe', {
 
     getters: {
         funcionariosFiltrados: (state) => {
-            return state.funcionarios.filter(funcionario => funcionario.nome_completo.toLowerCase().includes(state.filtros.busca.toLowerCase()))
+            // 1. Filtra os funcionários com base na busca
+            const busca = state.filtros.busca.toLowerCase();
+            const listaFiltrada = state.funcionarios.filter(funcionario => 
+                funcionario.nome_completo.toLowerCase().includes(busca)
+            );
+        
+            // 2. Ordena para que 'Anonimizado' fique por último
+            return [...listaFiltrada].sort((a, b) => {
+                const nomeA = a.nome_completo === 'Anonimizado';
+                const nomeB = b.nome_completo === 'Anonimizado';
+            
+                if (nomeA && !nomeB) return 1;  // Empurra 'a' para o fim
+                if (!nomeA && nomeB) return -1; // Mantém 'b' no fim
+                return a.nome_completo.localeCompare(b.nome_completo);                       // Mantém a ordem original entre os demais
+            });
         }
     },
 
@@ -42,7 +56,15 @@ export const useEquipeStore = defineStore('equipe', {
                 return { success: true }
             } catch (error){
                 console.error("Erro ao cadastrar funcionário: ", error)
-                return { success: false, error: error.response?.data?.message }
+            if (error.response?.data?.errors) {
+                const listaErros = error.response.data.errors
+                // Pega apenas a primeira mensagem de erro do primeiro campo que falhou
+                const primeiraMensagem = Object.values(listaErros)[0][0]
+                return { success: false, error: primeiraMensagem }
+            }
+
+                const message = error.response?.data?.message || "Erro ao cadastrar funcionário."
+                return { success: false, error: message }
             } finally {
                 this.loading = false
             }
@@ -85,6 +107,18 @@ export const useEquipeStore = defineStore('equipe', {
             }
         },
 
+        async obterHorariosFuncionario(id) {
+            this.loading = true;
+            try {
+                const response = await api.get(`/admin/funcionarios/${id}/horarios`);
+                return response.data; // Retorna os horários (US-10)
+            } catch (error) {
+                return { success: false, message: error.response?.data?.message || "Erro desconhecido" }
+            } finally {
+                this.loading = false;
+            }
+        },
+
         async buscarPorId(id) {
             this.loading = true
 
@@ -115,6 +149,18 @@ export const useEquipeStore = defineStore('equipe', {
             }
         },
 
+        async listarBloqueios(id) {
+            this.loading = true;
+            try {
+                const response = await api.get(`/admin/funcionarios/${id}/bloqueios`);
+                return response.data; // Retorna a lista de bloqueios para o componente
+            } catch (error) {
+                return { success: false, message: error.response?.data?.message || "Erro desconhecido" }
+            } finally {
+                this.loading = false;
+            }
+        },
+
         async adicionarBloqueio(id, dadosBloqueio) {
             this.loading = true;
             try {
@@ -129,6 +175,22 @@ export const useEquipeStore = defineStore('equipe', {
             } finally {
                 this.loading = false;
             }
-        }
+        },
+
+        async removerBloqueio(idFuncionario, idBloqueio) {
+            this.loading = true;
+            try {
+                const response = await api.delete(`/admin/funcionarios/${idFuncionario}/bloqueios/${idBloqueio}`);
+                return { success: true, message: response.data.message };
+            } catch (error) {
+                console.error("Erro ao remover bloqueio:", error);
+                return { 
+                    success: false, 
+                    error: error.response?.data?.message || "Erro ao remover bloqueio" 
+                };
+            } finally {
+                this.loading = false;
+            }
+        },
     },
 })

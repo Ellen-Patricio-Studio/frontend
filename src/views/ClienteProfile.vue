@@ -74,7 +74,7 @@ onMounted(async () => {
                     <h2 class="h2">{{ clientesStore.clienteSelecionado?.nome_completo }}</h2>
                     <span class="role-tag">Cliente</span>
                 </div>
-                <div class="perfil-actions">
+                <div class="perfil-actions"  v-if="clientesStore.clienteSelecionado?.nome_completo !== 'Anonimizado'">
                     <button class="button-select" @click="toggleEditModal" aria-label="Editar">
                         <Icon icon="mingcute:edit-line" /> Editar
                     </button>

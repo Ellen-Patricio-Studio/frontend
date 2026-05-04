@@ -52,7 +52,20 @@ const chartOptions = computed(() => ({
     y: {
       grid:   { color: 'rgba(200,200,200,0.15)' },
       border: { display: false, dash: [4, 4] },
-      ticks:  { color: '#888' },
+      ticks:  { 
+        color: '#888',
+        // Define o intervalo entre os números. 
+        // Se for agendamentos/realizações, pula de 1 em 1.
+        // Se for 'min', deixa o Chart.js calcular automaticamente (undefined).
+        stepSize: props.unidade !== 'min' ? 1 : undefined,
+        // Garante que não renderize rótulos decimais caso o stepSize falhe
+        callback: function(value) {
+          if (props.unidade !== 'min') {
+            return Math.floor(value) === value ? value : null;
+          }
+          return value;
+        }
+      },
       beginAtZero: true
     }
   }
