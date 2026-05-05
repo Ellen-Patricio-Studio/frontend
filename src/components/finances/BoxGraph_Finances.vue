@@ -193,9 +193,25 @@ const temDados  = computed(() => grafico.value.labels?.length > 0);
   padding-top: 24px !important;
   gap: 32px;
 
+  
   .top {
     @include flex(row, space-between, center);
     width: 100%;
+    
+    .h2{
+      @media all and (max-width: 768px){
+        width: 100%;
+        flex: 2;
+      }
+    }
+  
+    select{
+      @media all and (max-width: 768px){
+        width: 100%;
+        flex: 1;
+
+      }
+    }
   }
 
   .sem-dados {

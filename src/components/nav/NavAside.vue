@@ -24,6 +24,12 @@ onMounted(async () => {
     if(auth.token && !auth.user){
         await auth.carregarPerfil()
     }
+
+    // const setVh = () => {
+    //     document.documentElement.style.setProperty('--real-vh', `${window.innerHeight}px`)
+    // }
+    // setVh()
+    // window.addEventListener('resize', setVh)
 })
 
 watch(width, (newWidth) => {
@@ -139,6 +145,10 @@ themeStore.applyTheme();
                     cursor: pointer;
                 }
             }
+        }
+
+        @media all and (max-width: 768px){
+            height: 100dvh;
         }
     }
 </style>

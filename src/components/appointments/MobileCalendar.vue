@@ -123,8 +123,8 @@ const moverScroll = (direcao) => {
 };
 
 // ─── Layout ───────────────────────────────────────────────────────────────────
-const START_HOUR  = 8
-const END_HOUR    = 20
+const START_HOUR  = 0
+const END_HOUR    = 23
 const SLOT_MIN    = 60
 const PX_PER_MIN  = 1.5
 const CARD_PAD    = 6
@@ -411,6 +411,7 @@ const toggleModal = (modal, agendamento) => {
   user-select: none;
   -webkit-user-select: none;
   &:active { cursor: grabbing; }
+  padding-top: 12px;
 }
 
 .time-rail { width: 56px; flex-shrink: 0; position: relative; }

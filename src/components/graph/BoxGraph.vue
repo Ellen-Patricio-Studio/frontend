@@ -144,6 +144,21 @@ const unidade = computed(() => dadosPorTipo.value.unidade);
   .top {
     @include flex(row, space-between, center);
     width: 100%;
+    
+    .h2{
+      @media all and (max-width: 768px){
+        width: 100%;
+        flex: 2;
+      }
+    }
+  
+    select{
+      @media all and (max-width: 768px){
+        width: 100%;
+        flex: 1;
+
+      }
+    }
   }
 
   .sem-dados {

@@ -57,20 +57,22 @@ const lancamentosFiltrados = computed(() => {
                 <h2 class="h2">Transações recentes</h2>
                 <input v-model="buscaTransacao" type="text" class="input" placeholder="Buscar...">
             </div>
-            <div class="titles">
-                <p>Nº</p>
-                <p>Data criação</p>
-                <p>Descrição</p>
-                <p>Nº agendamento</p>
-                <p>Valor</p>
-                <p>Operação</p>
-                <p>Status</p>
-                <p>Data pagamento</p>
-                <p>Opções</p>
-            </div>
-            <RecentsTransitionList v-for="transacao in lancamentosFiltrados" :key="transacao.id" :transacao="transacao"></RecentsTransitionList>
-            <div v-if="lancamentosFiltrados.length === 0" class="sem-resultados">
-                Nenhuma transação encontrada.
+            <div class="table-scroll">
+                <div class="titles">
+                    <p>Nº</p>
+                    <p>Data criação</p>
+                    <p>Descrição</p>
+                    <p>Nº agendamento</p>
+                    <p>Valor</p>
+                    <p>Operação</p>
+                    <p>Status</p>
+                    <p>Data pagamento</p>
+                    <p>Opções</p>
+                </div>
+                <RecentsTransitionList v-for="transacao in lancamentosFiltrados" :key="transacao.id" :transacao="transacao"></RecentsTransitionList>
+                <div v-if="lancamentosFiltrados.length === 0" class="sem-resultados">
+                    Nenhuma transação encontrada.
+                </div>
             </div>
         </ul>
     </div>
@@ -87,6 +89,38 @@ const lancamentosFiltrados = computed(() => {
         @media all and (min-width: 768px){
             padding-left: calc(256px + 32px);
             margin-bottom: 16px;
+        }
+
+        .recent-transitions-list{
+            .table-scroll{
+                width: 100%;
+                overflow-x: auto;
+            
+                .titles, .item{
+                    min-width: 780px;
+
+                    p:nth-child(3){ // coluna de descrição
+                        flex: 3;
+                    }
+                }
+
+                .item{
+                    margin: 32px 0;
+                }
+            }
+        
+            .button-item{
+                height: 100%;
+                flex: 1;
+                @include flex(row, center, center);
+            
+                .icon{
+                    color: var(--cinza-nav);
+                    width: 20px;
+                    height: 20px;
+                    cursor: pointer;
+                }
+            }
         }
     }
 </style>

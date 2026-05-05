@@ -54,20 +54,6 @@ const toggleConfirmationModal = () => {
 </template>
 
 <style lang="scss">
-    .finances-container-admin{
-        .recent-transitions-list{
-            .button-item{
-                height: 100%;
-                flex: 1;
-                @include flex(row, center, center);
 
-                .icon{
-                    color: var(--cinza-nav);
-                    width: 20px;
-                    height: 20px;
-                    cursor: pointer;
-                }
-            }
-        }
-    }
+    
 </style>

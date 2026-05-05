@@ -11,14 +11,16 @@ import { useAuthStore } from '@/stores/useAuthStore';
 import { useAgendamentosStore } from '@/stores/useAgendamentosStore';
 import { computed } from 'vue';
 import { ref } from 'vue';
-
+import { useFinanceiroStore } from '@/stores/useFinanceiroStore';
 
 const auth = useAuthStore()
 const agendamentosStore = useAgendamentosStore();
+const financeiroStore = useFinanceiroStore()
 
 onMounted(() => {
     if(auth.isAdmin){
         agendamentosStore.fetchTodosAgendamentos()
+        financeiroStore.fetchDashboardOperacional()
     } else {
         agendamentosStore.fetchMeusAgendamentos();
     }
@@ -157,7 +159,7 @@ const receitaHoje = computed(() => {
             <BoxInfo v-if="auth.isFuncionario && !auth.isAdmin" icon="ic:round-check" texto="Agendamentos completos" :numero="agendamentosCompletos" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"    ></BoxInfo>
             <BoxInfo v-if="auth.isPeloMenosFuncionario" icon="solar:calendar-bold" texto="Agendamentos hoje" :numero="agendamentosHojeContagem" background-color="--azul-claro-box" icon-color="--azul-escuro-box"      ></BoxInfo>
             <BoxInfo v-if="auth.isAdmin" icon="boxicons:dollar" texto="Receita de hoje" :numero="receitaHoje" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"    ></BoxInfo>
-            <BoxInfo v-if="auth.isPeloMenosFuncionario" icon="fluent:people-team-24-filled" texto="Novos clientes" numero="123" background-color="--roxo-claro-box" icon-color="--roxo-escuro-box"></BoxInfo>
+            <BoxInfo v-if="auth.isPeloMenosFuncionario" icon="fluent:people-team-24-filled" texto="Clientes" :numero="financeiroStore.dashboardOperacional?.card_clientes_ativos" background-color="--roxo-claro-box" icon-color="--roxo-escuro-box"></BoxInfo>
             
             <BoxInfo v-if="auth.isCliente" icon="solar:calendar-bold" texto="Próximo agendamento" :numero="proximoAgendamentoData" background-color="--azul-claro-box" icon-color="--azul-escuro-box"      ></BoxInfo>
             <BoxInfo v-if="auth.isCliente" icon="ic:round-check" texto="Agendamentos completos" :numero="agendamentosCompletos" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"    ></BoxInfo>
@@ -234,6 +236,10 @@ const receitaHoje = computed(() => {
             overflow-y: auto;
             padding-top: 24px;
 
+            .titles, .item{
+                min-width: 500px;
+            }
+        
             .top, .titles{
                 @include flex(row, space-between, center);
                 width: 100%;
@@ -241,8 +247,9 @@ const receitaHoje = computed(() => {
                 position: sticky;
                 top: -24px;
                 background-color: var(--cards);
+                z-index: 1; // evita itens passarem por cima ao scrollar
             }
-
+        
             .titles{
                 top: 52px;
             }
