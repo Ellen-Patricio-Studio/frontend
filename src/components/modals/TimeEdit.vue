@@ -21,29 +21,36 @@ const horarios = ref([
     '16:00:00', '17:00:00', '18:00:00', '19:00:00', '20:00:00', '21:00:00', '22:00:00', '23:00:00',
 ])
 
-// Mapa bidirecional
 const mapaDias = {
     'Domingo': 0, 'Segunda-feira': 1, 'Terça-feira': 2, 'Quarta-feira': 3,
     'Quinta-feira': 4, 'Sexta-feira': 5, 'Sábado': 6
 }
 const mapaNumParaDia = Object.fromEntries(Object.entries(mapaDias).map(([k, v]) => [v, k]))
 
+// Cada item agora representa um dia com até dois turnos
 const escala = ref([
-    { dia_semana: null, hora_inicio: null, hora_fim: null }
+    { dia_semana: null, hora_inicio: null, hora_fim: null, hora_inicio2: null, hora_fim2: null }
 ])
 
 // ─── Carrega horários existentes ao abrir ─────────────────────────────────────
 onMounted(async () => {
     const data = await equipeStore.obterHorariosFuncionario(props.id)
-    // API retorna array de { dia_semana: 1, hora_inicio: "08:00", hora_fim: "17:00" }
     if (Array.isArray(data) && data.length > 0) {
-        escala.value = data.map(h => ({
-            // Converte número → nome do dia
-            dia_semana: mapaNumParaDia[h.dia_semana] ?? null,
-            // Normaliza para "HH:MM:SS" caso venha "HH:MM"
-            hora_inicio: h.hora_inicio?.length === 5 ? h.hora_inicio + ':00' : h.hora_inicio,
-            hora_fim:    h.hora_fim?.length === 5    ? h.hora_fim    + ':00' : h.hora_fim,
-        }))
+        // Agrupa por dia_semana para montar a estrutura de dois turnos
+        const porDia = {}
+        for (const h of data) {
+            const nomeDia = mapaNumParaDia[h.dia_semana] ?? null
+            const hi = h.hora_inicio?.length === 5 ? h.hora_inicio + ':00' : h.hora_inicio
+            const hf = h.hora_fim?.length === 5    ? h.hora_fim    + ':00' : h.hora_fim
+            if (!porDia[nomeDia]) {
+                porDia[nomeDia] = { dia_semana: nomeDia, hora_inicio: hi, hora_fim: hf, hora_inicio2: null, hora_fim2: null }
+            } else {
+                // Segundo turno do mesmo dia
+                porDia[nomeDia].hora_inicio2 = hi
+                porDia[nomeDia].hora_fim2 = hf
+            }
+        }
+        escala.value = Object.values(porDia)
     }
     carregando.value = false
 })
@@ -59,7 +66,7 @@ const podeAdicionarMais = computed(() => {
 
 const adicionarTurno = () => {
     if (podeAdicionarMais.value)
-        escala.value.push({ dia_semana: null, hora_inicio: null, hora_fim: null })
+        escala.value.push({ dia_semana: null, hora_inicio: null, hora_fim: null, hora_inicio2: null, hora_fim2: null })
 }
 
 const removerTurno = (index) => {
@@ -74,16 +81,55 @@ const getDiasDisponiveis = (indexAtual) =>
 const getHorariosSaidaDisponiveis = (horaInicio) =>
     horaInicio ? horarios.value.filter(h => h > horaInicio) : horarios.value
 
+// Entrada do 2º turno: no mínimo 1h depois da saída do 1º
+const getHorariosEntrada2Disponiveis = (horaFim1) => {
+    if (!horaFim1) return []
+    const [hh] = horaFim1.split(':').map(Number)
+    const minimoHora = hh + 1
+    if (minimoHora > 23) return []
+    const minimo = String(minimoHora).padStart(2, '0') + ':00:00'
+    return horarios.value.filter(h => h >= minimo)
+}
+
+const getHorariosSaida2Disponiveis = (horaInicio2) =>
+    horaInicio2 ? horarios.value.filter(h => h > horaInicio2) : horarios.value
+
+// Limpa os campos do 2º turno se a saída do 1º mudar
+const onHoraFim1Change = (turno) => {
+    turno.hora_inicio2 = null
+    turno.hora_fim2 = null
+}
+
+const onHoraInicio2Change = (turno) => {
+    turno.hora_fim2 = null
+}
+
 // ─── Salvar ───────────────────────────────────────────────────────────────────
 const salvarEscala = async () => {
     const incompleto = escala.value.some(t => !t.dia_semana || !t.hora_inicio || !t.hora_fim)
     if (incompleto) { alert2.value = 'Preencha todos os campos dos turnos adicionados.'; return }
 
-    const dadosFormatados = escala.value.map(item => ({
-        dia_semana:  mapaDias[item.dia_semana],
-        hora_inicio: item.hora_inicio.substring(0, 5),
-        hora_fim:    item.hora_fim.substring(0, 5)
-    }))
+    // Segundo turno: se preencheu entrada2, saída2 também é obrigatória (e vice-versa)
+    const turno2Incompleto = escala.value.some(t =>
+        (t.hora_inicio2 && !t.hora_fim2) || (!t.hora_inicio2 && t.hora_fim2)
+    )
+    if (turno2Incompleto) { alert2.value = 'Preencha a entrada e a saída do segundo turno.'; return }
+
+    const dadosFormatados = []
+    for (const item of escala.value) {
+        dadosFormatados.push({
+            dia_semana:  mapaDias[item.dia_semana],
+            hora_inicio: item.hora_inicio.substring(0, 5),
+            hora_fim:    item.hora_fim.substring(0, 5)
+        })
+        if (item.hora_inicio2 && item.hora_fim2) {
+            dadosFormatados.push({
+                dia_semana:  mapaDias[item.dia_semana],
+                hora_inicio: item.hora_inicio2.substring(0, 5),
+                hora_fim:    item.hora_fim2.substring(0, 5)
+            })
+        }
+    }
 
     const response = await equipeStore.configurarHorarios(props.id, dadosFormatados)
     if (response.success) window.location.reload()
@@ -117,14 +163,30 @@ const salvarEscala = async () => {
                         <option v-for="dia in getDiasDisponiveis(index)" :key="dia" :value="dia">{{ dia }}</option>
                     </select>
 
-                    <select v-model="turno.hora_inicio" class="input" required @change="turno.hora_fim = null">
+                    <!-- Turno 1 -->
+                    <select v-model="turno.hora_inicio" class="input" required @change="turno.hora_fim = null; onHoraFim1Change(turno)">
                         <option :value="null" disabled>entrada</option>
                         <option v-for="hora in horarios" :key="hora" :value="hora">{{ hora.substring(0, 5) }}</option>
                     </select>
 
-                    <select v-model="turno.hora_fim" class="input" required :disabled="!turno.hora_inicio">
+                    <select v-model="turno.hora_fim" class="input" required :disabled="!turno.hora_inicio" @change="onHoraFim1Change(turno)">
                         <option :value="null" disabled>saída</option>
                         <option v-for="hora in getHorariosSaidaDisponiveis(turno.hora_inicio)" :key="hora" :value="hora">
+                            {{ hora.substring(0, 5) }}
+                        </option>
+                    </select>
+
+                    <!-- Turno 2 -->
+                    <select v-model="turno.hora_inicio2" class="input" :disabled="!turno.hora_fim" @change="onHoraInicio2Change(turno)">
+                        <option :value="null" disabled>entrada 2</option>
+                        <option v-for="hora in getHorariosEntrada2Disponiveis(turno.hora_fim)" :key="hora" :value="hora">
+                            {{ hora.substring(0, 5) }}
+                        </option>
+                    </select>
+
+                    <select v-model="turno.hora_fim2" class="input" :disabled="!turno.hora_inicio2">
+                        <option :value="null" disabled>saída 2</option>
+                        <option v-for="hora in getHorariosSaida2Disponiveis(turno.hora_inicio2)" :key="hora" :value="hora">
                             {{ hora.substring(0, 5) }}
                         </option>
                     </select>
@@ -166,6 +228,12 @@ const salvarEscala = async () => {
             @include flex(row, start, center);
             width: 100%;
             gap: 16px;
+
+            .input{
+                @media all and (max-width: 768px){
+                    font-size: 7px;
+                }
+            }
 
             .icon {
                 width: 48px;

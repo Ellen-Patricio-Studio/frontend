@@ -159,7 +159,7 @@ const receitaHoje = computed(() => {
             <BoxInfo v-if="auth.isFuncionario && !auth.isAdmin" icon="ic:round-check" texto="Agendamentos completos" :numero="agendamentosCompletos" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"    ></BoxInfo>
             <BoxInfo v-if="auth.isPeloMenosFuncionario" icon="solar:calendar-bold" texto="Agendamentos hoje" :numero="agendamentosHojeContagem" background-color="--azul-claro-box" icon-color="--azul-escuro-box"      ></BoxInfo>
             <BoxInfo v-if="auth.isAdmin" icon="boxicons:dollar" texto="Receita de hoje" :numero="receitaHoje" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"    ></BoxInfo>
-            <BoxInfo v-if="auth.isPeloMenosFuncionario" icon="fluent:people-team-24-filled" texto="Clientes" :numero="financeiroStore.dashboardOperacional?.card_clientes_ativos" background-color="--roxo-claro-box" icon-color="--roxo-escuro-box"></BoxInfo>
+            <BoxInfo v-if="auth.isAdmin" icon="fluent:people-team-24-filled" texto="Clientes" :numero="financeiroStore.dashboardOperacional?.card_clientes_ativos" background-color="--roxo-claro-box" icon-color="--roxo-escuro-box"></BoxInfo>
             
             <BoxInfo v-if="auth.isCliente" icon="solar:calendar-bold" texto="Próximo agendamento" :numero="proximoAgendamentoData" background-color="--azul-claro-box" icon-color="--azul-escuro-box"      ></BoxInfo>
             <BoxInfo v-if="auth.isCliente" icon="ic:round-check" texto="Agendamentos completos" :numero="agendamentosCompletos" background-color="--vermelho-claro-box" icon-color="--vermelho-escuro-box"    ></BoxInfo>
